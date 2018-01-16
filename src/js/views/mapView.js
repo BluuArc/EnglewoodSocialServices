@@ -28,6 +28,7 @@ let MapView = function (div) {
 
     markerVisibilityCheck: () => { return true; }, //markers always visible by default
     lotMarkerVisCheck: () => { return true; }, //markers always visible by default
+    schoolVisCheck: () => { return true; }, // visible by default
 
     choroplethLayer: null,
     choropleth: null
@@ -49,23 +50,6 @@ let MapView = function (div) {
     if (self.map.getSize().y === 1) {
       alert("Error loading map. Please reload your page");
     }
-
-    // create the map layer using data from openstreetmap
-    // var osmUrl = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'; // normal
-    // // var osmUrl = 'http://a.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png'; // dark
-    // // var osmUrl = 'https://a.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png'; // light
-
-    // var osmAttrib = 'Map data © <a href="http://openstreetmap.org">OpenStreetMap</a> contributors';
-
-    // var osm = new L.TileLayer(osmUrl, {
-    //   minZoom: 11,
-    //   maxZoom: 18,
-    //   zoomSnap: 0.25,
-    //   zoomDelta: 0.25,
-    //   attribution: osmAttrib
-    // });
-    // self.map.addLayer(osm);
-
 
     // use mapbox map
     L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', {
@@ -92,11 +76,6 @@ let MapView = function (div) {
       self.landInventoryGroup = L.layerGroup([]).addTo(self.map);
     }
     self.map.zoomControl.setPosition('bottomright');
-
-    // causes map to recalculate size... (I shouldn't need to do this)
-    // setTimeout(function() {
-    //   self.map.invalidateSize();
-    // }, 0);
   }
 
   function drawEnglewoodOutline() {
@@ -151,18 +130,11 @@ let MapView = function (div) {
           ${school.Address}<br>
           ${school.City}, ${school.State}, ${school.Zip}
         `;
-      }).addTo(self.schoolGroup).on("click", function (e) {
-        if (self.markerVisibilityCheck() && this.options.data.visible && App.controllers.listToMapLink) {
-          App.controllers.listToMapLink.mapMarkerSelected(this.options.data);
-        } else {
-          self.map.closePopup();
-        }
-      })
-      .on("mouseover", function (e) {
-        if (self.markerVisibilityCheck()) {
-          // open popup forcefully
+      }).addTo(self.schoolGroup).on("mouseover", function (e) {
+        if (self.schoolVisCheck()) {
+          //open popup forcefully
           if (!this._popup._latlng) {
-            this._popup.setLatLng(new L.latLng(+this.options.data.Latitude, +this.options.data.Longitude));
+            this._popup.setLatLng(new L.latLng(this.options.data.Latitude, this.options.data.Longitude));
           }
 
           this._popup.openOn(self.map);
@@ -172,18 +144,32 @@ let MapView = function (div) {
         if (!this.options.data.expanded) {
           self.map.closePopup();
         }
-      });
+      }).on("click", function (e) {
+        if (self.schoolVisCheck()) {
+          //open popup forcefully
+          if (!this._popup._latlng) {
+            this._popup.setLatLng(new L.latLng(this.options.data.Latitude, this.options.data.Longitude));
+          }
 
+          this._popup.openOn(self.map);
+        }
+      });
+      curSchool._icon.classList.add("schoolMarker");
 
       return curSchool;
     });
+
+    if(App.controllers.schoolMarkerView) {
+      let schoolMarkerSelection = d3.select("#" + div).selectAll(".leaflet-marker-icon.schoolMarker");
+      App.controllers.schoolMarkerView.attachMarkers(schoolMarkers,schoolMarkerSelection);
+      self.schoolVisCheck = App.controllers.schoolMarkerView.markersAreVisible;
+    }
   }
 
   function plotLandInventory(landInventoryData){
     self.landInventoryGroup.clearLayers();
 
     let landMarkers = [];
-    let lastHovered = undefined;
 
     // iterate through land inventory data
     for(let lot of landInventoryData){
@@ -200,7 +186,7 @@ let MapView = function (div) {
         return `<strong>${lot.Location}</strong><br><b>Size: </b> ${lot["Sq. Ft."]} sq. ft.`;
       }).addTo(self.toggleableLotMarkerGroup)
       .on("mouseover", function (e) {
-        if (!lastHovered && self.lotMarkerVisCheck()) {
+        if (self.lotMarkerVisCheck()) {
           //open popup forcefully
           if (!this._popup._latlng) {
             this._popup.setLatLng(new L.latLng(this.options.data.Latitude, this.options.data.Longitude));
@@ -210,16 +196,10 @@ let MapView = function (div) {
         }
       })
       .on("mouseout", function (e) {
-        if (!lastHovered && !this.options.data.expanded) {
+        if (!this.options.data.expanded) {
           self.map.closePopup();
         }
       }).on("click",function(e){
-        if(e.originalEvent.target === lastHovered){
-          lastHovered = undefined;
-        }else{
-          lastHovered = e.originalEvent.target;
-        }
-
         if (self.lotMarkerVisCheck()) {
           //open popup forcefully
           if (!this._popup._latlng) {

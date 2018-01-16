@@ -38,6 +38,7 @@ Promise.all([documentPromise, windowPromise, less.pageLoadFinished])
   App.models.censusData = new CensusDataModel();
   App.models.boundaryData = new BoundaryDataModel();
   App.models.landInventory = new LandInventoryModel();
+  App.models.schoolData = new SchoolDataModel();
   App.models.crimeData = new CrimeDataModel();
 
   // views
@@ -72,21 +73,12 @@ Promise.all([documentPromise, windowPromise, less.pageLoadFinished])
     
     App.controllers.serviceMarkerView = new LeafletMarkerViewController("#toggleServiceView","#serviceViewText", "Service");
     App.controllers.landMarkerView = new LeafletMarkerViewController("#toggleLotView", "#lotViewText", "Vacant Lot");
+    App.controllers.schoolMarkerView = new LeafletMarkerViewController("#toggleSchoolView", "#schoolViewText", "School");
 
-    // App.controllers.mapData.setDataDropdown("#mapSettingsPanel");
     App.controllers.mapData.setupDataPanel("#mapPanelToggle", "#mapSettingsPanel");
-    // App.controllers.mapData.setPanelToggle("#mapPanelToggle");
     App.controllers.mapData.attachResetOverlayButton("#resetMaps");
 
-    // App.controllers.locationButton.attachLocationButton("#locationButton");
-    // App.controllers.locationButton.attachAddressLookupButton("#findAddressButton");
-
     App.controllers.search.attachDOMElements("#searchInput", "#searchButton");
-
-    // App.controllers.rectSelector = new RectSelectorController("#newRectSelector");
-    // App.controllers.rectSelector.attachDragLayer("#serviceMap");
-    // App.controllers.rectSelector.attachSpecificSelector("#rectSelector1", "1");
-    // App.controllers.rectSelector.attachSpecificSelector("#rectSelector2", "2");
 
     App.views.loadingMessage.updateAndRaise("Loading location, service, and census data");
     let numFinished = 0;
@@ -120,6 +112,11 @@ Promise.all([documentPromise, windowPromise, less.pageLoadFinished])
         console.log("Loaded Land Inventory Data", ++numFinished);
         return data;
       });
+    let schoolDataP = App.models.schoolData.loadData("./data/17-12-05 Englewood Schools.csv")
+      .then(data => {
+        console.log("Loaded School Data", ++numFinished);
+        return data;
+      });
     // let crimeDataP = App.models.crimeData.loadData()
     //   .then((data) => {
     //     console.log("Loaded Crime Data");
@@ -132,7 +129,7 @@ Promise.all([documentPromise, windowPromise, less.pageLoadFinished])
     let max_subdropdown_height = d3.select('body').node().clientHeight * 0.4;
 
     console.time("load data");
-    Promise.all([socialServiceP, serviceTaxonomyP, boundaryDataP, censusDataP, landInventoryP, /*crimeDataP*/])
+    Promise.all([socialServiceP, serviceTaxonomyP, boundaryDataP, censusDataP, landInventoryP, schoolDataP])
       .then(function(values) {
         // App.views.map.createMap();
         console.timeEnd("load data");
@@ -141,6 +138,7 @@ Promise.all([documentPromise, windowPromise, less.pageLoadFinished])
         App.views.loadingMessage.updateAndRaise("Plotting services and lots");
         App.views.map.plotServices(App.models.socialServices.getData());
         App.views.map.plotLandInventory(App.models.landInventory.getDataByFilter());
+        App.views.map.plotSchools(App.models.schoolData.getData());
 
         // App.views.chartList...
         console.timeEnd("plotting data");
@@ -156,6 +154,7 @@ Promise.all([documentPromise, windowPromise, less.pageLoadFinished])
         console.time("setting marker visibility");
         App.controllers.serviceMarkerView.setVisibilityState(false); 
         App.controllers.landMarkerView.setVisibilityState(false); 
+        App.controllers.schoolMarkerView.setVisibilityState(false);
         console.timeEnd("setting marker visibility");
 
         //set two selections to be west englewood and englewood

@@ -46,6 +46,7 @@
   <script src="./src/js/models/landInventoryModel.js"></script>
   <script src="./src/js/models/crimeDataModel.js"></script>
   <script src="./src/js/models/browserModel.js"></script>
+  <script src="./src/js/models/schoolDataModel.js"></script>
 
   <!-- Views -->
   <script src="./src/js/views/mapView.js"></script>
@@ -130,14 +131,11 @@
               </span>
                 <span class="caret"></span>
             </button>
-            <!-- <ul class="dropdown-menu" role="menu" id="filterDropdownList"></ul> -->
             <ul class="dropdown-menu dropdown-toggle" role="menu" id="filterDropdownList"></ul>
            </div> 
-          <!-- <div class="btn-group">  -->
-            <button type="button" class="btn btn-default navbar-btn" id="allServicesButton" style="display:none;">
-              <span class="glyphicon glyphicon-remove"></span>
-            </button> 
-          <!-- </div> -->
+          <button type="button" class="btn btn-default navbar-btn" id="allServicesButton" style="display:none;">
+            <span class="glyphicon glyphicon-remove"></span>
+          </button> 
         </div>
         <div class="nav btn-group" id="censusButtonGroup">
            <div class="btn-group"> 
@@ -147,14 +145,11 @@
               </span>
                 <span class="caret"></span>
             </button>
-            <!-- <ul class="dropdown-menu" role="menu" id="filterDropdownList"></ul> -->
             <ul class="dropdown-menu dropdown-toggle" role="menu" id="censusDropdownList"></ul>
            </div> 
-          <!-- <div class="btn-group">  -->
-            <button type="button" class="btn btn-default navbar-btn" id="allCensusButton" style="display:none;">
-              <span class="glyphicon glyphicon-remove"></span>
-            </button> 
-          <!-- </div> -->
+          <button type="button" class="btn btn-default navbar-btn" id="allCensusButton" style="display:none;">
+            <span class="glyphicon glyphicon-remove"></span>
+          </button> 
         </div>
 
         <button class="btn btn-success navbar-btn" id="toggleHideChartsButton">
@@ -172,6 +167,11 @@
         <button class="btn btn-success navbar-btn" id="toggleLotView">
           <span class="glyphicon glyphicon-eye-close"></span>
           <span id="lotViewText">Hide Vacant Lot Markers</span>
+        </button>
+
+        <button class="btn btn-success navbar-btn" id="toggleSchoolView">
+          <span class="glyphicon glyphicon-eye-close"></span>
+          <span id="schoolViewText">Hide School Markers</span>
         </button>
 
         <div class="dropdown-menu" role="menu" id="chartListWrapper">
