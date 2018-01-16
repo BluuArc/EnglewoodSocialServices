@@ -43,6 +43,7 @@ window.onresize = function() {
   // models
   App.models.socialServices = new SocialServiceModel();
   App.models.serviceTaxonomy = new ServiceTaxonomyModel();
+  App.models.schoolData = new SchoolDataModel();
 
   // views
 
@@ -80,16 +81,18 @@ window.onresize = function() {
     App.views.loadingMessage.updateAndRaise("Loading location and service data");
     let socialServiceP = App.models.socialServices.loadData("./admin-data/EnglewoodLocations.csv")
     let serviceTaxonomyP = App.models.serviceTaxonomy.loadData("./data/serviceTaxonomy.json");
+    let schoolDataP = App.models.schoolData.loadData("./data/17-12-05 Englewood Schools.csv");
 
     App.controllers.modal = new modalController();
 
-    Promise.all([socialServiceP, serviceTaxonomyP])
+    Promise.all([socialServiceP, serviceTaxonomyP, schoolDataP])
       .then(function(values) {
         // App.views.map.createMap();
 
         App.views.loadingMessage.updateAndRaise("Plotting services");
         App.views.map.plotServices(App.models.socialServices.getData());
         App.views.serviceList.populateList(App.models.socialServices.getData());
+        App.views.map.plotSchools(App.models.schoolData.getData());
 
         App.controllers.search.setCount(App.models.socialServices.getData().length);
         App.controllers.modal.setCount(App.models.socialServices.getData().length);

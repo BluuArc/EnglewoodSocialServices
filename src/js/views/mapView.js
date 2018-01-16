@@ -81,6 +81,7 @@ let MapView = function (div) {
     self.choroplethLayer = L.layerGroup([]).addTo(self.map);
     self.rectLayer = L.layerGroup([]).addTo(self.map);
     self.serviceGroup = L.layerGroup([]).addTo(self.map);
+    self.schoolGroup = L.layerGroup([]).addTo(self.map);
     if (L.markerClusterGroup){
       self.landInventoryGroup = L.markerClusterGroup({
         showCoverageOnHover: false,
@@ -127,6 +128,55 @@ let MapView = function (div) {
       });
     }
 
+  }
+
+  function plotSchools(schoolData) {
+    self.schoolGroup.clearLayers();
+
+    console.log("schoolData",schoolData);
+
+    let schoolMarkers = schoolData.map(school => {
+      school.visible = true;
+
+      // create a marker for each location
+      let curSchool = L.marker(
+        L.latLng(+school.Latitude,+school.Longitude),
+        {
+          icon: self.icons[self.iconColorNames[4]],
+          data: school
+        }
+      ).bindPopup(() => {
+        return `
+          <b>${school["Organization Name"]}</b><br>
+          ${school.Address}<br>
+          ${school.City}, ${school.State}, ${school.Zip}
+        `;
+      }).addTo(self.schoolGroup).on("click", function (e) {
+        if (self.markerVisibilityCheck() && this.options.data.visible && App.controllers.listToMapLink) {
+          App.controllers.listToMapLink.mapMarkerSelected(this.options.data);
+        } else {
+          self.map.closePopup();
+        }
+      })
+      .on("mouseover", function (e) {
+        if (self.markerVisibilityCheck()) {
+          // open popup forcefully
+          if (!this._popup._latlng) {
+            this._popup.setLatLng(new L.latLng(+this.options.data.Latitude, +this.options.data.Longitude));
+          }
+
+          this._popup.openOn(self.map);
+        }
+      })
+      .on("mouseout", function (e) {
+        if (!this.options.data.expanded) {
+          self.map.closePopup();
+        }
+      });
+
+
+      return curSchool;
+    });
   }
 
   function plotLandInventory(landInventoryData){
@@ -221,7 +271,7 @@ let MapView = function (div) {
   function plotServices(englewoodLocations) {
     self.serviceGroup.clearLayers();
     let serviceMarkers = [];
-    console.log(englewoodLocations);
+    console.log("serviceData",englewoodLocations);
 
     // iterate through the social services location file
     for (let loc of englewoodLocations) {
@@ -567,6 +617,7 @@ let MapView = function (div) {
 
   return {
     createMap,
+    plotSchools,
     plotLandInventory,
     plotServices,
     updateServicesWithFilter,
