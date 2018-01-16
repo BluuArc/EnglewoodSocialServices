@@ -159,21 +159,6 @@
 
         </button>
 
-        <button class="btn btn-success navbar-btn" id="toggleServiceView">
-          <span class="glyphicon glyphicon-eye-close"></span>
-          <span id="serviceViewText">Hide Service Markers</span>
-        </button>
-
-        <button class="btn btn-success navbar-btn" id="toggleLotView">
-          <span class="glyphicon glyphicon-eye-close"></span>
-          <span id="lotViewText">Hide Vacant Lot Markers</span>
-        </button>
-
-        <button class="btn btn-success navbar-btn" id="toggleSchoolView">
-          <span class="glyphicon glyphicon-eye-close"></span>
-          <span id="schoolViewText">Hide School Markers</span>
-        </button>
-
         <div class="dropdown-menu" role="menu" id="chartListWrapper">
           <p class="title label-info">
             Chart List
@@ -196,6 +181,30 @@
 
           </div>
           
+        </div>
+
+        <div class="btn-group">
+          <button type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown">Toggle Marker Views <span class="caret"></span></button>
+          <ul class="dropdown-menu" role="menu">
+            <li>
+              <a id="toggleServiceView" href="#">
+                <span class="glyphicon glyphicon-eye-close"></span>
+                <span id="serviceViewText">Hide Service Markers</span>
+              </a>
+            </li>
+            <li>
+              <a id="toggleLotView" href="#">
+                <span class="glyphicon glyphicon-eye-close"></span>
+                <span id="lotViewText">Hide Vacant Lot Markers</span>
+              </a>
+            </li>
+            <li>
+              <a id="toggleSchoolView" href="#">
+                <span class="glyphicon glyphicon-eye-close"></span>
+                <span id="schoolViewText">Hide School Markers</span>
+              </a>
+            </li>
+          </ul>
         </div>
         <div id="legend"></div>
       </div>
