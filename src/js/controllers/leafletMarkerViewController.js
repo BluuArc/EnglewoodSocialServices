@@ -75,10 +75,18 @@ let LeafletMarkerViewController = function (buttonID, buttonTextID, markerName) 
         return self.visibleMarkers == true;
     }
 
+
+    function raise() {
+        if(self.markerD3Selection){
+            self.markerD3Selection.raise();
+        }
+    }
+
     return {
         markersAreVisible,
         attachMarkers,
         setVisibilityState,
-        setCustomToggleFunction
+        setCustomToggleFunction,
+        raise
     }
 }

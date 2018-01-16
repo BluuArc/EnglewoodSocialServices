@@ -78,6 +78,8 @@ window.onresize = function() {
 
     App.controllers.search.attachDOMElements("#searchInput", "#searchCount", "#searchButton");
 
+    App.controllers.schoolMarkerView = new LeafletMarkerViewController("#toggleSchoolView", "#schoolViewText", "School");
+
     App.views.loadingMessage.updateAndRaise("Loading location and service data");
     let socialServiceP = App.models.socialServices.loadData("./admin-data/EnglewoodLocations.csv")
     let serviceTaxonomyP = App.models.serviceTaxonomy.loadData("./data/serviceTaxonomy.json");

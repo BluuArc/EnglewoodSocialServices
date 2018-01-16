@@ -65,7 +65,6 @@ let MapView = function (div) {
     self.choroplethLayer = L.layerGroup([]).addTo(self.map);
     self.rectLayer = L.layerGroup([]).addTo(self.map);
     self.serviceGroup = L.layerGroup([]).addTo(self.map);
-    self.schoolGroup = L.layerGroup([]).addTo(self.map);
     if (L.markerClusterGroup){
       self.landInventoryGroup = L.markerClusterGroup({
         showCoverageOnHover: false,
@@ -75,6 +74,7 @@ let MapView = function (div) {
     }else{
       self.landInventoryGroup = L.layerGroup([]).addTo(self.map);
     }
+    self.schoolGroup = L.layerGroup([]).addTo(self.map);
     self.map.zoomControl.setPosition('bottomright');
   }
 
@@ -345,6 +345,10 @@ let MapView = function (div) {
       let serviceMarkersSelection = d3.select("#" + div).selectAll('.leaflet-marker-icon.leaflet-zoom-animated.leaflet-interactive');
       App.controllers.serviceMarkerView.attachMarkers(serviceMarkers, serviceMarkersSelection);
       self.markerVisibilityCheck = App.controllers.serviceMarkerView.markersAreVisible;
+    }
+
+    if(App.controllers.schoolMarkerView){
+      App.controllers.schoolMarkerView.raise(); //keep school markers on top
     }
   }
 
