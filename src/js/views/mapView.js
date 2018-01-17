@@ -9,16 +9,12 @@ let MapView = function (div) {
     currentLocationMarker: null,
     icons: {},
 
-    iconColorNames: ["blue", "red", "green", "orange", "yellow", "violet", "grey", "black"],
     iconColors: {
-      "blue": "#2e84cb",
-      "red": "#cb2d40",
-      "green": "#28ad25",
-      "orange": "#cc852a",
-      "yellow": "#cac428",
-      "violet": "#9c2bcb",
-      "grey": "#7b7b7b",
-      "black": "#3e3e3e"
+      serviceMarker: "#2e84cb",
+      serviceMarkerSelected: "#cc852a",
+      lotMarker: "#9c2bcb",
+      schoolMarker: "#f781bf",
+      locationMarker: "#cb2d40"
     },
 
     rectLayer: null,
@@ -96,10 +92,11 @@ let MapView = function (div) {
 
   // initialize the different icon options by color
   function initIcons() {
-    for (let color of self.iconColorNames) {
-      self.icons[color] = new L.Icon({
-        iconUrl: 'https://cdn.rawgit.com/pointhi/leaflet-color-markers/master/img/marker-icon-' + color + '.png',
-        shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+    for (let color in self.iconColors) {
+      self.icons[color] = new L.DivIcon.SVGIcon({
+        color: self.iconColors[color],
+        fillOpacity: 1,
+        circleWeight: 3.5,
         iconSize: [25, 41],
         iconAnchor: [12, 41],
         popupAnchor: [1, -34],
@@ -121,7 +118,7 @@ let MapView = function (div) {
       let curSchool = L.marker(
         L.latLng(+school.Latitude,+school.Longitude),
         {
-          icon: self.icons[self.iconColorNames[4]],
+          icon: self.icons.schoolMarker,
           data: school
         }
       ).bindPopup(() => {
@@ -178,7 +175,7 @@ let MapView = function (div) {
       // create a marker for each lot location
       let curLot = L.marker(
         L.latLng(+lot.Latitude, +lot.Longitude), {
-          icon: self.icons[self.iconColorNames[5]],
+          icon: self.icons.lotMarker,
           riseOnHover: true,
           data: lot
         }
@@ -272,7 +269,7 @@ let MapView = function (div) {
       // create a marker for each social services location
       let curService = L.marker(
           L.latLng(lat, lng), {
-            icon: self.icons[self.iconColorNames[0]],
+            icon: self.icons.serviceMarker,
             riseOnHover: true, // moves the marker to the front on mouseover
             // bind data to marker inside options
             data: loc
@@ -360,7 +357,7 @@ let MapView = function (div) {
     console.log(service);
     self.serviceGroup.eachLayer(function (layer) {
       if (service && service["Organization Name"] === layer.options.data["Organization Name"]) {
-        layer.setIcon(self.icons["orange"]);
+        layer.setIcon(self.icons.serviceMarkerSelected);
 
         // open popup forcefully
         if (!layer._popup._latlng) {
@@ -369,7 +366,8 @@ let MapView = function (div) {
 
         layer._popup.openOn(self.map);
       } else {
-        layer.options.data.visible ? layer.setIcon(self.icons["blue"]) : layer.setIcon(self.icons["grey"]);
+        // layer.options.data.visible ? layer.setIcon(self.icons.serviceMarker) : layer.setIcon(self.icons["grey"]);
+        layer.setIcon(self.icons.serviceMarker)
         // layer.setIcon(self.icons["blue"]);
       }
     });
@@ -383,7 +381,7 @@ let MapView = function (div) {
 
   function drawLocationMarker(position) {
     self.currentLocationMarker = L.marker(position, {
-      icon: self.icons[self.iconColorNames[1]],
+      icon: self.icons.locationMarker,
       zIndexOffset: 200
     });
 
@@ -599,6 +597,10 @@ let MapView = function (div) {
 
   }
 
+  function getIconColor(name){
+    return self.iconColors[name];
+  }
+
   return {
     createMap,
     plotSchools,
@@ -617,6 +619,8 @@ let MapView = function (div) {
     jumpToLocation,
     jumpToLocationNoMarker,
     clearLocation,
-    fitMapAroundServices
+    fitMapAroundServices,
+
+    getIconColor
   };
 };

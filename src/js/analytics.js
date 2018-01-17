@@ -217,6 +217,22 @@ Promise.all([documentPromise, windowPromise, less.pageLoadFinished])
         App.views.chartList.addSelection(selectionData.westEnglewood);
         App.views.chartList.addSelection(selectionData.englewood);
 
+        // insert icons
+        d3.selectAll(".svg-insert").html(function(){
+          let id = d3.select(this).attr("id");
+          console.log("svg id", id);
+          if(!id ){
+            return "";
+          }else{
+            return new L.DivIcon.SVGIcon({
+              color: App.views.map.getIconColor(id) || "black",
+              fillOpacity: 1,
+              // circleWeight: 3.5,
+              iconSize: [14, 23],
+            }).options.html;
+          }
+        });
+
         App.views.loadingMessage.finishLoading();
 
         App.controllers.browserMessage.runBrowserCheck();

@@ -28,6 +28,7 @@
   <script src="./lib/js/leaflet.markercluster.js"></script>
   <script src="./lib/js/leaflet.featuregroup.subgroup.js"></script>
   <script src="./lib/js/d3-starPlot-modded.js"></script>
+  <script src="./lib/js/svg-icon.js"></script>
   
   <script src="https://cdnjs.cloudflare.com/ajax/libs/d3-legend/2.24.0/d3-legend.min.js"></script>
 
@@ -190,18 +191,21 @@
               <a id="toggleServiceView" href="#">
                 <span class="glyphicon glyphicon-eye-close"></span>
                 <span id="serviceViewText">Hide Service Markers</span>
+                <span class="svg-insert" id="serviceMarker"></span>
               </a>
             </li>
             <li>
               <a id="toggleLotView" href="#">
                 <span class="glyphicon glyphicon-eye-close"></span>
                 <span id="lotViewText">Hide Vacant Lot Markers</span>
+                <span class="svg-insert" id="lotMarker"></span>
               </a>
             </li>
             <li>
               <a id="toggleSchoolView" href="#">
                 <span class="glyphicon glyphicon-eye-close"></span>
                 <span id="schoolViewText">Hide School Markers</span>
+                <span class="svg-insert" id="schoolMarker"></span>
               </a>
             </li>
           </ul>
