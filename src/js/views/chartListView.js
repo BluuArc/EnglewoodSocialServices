@@ -204,7 +204,7 @@ let ChartListView = function(listID) {
           .attr('width', barThickness).attr('height', height)
           .style('fill', data_entry.color).attr('id', 'selection-graph-bar')
           .on('click', function () {
-            App.views.map.centerAroundRect(self.selections[selectionKeys[index]]);
+            App.views.map.centerAroundSelection(self.selections[selectionKeys[index]]);
           });
 
         let textSize = 14;

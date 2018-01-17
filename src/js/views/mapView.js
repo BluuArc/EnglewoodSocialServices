@@ -17,11 +17,6 @@ let MapView = function (div) {
       locationMarker: "#cb2d40"
     },
 
-    rectLayer: null,
-    rects: {},
-    rectColors: d3.schemeCategory10.slice(0),
-    totalRects: 0,
-
     markerVisibilityCheck: () => { return true; }, //markers always visible by default
     lotMarkerVisCheck: () => { return true; }, //markers always visible by default
     schoolVisCheck: () => { return true; }, // visible by default
@@ -59,7 +54,6 @@ let MapView = function (div) {
     self.map.setView([41.7750541, -87.6585445], 14);
 
     self.choroplethLayer = L.layerGroup([]).addTo(self.map);
-    self.rectLayer = L.layerGroup([]).addTo(self.map);
     self.serviceGroup = L.layerGroup([]).addTo(self.map);
     if (L.markerClusterGroup){
       self.landInventoryGroup = L.markerClusterGroup({
@@ -388,49 +382,8 @@ let MapView = function (div) {
     self.map.addLayer(self.currentLocationMarker);
   }
 
-  function drawRect(bound1, bound2, rectID) {
-    let llBound1 = self.map.containerPointToLatLng(bound1);
-    let llBound2 = self.map.containerPointToLatLng(bound2);
-
-    let color = self.rectColors.shift();
-
-    if (rectID) {
-      if (rectID == 1) {
-        color = "#1f77b4";
-      } else if (rectID == 2) {
-        color = "#ff7f0e";
-      }
-    }
-
-    let rect = L.rectangle([llBound1, llBound2], {
-        color,
-        data: rectID || self.totalRects
-      })
-      // .bindPopup(function (layer) { // allow for the popup on click with the name of the location
-      //   return `<button class='btn btn-xs btn-danger' onclick='App.controllers.rectSelector.removeRect(${layer.options.data})'>
-      // <span class='glyphicon glyphicon-remove'></span> Remove</button>`;
-      // })
-      // .setZIndex(200)
-      .addTo(self.rectLayer);
-
-    self.rects[rectID || self.totalRects] = rect;
-
-    return {
-      id: rectID || self.totalRects++,
-      color,
-      bounds: [llBound1, llBound2]
-    };
-  }
-
-  function removeRect(rect) {
-    self.rectLayer.removeLayer(self.rects[rect]);
-    self.rectColors.push(self.rects[rect].options.color);
-
-    delete self.rects[rect];
-  }
-
-  function centerAroundRect(rect) {
-    self.map.fitBounds(rect.bounds);
+  function centerAroundSelection(selection) {
+    self.map.fitBounds(selection.bounds);
   }
 
   function drawChoropleth(data, title, options = {}) {
@@ -525,12 +478,6 @@ let MapView = function (div) {
           let subTypeTitle = `${description.subType.replace(/[^a-zA-Z0-9- ]/g, "")}`;
           return `<b>Count of <em>${mainTypeTitle} - ${subTypeTitle}</em> on this block:</b> ${layer.feature.properties.data}`;
         }).addTo(self.choroplethLayer);
-
-      self.rectLayer.eachLayer(rect => {
-        if(rect) {
-          rect.bringToFront();
-        }
-      });
     }
 
   }
@@ -609,9 +556,7 @@ let MapView = function (div) {
     updateServicesWithFilter,
     setSelectedService,
 
-    drawRect,
-    removeRect,
-    centerAroundRect,
+    centerAroundSelection,
 
     drawChoropleth,
     drawEnglewoodOutline,

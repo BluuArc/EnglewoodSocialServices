@@ -47,7 +47,7 @@ let StarPlotView = function(options){
                     min: <min val>,
                     max: <max val>,
                     label: <custom label> //optional
-                    propertyName: <property-name>
+                    propertyName: <property-name> // name of axis
                 }
             ]
         */
@@ -99,8 +99,6 @@ let StarPlotView = function(options){
                 .attr("text-anchor", "middle")
                 .style("transform", `translateX(${$svg.width() / 2}px) translateY(${$svg.height() / 2}px)`);
         }
-        
-
     }
 
     return {
