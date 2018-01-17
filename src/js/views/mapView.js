@@ -200,7 +200,7 @@ let MapView = function (div) {
           this._popup.openOn(self.map);
         }
       });
-
+      
       landMarkers.push(curLot);
     }
 
@@ -327,13 +327,15 @@ let MapView = function (div) {
             self.map.closePopup();
           }
         });
+
+        curService._icon.classList.add("serviceMarker");
       
         serviceMarkers.push(curService);
     }
 
     //pass new list to service marker view controller
     if(App.controllers.serviceMarkerView){
-      let serviceMarkersSelection = d3.select("#" + div).selectAll('.leaflet-marker-icon.leaflet-zoom-animated.leaflet-interactive');
+      let serviceMarkersSelection = d3.select("#" + div).selectAll('.leaflet-marker-icon.leaflet-zoom-animated.leaflet-interactive.serviceMarker');
       App.controllers.serviceMarkerView.attachMarkers(serviceMarkers, serviceMarkersSelection);
       self.markerVisibilityCheck = App.controllers.serviceMarkerView.markersAreVisible;
     }
