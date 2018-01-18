@@ -77,7 +77,7 @@ let ChartListView = function(listID){
         called when chart is first created
       update: function(chart:d3 selection of chart entry, data) => returns nothing
         DOM manipulation occurs here
-      remove: function(evt:click event) => returns nothing // OPTIONAL, X button is shown if defined
+      remove: function(data) => returns nothing // OPTIONAL, X button is shown if defined
         this is run on button click; used to do any data cleanup (if necessary)
         chart removal from DOM happens after this function is run by chartListView
     }
@@ -98,10 +98,11 @@ let ChartListView = function(listID){
     options.init(chartList[options.id].el);
   }
 
-  function removeChart(id, clickEvent) {
-      self.chartList[id].remove(clickEvent);
+  function removeChart(id, data) {
+      self.chartList[id].remove(data);
       self.chartList[id].el.remove();
       delete self.chartList[id];
+      console.log("deleted chart with ID",id);
   }
 
   function updateChart(id, data) {

@@ -11,6 +11,7 @@ let MapDataController = function () {
     censusDropdownButton: null,
     censusDropdownList: null,
     data: null,
+    lastShownProperty: null,
 
     filters: {}, // equivalent to subcategory states
 
@@ -75,31 +76,14 @@ let MapDataController = function () {
     return `${mainTypeTitle}__${subTypeTitle}`.replace(/[^a-zA-Z0-9_]/g, ""); //remove any non-alpha numberic characters except underscores
   }
 
-  function resetFilters() {
-    console.log("Reset Filters");
-
-    let current_census_properties = {
-      type: "census"
-    };
-
-    current_census_properties.subType = (Object.keys(self.filters).length === 1) ? Object.keys(self.filters)[0].split("||")[1] : "All";
-    
+  function resetFilters(isConsecutiveCall = false) {
+    console.trace("Reset Filters");
     self.filters = {};
 
     console.log(self.mainCategoryStates)
     for (let mainCategory of Object.keys(self.mainCategoryStates)) {
-      if (self.mainCategoryStates[mainCategory] !== "none") {
-        current_census_properties.mainType = mainCategory;
-      }
       self.mainCategoryStates[mainCategory] = "none";
     }
-
-    console.log("current_census_properties", current_census_properties, createPropertyID(current_census_properties));
-    console.trace();
-    if(current_census_properties.mainType && self.chartList){
-      self.chartList.removeChart(createPropertyID(current_census_properties));
-    }
-      
 
     removeMap();
 
@@ -112,6 +96,17 @@ let MapDataController = function () {
     self.censusResetButton.selectAll('#currentServiceSelection').text("Clear Selection");
     // self.censusResetButton.attr('disabled',true);
     document.getElementById("allCensusButton").style.display = "none";
+
+
+    if (self.lastShownProperty) {
+      let id = createPropertyID(self.lastShownProperty);
+      self.lastShownProperty = null;
+      if (!isConsecutiveCall && self.chartList) {
+        self.chartList.removeChart(id, true);
+      }
+    } else {
+      console.log("no last shown property found");
+    }
   }
 
   function getFilterKey(mainType,subType){
@@ -223,16 +218,14 @@ let MapDataController = function () {
               document.getElementById("allCensusButton").style.display = "";
 
               addMap(d);
+
+              chartButtonClick(d);
             } else {
               resetFilters();
             }
 
-
             updateSubCategoryIcon(d.mainType, d.subType);
             updateMainCategoryOnSubUpdate(d.mainType);
-
-            chartButtonClick(d);
-
           });
 
         // create tab content div for this t1 category
@@ -301,15 +294,14 @@ let MapDataController = function () {
               document.getElementById("allCensusButton").style.display = "";
 
               addMap(d);
+
+              chartButtonClick(d);
             } else {
               resetFilters();
             }
 
-
             updateSubCategoryIcon(d.mainType, d.subType);
             updateMainCategoryOnSubUpdate(d.mainType);
-
-            chartButtonClick(d);
           });
 
       });
@@ -372,14 +364,21 @@ let MapDataController = function () {
       console.error("No chart list specified");
       return;
     }
+
+    if(self.lastShownProperty){
+      self.chartList.removeChart(createPropertyID(self.lastShownProperty), true);
+    }
+    self.lastShownProperty = d;
     
     console.log("Create chart for", d);
     if(d.type !== "census"){
-      App.views.chartList.addPropertyChart(d);
+      self.chartList.addChart(new CensusBarChart(d,createPropertyID(d)));
     }else{
       let title = d.title ? `<b>${d.subType}</b>` : undefined;
-      App.views.chartList.addPropertyChart(d, title);
+      self.chartList.addChart(new CensusBarChart(d, createPropertyID(d), title));
     }
+
+    self.chartList.updateChart(createPropertyID(d));
   }
 
   function addChart(d) {
