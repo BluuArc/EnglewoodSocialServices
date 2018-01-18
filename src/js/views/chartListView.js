@@ -55,16 +55,13 @@ let ChartListView = function(listID) {
     let lotCharts = self.chartList.selectAll(".vacantLotChart");
     self.chartList.selectAll('#error-selection-chart').remove();
     if(censusCharts.empty() || lotCharts.empty()){
-      if(neededSelections > 0 && lotCharts.empty() && censusCharts.empty()){ //show selection message if no charts are currently showing
-          // addErrorChart(`Select ${neededSelections} ${neededSelections === 1 ? "area" : "areas"} where you'd like to compare data`);
+       //show selection message if no charts are currently showing
+      if(neededSelections > 0 && lotCharts.empty() && censusCharts.empty()){
           addErrorChart("Please wait until data has finished loading");
       }else{
         if(censusCharts.empty()){
           addErrorChart("Select a census category to compare census data across the selected areas.");
         }
-        // if(serviceCharts.empty()){
-        //   addErrorChart("Select a service category to compare service data across the selected areas.");
-        // }
       }
     }
     return neededSelections;
