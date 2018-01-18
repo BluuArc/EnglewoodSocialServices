@@ -141,10 +141,6 @@ Promise.all([documentPromise, windowPromise, less.pageLoadFinished])
 
         // App.views.chartList...
         console.timeEnd("plotting data");
-        console.time("Adding lot chart");
-        // App.views.chartList.addLotChart();
-        console.error("Adding lot chart has been disabled");
-        console.timeEnd("Adding lot chart");
 
         console.time("populating dropdown");
         App.controllers.serviceFilterDropdown.populateDropdown(max_subdropdown_height);
@@ -214,7 +210,10 @@ Promise.all([documentPromise, windowPromise, less.pageLoadFinished])
         console.timeEnd("getting selection data");
         console.log(selectionData);
 
-        console.error("Adding Selection has been disabled")
+        // console.error("Adding Selection has been disabled")
+
+        App.views.chartList.addChart(new VacantLotBarChart(selectionData.englewood,selectionData.westEnglewood));
+        App.views.chartList.updateChart("vacant-lots-total");
 
         // App.views.chartList.addSelection(selectionData.westEnglewood);
         // App.views.chartList.addSelection(selectionData.englewood);
