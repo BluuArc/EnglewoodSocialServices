@@ -166,19 +166,6 @@ Promise.all([documentPromise, windowPromise, less.pageLoadFinished])
         App.views.chartList.addChart(new VacantLotBarChart(App.models.aggregateData.englewood,App.models.aggregateData.westEnglewood));
         App.views.chartList.updateChart("vacant-lots-total");
 
-        // App.views.chartList.addSelection(selectionData.westEnglewood);
-        // App.views.chartList.addSelection(selectionData.englewood);
-
-        App.views.chartList.addChart({
-          title: "<h4>Test Chart</h4>",
-          id: "test",
-          init: (chart) => {
-            chart.select(".panel-body").text("This is the panel body");
-          },
-          update: () => {},
-          remove: () => {}
-        });
-
         // insert icons
         d3.selectAll(".svg-insert").html(function(){
           let id = d3.select(this).attr("id");
