@@ -22,6 +22,10 @@ let MapDataController = function () {
     }
   };
 
+  function setChartList(chartList) {
+    self.chartList = chartList;
+  }
+
   function setDataDropdown(id) {
     self.dataDropdownList = d3.select(id);
   }
@@ -65,6 +69,12 @@ let MapDataController = function () {
     console.log("Reset Overlay");
   }
 
+  function createPropertyID(property_data) {
+    let mainTypeTitle = property_data.mainType.split("_").map(d => `${d[0].toUpperCase()}${d.slice(1).toLowerCase()}`).join("_");
+    let subTypeTitle = property_data.subType.split(" ").join("_");
+    return `${mainTypeTitle}__${subTypeTitle}`.replace(/[^a-zA-Z0-9_]/g, ""); //remove any non-alpha numberic characters except underscores
+  }
+
   function resetFilters() {
     console.log("Reset Filters");
 
@@ -84,10 +94,12 @@ let MapDataController = function () {
       self.mainCategoryStates[mainCategory] = "none";
     }
 
-    console.log("current_census_properties", current_census_properties);
+    console.log("current_census_properties", current_census_properties, createPropertyID(current_census_properties));
     console.trace();
-    if(current_census_properties.mainType)
-      App.views.chartList.removePropertyChart(current_census_properties);
+    if(current_census_properties.mainType && self.chartList){
+      self.chartList.removeChart(createPropertyID(current_census_properties));
+    }
+      
 
     removeMap();
 
@@ -356,6 +368,11 @@ let MapDataController = function () {
   }
 
   function chartButtonClick(d) {
+    if(!self.chartList){
+      console.error("No chart list specified");
+      return;
+    }
+    
     console.log("Create chart for", d);
     if(d.type !== "census"){
       App.views.chartList.addPropertyChart(d);
@@ -466,6 +483,7 @@ let MapDataController = function () {
     resetFilters,
     populateDropdown,
     removeChartFromList,
-    setCensusClearButton
+    setCensusClearButton,
+    setChartList
   };
 }

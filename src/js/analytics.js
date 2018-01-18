@@ -76,6 +76,7 @@ Promise.all([documentPromise, windowPromise, less.pageLoadFinished])
 
     App.controllers.mapData.setupDataPanel("#mapPanelToggle", "#mapSettingsPanel");
     App.controllers.mapData.attachResetOverlayButton("#resetMaps");
+    App.controllers.mapData.setChartList(App.views.chartList);
 
     App.controllers.search.attachDOMElements("#searchInput", "#searchButton");
 
@@ -156,63 +157,13 @@ Promise.all([documentPromise, windowPromise, less.pageLoadFinished])
         //set two selections to be west englewood and englewood
         console.time("getting selection data");
         App.views.loadingMessage.updateAndRaise("Filtering data for West Englewood and Englewood");
-        let westEnglewoodPoly = App.models.boundaryData.getWestEnglewoodPolygon();
-        let englewoodPoly = App.models.boundaryData.getEnglewoodPolygon();
-        let splitLotData = App.models.landInventory.splitDataByEnglewood_WestEnglewood();
-        let selectionData = {
-          westEnglewood: {
-            data: {
-              census: App.models.censusData.getDataWithinPolygon(westEnglewoodPoly).dataTotals,
-              // lot: App.models.landInventory.getDataByFilter((a) => { return a.Area === "West Englewood"; })
-              lot: splitLotData.westEnglewood
-            },
-            area: turf.area(westEnglewoodPoly) / (1000 * 1000), //turf.area returns area in m^2, divide by 1000^2 to get km^2
-            color: "#1f77b4",
-            id: "West Englewood",
-            bounds: (function(poly){
-              console.time("bounds get");
-              let coordsArr = poly.geometry.coordinates[0];
-              let latExtent = d3.extent(coordsArr, (d) => { return d[1]; });
-              let lngExtent = d3.extent(coordsArr, (d) => { return d[0]; });
-
-              console.timeEnd("bounds get");
-
-              return [
-                [latExtent[0], lngExtent[0]],
-                [latExtent[1], lngExtent[1]],
-              ];
-            })(westEnglewoodPoly)
-          },
-          englewood: {
-            data: {
-              census: App.models.censusData.getDataWithinPolygon(englewoodPoly).dataTotals,
-              // lot: App.models.landInventory.getDataByFilter((a) => { return a.Area === "Englewood"; })
-              lot: splitLotData.englewood
-            },
-            area: turf.area(englewoodPoly) / (1000 * 1000), //turf.area returns area in m^2, divide by 1000^2 to get km^2
-            color: "#ff7f0e",
-            id: "Englewood",
-            bounds: (function (poly) {
-              console.time("bounds get");
-              let coordsArr = poly.geometry.coordinates[0];
-              let latExtent = d3.extent(coordsArr, (d) => { return d[1]; });
-              let lngExtent = d3.extent(coordsArr, (d) => { return d[0]; });
-
-              console.timeEnd("bounds get");
-              return [
-                [latExtent[0], lngExtent[0]],
-                [latExtent[1], lngExtent[1]],
-              ];
-            })(englewoodPoly)
-          }
-        };
-
+        aggregateData();
         console.timeEnd("getting selection data");
-        console.log(selectionData);
+        console.log(App.models.aggregateData);
 
         // console.error("Adding Selection has been disabled")
 
-        App.views.chartList.addChart(new VacantLotBarChart(selectionData.englewood,selectionData.westEnglewood));
+        App.views.chartList.addChart(new VacantLotBarChart(App.models.aggregateData.englewood,App.models.aggregateData.westEnglewood));
         App.views.chartList.updateChart("vacant-lots-total");
 
         // App.views.chartList.addSelection(selectionData.westEnglewood);
@@ -258,5 +209,60 @@ Promise.all([documentPromise, windowPromise, less.pageLoadFinished])
         
       });
   };
+
+  function aggregateData() {
+    let westEnglewoodPoly = App.models.boundaryData.getWestEnglewoodPolygon();
+    let englewoodPoly = App.models.boundaryData.getEnglewoodPolygon();
+    let splitLotData = App.models.landInventory.splitDataByEnglewood_WestEnglewood();
+    let selectionData = {
+      westEnglewood: {
+        data: {
+          census: App.models.censusData.getDataWithinPolygon(westEnglewoodPoly).dataTotals,
+          // lot: App.models.landInventory.getDataByFilter((a) => { return a.Area === "West Englewood"; })
+          lot: splitLotData.westEnglewood
+        },
+        area: turf.area(westEnglewoodPoly) / (1000 * 1000), //turf.area returns area in m^2, divide by 1000^2 to get km^2
+        color: "#1f77b4",
+        id: "West Englewood",
+        bounds: (function (poly) {
+          console.time("bounds get");
+          let coordsArr = poly.geometry.coordinates[0];
+          let latExtent = d3.extent(coordsArr, d => d[1]);
+          let lngExtent = d3.extent(coordsArr, d => d[0]);
+
+          console.timeEnd("bounds get");
+
+          return [
+            [latExtent[0], lngExtent[0]],
+            [latExtent[1], lngExtent[1]],
+          ];
+        })(westEnglewoodPoly)
+      },
+      englewood: {
+        data: {
+          census: App.models.censusData.getDataWithinPolygon(englewoodPoly).dataTotals,
+          // lot: App.models.landInventory.getDataByFilter((a) => { return a.Area === "Englewood"; })
+          lot: splitLotData.englewood
+        },
+        area: turf.area(englewoodPoly) / (1000 * 1000), //turf.area returns area in m^2, divide by 1000^2 to get km^2
+        color: "#ff7f0e",
+        id: "Englewood",
+        bounds: (function (poly) {
+          console.time("bounds get");
+          let coordsArr = poly.geometry.coordinates[0];
+          let latExtent = d3.extent(coordsArr, d => d[1]);
+          let lngExtent = d3.extent(coordsArr, d => d[0]);
+
+          console.timeEnd("bounds get");
+          return [
+            [latExtent[0], lngExtent[0]],
+            [latExtent[1], lngExtent[1]],
+          ];
+        })(englewoodPoly)
+      }
+    };
+
+    App.models.aggregateData = selectionData;
+  }
 
 })();
