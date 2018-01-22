@@ -18,7 +18,8 @@ let StarPlotView = function(options){
         },
         plotFn: undefined,
         svg: undefined,
-        svgGroup: undefined
+        svgGroup: undefined,
+        interaction: false
     };
 
     function init() {
@@ -29,6 +30,7 @@ let StarPlotView = function(options){
         self.name = options.name;
         self.height = options.height;
         self.width = options.width;
+        self.interaction = options.interaction || false;
         if(options.margin){
             for(let p of Object.keys(self.margin)){
                 self.margin[p] = options.margin[p] || self.margin[p];
@@ -89,16 +91,25 @@ let StarPlotView = function(options){
         self.svgGroup = self.svg.append('g').attr("id","starplot-" + self.name);
 
         if(data){
-            self.svgGroup.datum(data).call(self.plotFn)
+            let group = self.svgGroup.datum(data).call(self.plotFn)
                     .style("transform", `translateX(${self.margin.left - self.margin.right}px) translateY(${self.margin.top - self.margin.bottom}px)`)
                 .select(".star-title")
-                    .style("transform", `translateX(${self.titleMargin.left - self.titleMargin.right}px) translateY(${self.titleMargin.top - self.titleMargin.bottom}px)`)    
+                    .style("transform", `translateX(${self.titleMargin.left - self.titleMargin.right}px) translateY(${self.titleMargin.top - self.titleMargin.bottom}px)`);
+
+            if(self.interaction){
+                console.log("Adding interaction to star plot");
+                group.call(self.plotFn.interaction);
+            }
         }else{
             let $svg = $(self.svg.node());
             self.svgGroup.append("text").text("Select a block to show data")
                 .attr("text-anchor", "middle")
                 .style("transform", `translateX(${$svg.width() / 2}px) translateY(${$svg.height() / 2}px)`);
         }
+    }
+
+    function addInteraction(params) {
+        
     }
 
     return {

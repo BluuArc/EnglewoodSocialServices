@@ -161,10 +161,50 @@ Promise.all([documentPromise, windowPromise, less.pageLoadFinished])
         console.timeEnd("getting selection data");
         console.log(App.models.aggregateData);
 
-        // console.error("Adding Selection has been disabled")
+        App.views.loadingMessage.updateAndRaise("Adding charts");
 
         App.views.chartList.addChart(new VacantLotBarChart(App.models.aggregateData.englewood,App.models.aggregateData.westEnglewood));
         App.views.chartList.updateChart("vacant-lots-total");
+
+        let [lotRanges, lotData] = (function(){
+          let data = {
+            Residential: [],
+            PD: [],
+            POS: [],
+            BCM: []
+          };
+          let total = App.models.landInventory.getDataByFilter().length;
+
+          App.models.landInventory.getDataByFilter().forEach(d => {
+            let zone = d["Zoning Classification"];
+            if(zone.indexOf("R") === 0){
+              data.Residential.push(d);
+            }else if(zone.indexOf("PD") === 0 || zone.indexOf("PMD") === 0){
+              data.PD.push(d);
+            }else if(zone.indexOf("POS") === 0){
+              data.POS.push(d);
+            }else if(zone.indexOf("B") === 0 || zone.indexOf("C") === 0 || zone.indexOf("M") === 0){
+              data.BCM.push(d);
+            }else{
+              console.log("Ignoring zone", zone);
+            }
+          });
+
+          let filteredData = {};
+          let zoneRanges = {};
+          
+          for(let zoneType in data){
+            filteredData[zoneType] = data[zoneType].length;
+            zoneRanges[zoneType] = [0,total];
+          }
+
+          return [zoneRanges,filteredData];
+        })();
+
+        console.log(lotRanges,lotData);
+
+        App.views.chartList.addChart(new VacantLotStarPlot("vacant-lot-overall-star-plot","<h4><b>Vacant Lots</b></h4>", lotRanges));
+        App.views.chartList.updateChart("vacant-lot-overall-star-plot", lotData);
 
         // insert icons
         d3.selectAll(".svg-insert").html(function(){

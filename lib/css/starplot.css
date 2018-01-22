@@ -17,6 +17,11 @@
     stroke-dasharray: 4 5;
 }
 
+.star-axis-outer {
+    stroke: #ccc;
+    stroke-width: 2px;
+}
+
 .star-path {
     stroke: #444;
     stroke-width: 2px;

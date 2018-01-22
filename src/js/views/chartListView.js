@@ -83,29 +83,31 @@ let ChartListView = function(listID){
     }
   */
   function addChart(options){
+    console.log("Adding chart:", options.id);
     let chartList = self.chartList;
 
     if(chartList[options.id]){
-        throw Error(`Chart with ID ${options.id} already exists`);
+      throw Error(`Chart with ID ${options.id} already exists`);
     }
 
     chartList[options.id] = {
-        el: initializeDefaultChart(options.id, options.title, options.remove),
-        update: options.update,
-        remove: options.remove || function(){ console.log("removing chart", options.id); }
+      el: initializeDefaultChart(options.id, options.title, options.remove),
+      update: options.update,
+      remove: options.remove || function(){ console.log("removing chart", options.id); }
     };
 
     options.init(chartList[options.id].el);
   }
 
   function removeChart(id, data) {
-      self.chartList[id].remove(data);
-      self.chartList[id].el.remove();
-      delete self.chartList[id];
-      console.log("deleted chart with ID",id);
+    console.log("Removing chart:", id);
+    self.chartList[id].remove(data);
+    self.chartList[id].el.remove();
+    delete self.chartList[id];
   }
 
   function updateChart(id, data) {
+    console.log("Updating chart:", id);
     self.chartList[id].update(self.chartList[id].el, data);
   }
 
