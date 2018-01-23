@@ -53,7 +53,7 @@ function VacantLotStarPlot(id, title, dataRanges) {
       },
       axes: self.axes,
       rotate: 0,
-      // interaction: true
+      interaction: true
     });
   }
 
@@ -62,14 +62,41 @@ function VacantLotStarPlot(id, title, dataRanges) {
       panel.style("display", null);
       self.starPlot.render(data);
 
-      // offset side labels to not cover chart
-      let residentialLabel = panel.select("text#Residential"),
-        parkLabel = panel.select("text#POS");
-      residentialLabel.attr('x', +residentialLabel.attr('x') + 10);
-      parkLabel.selectAll('tspan').attr('x', +parkLabel.attr('x') - 10);
+      offsetLabels(panel);
+      addInteraction(panel);
     } else {
       panel.style("display", "none"); // hide on no data
     }
+  }
+
+  function offsetLabels(panel) {
+    // offset side labels to not cover chart
+    let residentialLabel = panel.select("text#Residential"),
+      parkLabel = panel.select("text#POS");
+    residentialLabel.attr('x', +residentialLabel.attr('x') + 10);
+    parkLabel.selectAll('tspan').attr('x', +parkLabel.attr('x') - 10);
+  }
+
+  // based off of http://bl.ocks.org/kevinschaul/8833989
+  function addInteraction(panel) {
+    let svg = panel.select('.panel-body svg');
+    let footer = panel.select('.panel-footer');
+
+    let dataText = footer.append("div").attr("class", "interaction data-text");
+
+    let interactionObjects = panel.selectAll(".interaction").style('display', 'none');
+
+    svg.selectAll(".star-interaction")
+      .on('mouseover', (d) => {
+        interactionObjects.style('display', 'block');
+
+        let percent = (d.datum[d.key] / dataRanges[d.key][1]) * 100;
+
+        dataText.html(`<b>${self.propertyMap[d.key]}:</b><br>${d.datum[d.key]} (${percent.toFixed(2)}%) of ${dataRanges[d.key][1]} total lots`);
+      }).on('mouseout', (d) => {
+        interactionObjects.style('display', 'none');
+      });
+    
   }
 
   return {
