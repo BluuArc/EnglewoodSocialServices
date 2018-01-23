@@ -18,7 +18,7 @@ let StarPlotView = function(options){
         },
         plotFn: undefined,
         svg: undefined,
-        svgGroup: undefined,
+        svgGroup: {},
         interaction: false
     };
 
@@ -69,7 +69,9 @@ let StarPlotView = function(options){
             .properties(properties) //array of strings corresponding to properties of dataum
             .scales(scales)
             .labels(options.labels || labels)
-            // .title(() => self.name);
+            .includeGuidelines(false)
+            .includeLabels(false)
+            .includeChart(true)
     };
 
     init();
@@ -81,22 +83,47 @@ let StarPlotView = function(options){
             ...
         }
     */
-    function render(data) {
+    function render(data, groupID, fillColor) {
+
+        groupID = groupID || "chart-outline"; // default to chart outline
+
         if(!self.svg){
             self.svg = self.parent.append("svg")
                 .attr("width", self.width).attr("height", self.height)
                 .style("width", self.width).style("height", self.height);
         }
-        if(self.svgGroup){
-            self.svgGroup.remove();
+        if(self.svgGroup[groupID]){
+            self.svgGroup[groupID].remove();
         }
-        self.svgGroup = self.svg.append('g').attr("id","starplot-" + self.name);
+        self.svgGroup[groupID] = self.svg.append('g').attr("id","starplot-" + self.name);
 
-        if(data){
-            let group = self.svgGroup.datum(data).call(self.plotFn)
+        if(groupID === 'chart-outline'){
+            let group = self.svgGroup[groupID].datum({})
+                .call(
+                    self.plotFn
+                        .includeGuidelines(true)
+                        .includeLabels(true)
+                        .includeChart(false)
+                )
                     .style("transform", `translateX(${self.margin.left - self.margin.right}px) translateY(${self.margin.top - self.margin.bottom}px)`)
                 .select(".star-title")
                     .style("transform", `translateX(${self.titleMargin.left - self.titleMargin.right}px) translateY(${self.titleMargin.top - self.titleMargin.bottom}px)`);
+        }else if(data){
+            let group = self.svgGroup[groupID].datum(data)
+            .call(
+                self.plotFn
+                    .includeGuidelines(false)
+                    .includeLabels(false)
+                    .includeChart(true)
+            )
+                    .style("transform", `translateX(${self.margin.left - self.margin.right}px) translateY(${self.margin.top - self.margin.bottom}px)`);
+            
+            group.select(".star-title")
+                    .style("transform", `translateX(${self.titleMargin.left - self.titleMargin.right}px) translateY(${self.titleMargin.top - self.titleMargin.bottom}px)`);
+
+            if(fillColor){
+                self.svgGroup[groupID].select("path.star-path").style('fill', fillColor);
+            }
 
             if(self.interaction){
                 console.log("Adding interaction to star plot");
@@ -104,7 +131,7 @@ let StarPlotView = function(options){
             }
         }else{
             let $svg = $(self.svg.node());
-            self.svgGroup.append("text").text("Select a block to show data")
+            self.svgGroup[groupID].append("text").text("Select a block to show data")
                 .attr("text-anchor", "middle")
                 .style("transform", `translateX(${$svg.width() / 2}px) translateY(${$svg.height() / 2}px)`);
         }

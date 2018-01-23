@@ -99,16 +99,16 @@ let ChartListView = function(listID){
     options.init(chartList[options.id].el);
   }
 
-  function removeChart(id, data) {
+  function removeChart(id, ...data) {
     console.log("Removing chart:", id);
-    self.chartList[id].remove(data);
+    self.chartList[id].remove(...data);
     self.chartList[id].el.remove();
     delete self.chartList[id];
   }
 
-  function updateChart(id, data) {
+  function updateChart(id, ...data) {
     console.log("Updating chart:", id);
-    self.chartList[id].update(self.chartList[id].el, data);
+    self.chartList[id].update(self.chartList[id].el, ...data);
   }
 
   return {

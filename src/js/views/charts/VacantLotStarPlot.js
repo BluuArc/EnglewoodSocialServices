@@ -1,7 +1,7 @@
 "use strict";
 
 // star plot that shows the distribution of vacant lot types of a given selection
-function VacantLotStarPlot(id, title, dataRanges) {
+function VacantLotStarPlot(id, title, dataRanges, options = {}) {
   let self = {
     title: title,
     id: id,
@@ -57,13 +57,20 @@ function VacantLotStarPlot(id, title, dataRanges) {
     });
   }
 
-  function update(panel, data) {
+  function update(panel, data, options = {renderLabels: false, enableInteraction: false} ) {
     if (data) {
       panel.style("display", null);
-      self.starPlot.render(data);
+      console.log(options.fillColor);
+      self.starPlot.render(data, options.groupID, options.fillColor);
 
-      offsetLabels(panel);
-      addInteraction(panel);
+
+      if(options.renderLabels){
+        offsetLabels(panel);
+      }
+
+      if(options.enableInteraction){
+        options.interactionFn ? options.interactionFn(panel, self.propertyMap) : addInteraction(panel);
+      }
     } else {
       panel.style("display", "none"); // hide on no data
     }
@@ -87,6 +94,7 @@ function VacantLotStarPlot(id, title, dataRanges) {
     let interactionObjects = panel.selectAll(".interaction").style('display', 'none');
 
     svg.selectAll(".star-interaction")
+      .classed('hoverable', true)
       .on('mouseover', (d) => {
         interactionObjects.style('display', 'block');
 

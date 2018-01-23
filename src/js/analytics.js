@@ -166,45 +166,50 @@ Promise.all([documentPromise, windowPromise, less.pageLoadFinished])
         App.views.chartList.addChart(new VacantLotBarChart(App.models.aggregateData.englewood,App.models.aggregateData.westEnglewood));
         App.views.chartList.updateChart("vacant-lots-total");
 
-        let [lotRanges, lotData] = (function(){
-          let data = {
-            Residential: [],
-            PD: [],
-            POS: [],
-            BCM: []
-          };
-          let total = App.models.landInventory.getDataByFilter().length;
-
-          App.models.landInventory.getDataByFilter().forEach(d => {
-            let zone = d["Zoning Classification"];
-            if(zone.indexOf("R") === 0){
-              data.Residential.push(d);
-            }else if(zone.indexOf("PD") === 0 || zone.indexOf("PMD") === 0){
-              data.PD.push(d);
-            }else if(zone.indexOf("POS") === 0){
-              data.POS.push(d);
-            }else if(zone.indexOf("B") === 0 || zone.indexOf("C") === 0 || zone.indexOf("M") === 0){
-              data.BCM.push(d);
-            }else{
-              console.log("Ignoring zone", zone);
-            }
-          });
-
-          let filteredData = {};
-          let zoneRanges = {};
-          
-          for(let zoneType in data){
-            filteredData[zoneType] = data[zoneType].length;
-            zoneRanges[zoneType] = [0,total];
-          }
-
-          return [zoneRanges,filteredData];
-        })();
+        let [lotRanges, lotData] = generateLotKiviatData(App.models.landInventory.getDataByFilter(), true);
 
         console.log(lotRanges,lotData);
 
-        App.views.chartList.addChart(new VacantLotStarPlot("vacant-lot-overall-star-plot","<h4><b>Vacant Lots</b></h4>", lotRanges));
-        App.views.chartList.updateChart("vacant-lot-overall-star-plot", lotData);
+        let englewoodKiviatData = generateLotKiviatData(App.models.aggregateData.englewood.data.lot, false);
+        let westEnglewoodKiviatData = generateLotKiviatData(App.models.aggregateData.westEnglewood.data.lot, false);
+
+        App.views.chartList.addChart(new VacantLotStarPlot("vacant-lot-overall-star-plot","<h4><b>Vacant Lots:</b> Overall</h4>", lotRanges));
+        App.views.chartList.updateChart("vacant-lot-overall-star-plot", {}, {renderLabels: true}); // init labels and outline
+        App.views.chartList.updateChart("vacant-lot-overall-star-plot", lotData, { groupID: 'overall', fillColor: '#e8e031'});
+        App.views.chartList.updateChart("vacant-lot-overall-star-plot", englewoodKiviatData, { groupID: 'englewood', fillColor: App.models.aggregateData.englewood.color });
+        App.views.chartList.updateChart("vacant-lot-overall-star-plot", westEnglewoodKiviatData, 
+          { 
+            groupID: 'westEnglewood', 
+            fillColor: App.models.aggregateData.westEnglewood.color,
+            enableInteraction: true,
+            interactionFn: (panel, propertyMap) => {
+              let svg = panel.select('.panel-body svg');
+              let footer = panel.select('.panel-footer');
+
+              let dataText = footer.append("div").attr("class", "interaction data-text");
+
+              let interactionObjects = panel.selectAll(".interaction").style('display', 'none');
+
+              svg.selectAll(".star-interaction")
+                .classed('hoverable', true)
+                .on('mouseover', (d) => {
+                  interactionObjects.style('display', 'block');
+
+                  let totalPercent = (lotData[d.key] / lotRanges[d.key][1]) * 100,
+                  englewoodPercent = (englewoodKiviatData[d.key] / lotRanges[d.key][1]) * 100,
+                  westEnglewoodPercent = (westEnglewoodKiviatData[d.key] / lotRanges[d.key][1]) * 100;
+
+                  dataText.html(`<b><u>${propertyMap[d.key]}:</u></b><br>
+                    <b>Overall:</b> ${lotData[d.key]} (${totalPercent.toFixed(2)}%) of ${lotRanges[d.key][1]} total lots<br>
+                    <b>Englewood:</b> ${englewoodKiviatData[d.key]} (${englewoodPercent.toFixed(2)}%) of ${lotRanges[d.key][1]} total lots<br>
+                    <b>West Englewood:</b> ${westEnglewoodKiviatData[d.key]} (${westEnglewoodPercent.toFixed(2)}%) of ${lotRanges[d.key][1]} total lots
+                  `);
+                }).on('mouseout', (d) => {
+                  interactionObjects.style('display', 'none');
+                });
+            }
+          });
+        
 
         // insert icons
         d3.selectAll(".svg-insert").html(function(){
@@ -236,6 +241,41 @@ Promise.all([documentPromise, windowPromise, less.pageLoadFinished])
         
       });
   };
+
+  function generateLotKiviatData(lotData, generateRange) {
+    let data = {
+      Residential: [],
+      PD: [],
+      POS: [],
+      BCM: []
+    };
+    let total = lotData.length;
+
+    lotData.forEach(d => {
+      let zone = d["Zoning Classification"];
+      if (zone.indexOf("R") === 0) {
+        data.Residential.push(d);
+      } else if (zone.indexOf("PD") === 0 || zone.indexOf("PMD") === 0) {
+        data.PD.push(d);
+      } else if (zone.indexOf("POS") === 0) {
+        data.POS.push(d);
+      } else if (zone.indexOf("B") === 0 || zone.indexOf("C") === 0 || zone.indexOf("M") === 0) {
+        data.BCM.push(d);
+      } else {
+        console.log("Ignoring zone", zone);
+      }
+    });
+
+    let filteredData = {};
+    let zoneRanges = {};
+
+    for (let zoneType in data) {
+      filteredData[zoneType] = data[zoneType].length;
+      zoneRanges[zoneType] = [0, total];
+    }
+
+    return generateRange ? [zoneRanges, filteredData] : filteredData;
+  }
 
   function aggregateData() {
     let westEnglewoodPoly = App.models.boundaryData.getWestEnglewoodPolygon();
