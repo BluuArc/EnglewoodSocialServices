@@ -31,6 +31,7 @@ let StarPlotView = function(options){
         self.height = options.height;
         self.width = options.width;
         self.interaction = options.interaction || false;
+        self.rotate = options.rotate || 0;
         if(options.margin){
             for(let p of Object.keys(self.margin)){
                 self.margin[p] = options.margin[p] || self.margin[p];
@@ -64,9 +65,10 @@ let StarPlotView = function(options){
             labels.push(a.label || a.propertyName);
         }
         self.plotFn = d3.starPlot()
+            .rotate(options.rotate || 0)
             .properties(properties) //array of strings corresponding to properties of dataum
             .scales(scales)
-            .labels(labels)
+            .labels(options.labels || labels)
             // .title(() => self.name);
     };
 
@@ -106,10 +108,6 @@ let StarPlotView = function(options){
                 .attr("text-anchor", "middle")
                 .style("transform", `translateX(${$svg.width() / 2}px) translateY(${$svg.height() / 2}px)`);
         }
-    }
-
-    function addInteraction(params) {
-        
     }
 
     return {

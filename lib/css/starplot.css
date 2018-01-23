@@ -18,7 +18,12 @@
 }
 
 .star-axis-outer {
-    stroke: #ccc;
+    stroke: #888;
+    stroke-width: 2px;
+}
+
+.star-axis-inner {
+    stroke: #aaa;
     stroke-width: 2px;
 }
 
