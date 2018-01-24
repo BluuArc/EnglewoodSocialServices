@@ -163,8 +163,8 @@ Promise.all([documentPromise, windowPromise, less.pageLoadFinished])
 
         App.views.loadingMessage.updateAndRaise("Adding charts");
 
-        App.views.chartList.addChart(new VacantLotBarChart(App.models.aggregateData.englewood,App.models.aggregateData.westEnglewood));
-        App.views.chartList.updateChart("vacant-lots-total");
+        // App.views.chartList.addChart(new VacantLotBarChart(App.models.aggregateData.englewood,App.models.aggregateData.westEnglewood));
+        // App.views.chartList.updateChart("vacant-lots-total");
         
         addOverallLotKiviatChart();
         addRelativeKiviatChart();
@@ -277,8 +277,8 @@ Promise.all([documentPromise, windowPromise, less.pageLoadFinished])
 
               dataText.html(`<b><u>${propertyMap[d.key]}:</u></b><br>
                     <b>Overall:</b> ${lotData[d.key]} (${totalPercent.toFixed(2)}%) of ${lotRanges[d.key][1]} lots<br>
-                    <b>Englewood:</b> ${englewoodKiviatData[d.key]} (${englewoodPercent.toFixed(2)}%) of ${lotRanges[d.key][1]} lots<br>
-                    <b>West Englewood:</b> ${westEnglewoodKiviatData[d.key]} (${westEnglewoodPercent.toFixed(2)}%) of ${lotRanges[d.key][1]} lots
+                    <b class="text englewood">Englewood:</b> ${englewoodKiviatData[d.key]} (${englewoodPercent.toFixed(2)}%) of ${lotRanges[d.key][1]} lots<br>
+                    <b class="text west-englewood">West Englewood:</b> ${westEnglewoodKiviatData[d.key]} (${westEnglewoodPercent.toFixed(2)}%) of ${lotRanges[d.key][1]} lots
                   `).classed('empty',false);
             }).on('mouseout', (d) => {
               interactionObjects.style('display', 'none');
@@ -327,9 +327,9 @@ Promise.all([documentPromise, windowPromise, less.pageLoadFinished])
                 westEnglewoodPercent = (westEnglewoodKiviatData[d.key] / lotRanges[d.key][1]) * 100;
 
               dataText.html(`<b><u>${propertyMap[d.key]}:</u></b><br>
-                    <b>Overall:</b> ${lotData[d.key]} (${totalPercent.toFixed(2)}%) of ${lotRanges[d.key][1]} total lots<br>
-                    <b>Englewood:</b> ${englewoodKiviatData[d.key]} (${englewoodPercent.toFixed(2)}%) of ${lotRanges[d.key][1]} total lots<br>
-                    <b>West Englewood:</b> ${westEnglewoodKiviatData[d.key]} (${westEnglewoodPercent.toFixed(2)}%) of ${lotRanges[d.key][1]} total lots
+                    <b style="background-color: rgb(232, 224, 49)">Overall:</b> ${lotData[d.key]} (${totalPercent.toFixed(2)}%) of ${lotRanges[d.key][1]} total lots<br>
+                    <b class="text englewood">Englewood:</b> ${englewoodKiviatData[d.key]} (${englewoodPercent.toFixed(2)}%) of ${lotRanges[d.key][1]} total lots<br>
+                    <b class="text west-englewood">West Englewood:</b> ${westEnglewoodKiviatData[d.key]} (${westEnglewoodPercent.toFixed(2)}%) of ${lotRanges[d.key][1]} total lots
                   `).classed('empty',false);
             }).on('mouseout', (d) => {
               interactionObjects.style('display', 'none');
