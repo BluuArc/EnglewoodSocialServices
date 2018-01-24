@@ -89,7 +89,10 @@ function VacantLotStarPlot(id, title, dataRanges, options = {}) {
     let svg = panel.select('.panel-body svg');
     let footer = panel.select('.panel-footer');
 
-    let dataText = footer.append("div").attr("class", "interaction data-text");
+    let defaultText = "Mouseover the chart to view data";
+
+    let dataText = footer.append("div").attr("class", "data-text")
+      .text(defaultText).classed("empty", true);
 
     let interactionObjects = panel.selectAll(".interaction").style('display', 'none');
 
@@ -100,9 +103,11 @@ function VacantLotStarPlot(id, title, dataRanges, options = {}) {
 
         let percent = (d.datum[d.key] / dataRanges[d.key][1]) * 100;
 
-        dataText.html(`<b>${self.propertyMap[d.key]}:</b><br>${d.datum[d.key]} (${percent.toFixed(2)}%) of ${dataRanges[d.key][1]} total lots`);
+        dataText.html(`<b>${self.propertyMap[d.key]}:</b><br>${d.datum[d.key]} (${percent.toFixed(2)}%) of ${dataRanges[d.key][1]} total lots`)
+          .classed("empty", false);
       }).on('mouseout', (d) => {
         interactionObjects.style('display', 'none');
+        dataText.text(defaultText).classed("empty", true);
       });
     
   }

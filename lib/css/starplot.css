@@ -29,7 +29,7 @@
 
 .star-path {
     stroke: #444;
-    stroke-width: 2px;
+    /* stroke-width: 2px; */
     fill: #709CB1;
     fill-opacity: 0.6;
 }

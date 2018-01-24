@@ -18,10 +18,14 @@ let ChartListView = function(listID){
   function makeCollapsing(buttonID, listWrapperID) {
     let mobile = window.innerWidth < 769;
 
+    let wrapperHeight = (window.innerHeight - $(d3.select(".navbar").node()).height()) + "px";
+
     self.wrapper = d3.select(listWrapperID)
       .style("pointer-events", mobile ? "none" : "all")
       .style("opacity", mobile ? 0 : 1)
-      .style("height", (window.innerHeight - $(d3.select(".navbar").node()).height()) + "px");
+      .style("height", wrapperHeight);
+
+    self.chartListDOM.style("height", `calc(${wrapperHeight} - 3em - 10px)`);
 
     self.toggleButton = d3.select(buttonID).classed("open", !mobile)
       .on("click", function (d) {
