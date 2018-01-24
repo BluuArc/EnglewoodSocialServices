@@ -47,7 +47,7 @@ let ChartListView = function(listID){
   }
 
   function initializeDefaultChart(id, title, canDelete) {
-    let chartElement = self.chartListDOM.append("div")
+    let chartElement = self.chartListDOM.insert("div", ":first-child") //add to top of list
         .attr("class", "panel panel-default chartEntry")
         .attr("id",id);
 
@@ -82,7 +82,8 @@ let ChartListView = function(listID){
       update: function(chart:d3 selection of chart entry, data) => returns nothing
         DOM manipulation occurs here
       remove: function(data) => returns nothing // OPTIONAL, X button is shown if defined
-        this is run on button click; used to do any data cleanup (if necessary)
+        this is run on button click or when the remove chart function is called
+        used to do any data cleanup (if necessary)
         chart removal from DOM happens after this function is run by chartListView
     }
   */
@@ -105,7 +106,9 @@ let ChartListView = function(listID){
 
   function removeChart(id, ...data) {
     console.log("Removing chart:", id);
-    self.chartList[id].remove(...data);
+    if(self.chartList[id].remove){
+      self.chartList[id].remove(...data);
+    }
     self.chartList[id].el.remove();
     delete self.chartList[id];
   }

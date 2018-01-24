@@ -55,6 +55,10 @@ function VacantLotStarPlot(id, title, dataRanges, options = {}) {
       rotate: 0,
       interaction: true
     });
+
+    if(options.init){
+      options.init(chartPanel);
+    }
   }
 
   function update(panel, data, options = {renderLabels: false, enableInteraction: false} ) {

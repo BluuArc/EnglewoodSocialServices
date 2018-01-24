@@ -246,7 +246,27 @@ Promise.all([documentPromise, windowPromise, less.pageLoadFinished])
     let englewoodKiviatData = generateLotKiviatData(App.models.aggregateData.englewood.data.lot, false);
     let westEnglewoodKiviatData = generateLotKiviatData(App.models.aggregateData.westEnglewood.data.lot, false);
 
-    App.views.chartList.addChart(new VacantLotStarPlot("vacant-lot-relative-star-plot", "<h4><b>Vacant Lots:</b> Relative Distribution</h4>", lotRanges));
+    let plotOptions = {
+      init: (panel) => {
+        let heading = panel.select('.panel-heading').classed('collapsible',true);
+
+        panel.select('.panel-body').classed('collapse', true);
+        panel.select('.panel-footer').classed('collapse', true);
+
+        let isClosed = false;
+
+        let toggle = () => {
+          $(panel.node()).find(".collapse").collapse(isClosed ? "show" : "hide");
+
+          heading.classed("collapsed", !isClosed);
+          isClosed = !isClosed;
+        };
+          
+        heading.on('click', toggle);
+        toggle(); toggle();
+      }
+    };
+    App.views.chartList.addChart(new VacantLotStarPlot("vacant-lot-relative-star-plot", "<h4><b>Vacant Lots:</b> Relative Distribution</h4>", lotRanges, plotOptions));
     App.views.chartList.updateChart("vacant-lot-relative-star-plot", {}, { renderLabels: true }); // init labels and outline
     // App.views.chartList.updateChart("vacant-lot-overall-star-plot", lotData, { groupID: 'overall', fillColor: '#e8e031' });
     App.views.chartList.updateChart("vacant-lot-relative-star-plot", englewoodKiviatData, { groupID: 'englewood', fillColor: App.models.aggregateData.englewood.color });
@@ -271,12 +291,12 @@ Promise.all([documentPromise, windowPromise, less.pageLoadFinished])
             .on('mouseover', (d) => {
               interactionObjects.style('display', 'block');
 
-              let totalPercent = (lotData[d.key] / lotRanges[d.key][1]) * 100,
+              let totalPercent = (lotData[d.key] / App.models.landInventory.getDataByFilter().length) * 100,
                 englewoodPercent = (englewoodKiviatData[d.key] / lotRanges[d.key][1]) * 100,
                 westEnglewoodPercent = (westEnglewoodKiviatData[d.key] / lotRanges[d.key][1]) * 100;
 
               dataText.html(`<b><u>${propertyMap[d.key]}:</u></b><br>
-                    <b>Overall:</b> ${lotData[d.key]} (${totalPercent.toFixed(2)}%) of ${lotRanges[d.key][1]} lots<br>
+                    <b>Overall:</b> ${lotData[d.key]} (${totalPercent.toFixed(2)}%) of ${App.models.landInventory.getDataByFilter().length} total lots<br>
                     <b class="text englewood">Englewood:</b> ${englewoodKiviatData[d.key]} (${englewoodPercent.toFixed(2)}%) of ${lotRanges[d.key][1]} lots<br>
                     <b class="text west-englewood">West Englewood:</b> ${westEnglewoodKiviatData[d.key]} (${westEnglewoodPercent.toFixed(2)}%) of ${lotRanges[d.key][1]} lots
                   `).classed('empty',false);
@@ -297,7 +317,28 @@ Promise.all([documentPromise, windowPromise, less.pageLoadFinished])
     let englewoodKiviatData = generateLotKiviatData(App.models.aggregateData.englewood.data.lot, false);
     let westEnglewoodKiviatData = generateLotKiviatData(App.models.aggregateData.westEnglewood.data.lot, false);
 
-    App.views.chartList.addChart(new VacantLotStarPlot("vacant-lot-overall-star-plot", "<h4><b>Vacant Lots:</b> Overall Distribution</h4>", lotRanges));
+    let plotOptions = {
+      init: (panel) => {
+        let heading = panel.select('.panel-heading').classed('collapsible', true);
+
+        panel.select('.panel-body').classed('collapse', true);
+        panel.select('.panel-footer').classed('collapse', true);
+
+        let isClosed = false;
+
+        let toggle = () => {
+          $(panel.node()).find(".collapse").collapse(isClosed ? "show" : "hide");
+
+          heading.classed("collapsed", !isClosed);
+          isClosed = !isClosed;
+        };
+
+        heading.on('click', toggle);
+        toggle(); toggle();
+      }
+    };
+
+    App.views.chartList.addChart(new VacantLotStarPlot("vacant-lot-overall-star-plot", "<h4><b>Vacant Lots:</b> Overall Distribution</h4>", lotRanges, plotOptions));
     App.views.chartList.updateChart("vacant-lot-overall-star-plot", {}, { renderLabels: true }); // init labels and outline
     App.views.chartList.updateChart("vacant-lot-overall-star-plot", lotData, { groupID: 'overall', fillColor: '#e8e031' });
     App.views.chartList.updateChart("vacant-lot-overall-star-plot", englewoodKiviatData, { groupID: 'englewood', fillColor: App.models.aggregateData.englewood.color });
