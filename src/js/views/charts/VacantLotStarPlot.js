@@ -93,26 +93,44 @@ function VacantLotStarPlot(id, title, dataRanges, options = {}) {
     let svg = panel.select('.panel-body svg');
     let footer = panel.select('.panel-footer');
 
-    let defaultText = "Mouseover the chart to view data";
+    let defaultText = "Click on the chart to view data";
 
     let dataText = footer.append("div").attr("class", "data-text")
       .text(defaultText).classed("empty", true);
 
     let interactionObjects = panel.selectAll(".interaction").style('display', 'none');
 
+    let selectionKey = null,
+      selectionElem = null;
+
     svg.selectAll(".star-interaction")
       .classed('hoverable', true)
       .on('mouseover', (d) => {
         interactionObjects.style('display', 'block');
-
-        let percent = (d.datum[d.key] / dataRanges[d.key][1]) * 100;
-
-        let htmlText = interactionOptions.htmlFn ? interactionOptions.htmlFn(d, self.propertyMap) : `<b>${self.propertyMap[d.key]}:</b><br>${d.datum[d.key]} (${percent.toFixed(2)}%) of ${dataRanges[d.key][1]} total lots`;
-        dataText.html(htmlText)
-          .classed("empty", false);
       }).on('mouseout', (d) => {
         interactionObjects.style('display', 'none');
-        dataText.text(defaultText).classed("empty", true);
+      }).on('click', function(d){
+        let elem = d3.select(this);
+
+        if(selectionElem){
+          selectionElem.style("stroke-width",null)
+            .style("fill-opacity", null);
+        }
+
+        if(selectionKey !== d.key){
+          let percent = (d.datum[d.key] / dataRanges[d.key][1]) * 100;
+
+          let htmlText = interactionOptions.htmlFn ? interactionOptions.htmlFn(d, self.propertyMap) : `<b>${self.propertyMap[d.key]}:</b><br>${d.datum[d.key]} (${percent.toFixed(2)}%) of ${dataRanges[d.key][1]} total lots`;
+          dataText.html(htmlText)
+            .classed("empty", false);
+
+          selectionElem = elem.style("stroke-width", "2px").style("fill-opacity","0.6");
+          selectionKey = d.key;
+        }else{
+          selectionKey = null;
+          selectionElem = null;
+          dataText.text(defaultText).classed("empty", true);
+        }
       });
     
   }
