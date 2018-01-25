@@ -715,20 +715,42 @@ text.delete-button-symbol {
   height: 80px;
 }
 
-.text.englewood {
-  color: rgb(255, 127, 14);
+.englewood {
+  --englewood-color: rgb(255, 127, 14);
+  &.text {
+    color: var(--englewood-color);
+  }
+
+  &.fill {
+    fill: var(--englewood-color)
+  }
+
+  &.stroke {
+    stroke: var(--englewood-color)
+  }
+
+  &.bg {
+    background-color: var(--englewood-color);
+  }
 }
 
-.text.west-englewood {
-  color: rgb(31, 119, 180);
-}
+.west-englewood {
+  --west-englewood-color: rgb(31, 119, 180);
+  &.text {
+    color: var(--west-englewood-color);
+  }
 
-.bg.englewood {
-  background-color: rgb(255, 127, 14);
-}
+  &.fill {
+    fill: var(--west-englewood-color)
+  }
 
-.bg.west-englewood {
-  background-color: rgb(31, 119, 180);
+  &.stroke {
+    stroke: var(--west-englewood-color)
+  }
+
+  &.bg {
+    background-color: var(--west-englewood-color);
+  }
 }
 
 .panel-heading.collapsible {
