@@ -275,36 +275,17 @@ Promise.all([documentPromise, windowPromise, less.pageLoadFinished])
         groupID: 'westEnglewood',
         fillColor: App.models.aggregateData.westEnglewood.color,
         enableInteraction: true,
-        interactionFn: (panel, propertyMap) => {
-          let svg = panel.select('.panel-body svg');
-          let footer = panel.select('.panel-footer');
+        htmlFn: (d, propertyMap) => {
+          let totalPercent = (lotData[d.key] / App.models.landInventory.getDataByFilter().length) * 100,
+            englewoodPercent = (englewoodKiviatData[d.key] / lotRanges[d.key][1]) * 100,
+            westEnglewoodPercent = (westEnglewoodKiviatData[d.key] / lotRanges[d.key][1]) * 100;
 
-          let defaultText = "Mouseover the chart to view data";
-
-          let dataText = footer.append("div").attr("class", "data-text")
-            .text(defaultText).classed("empty", true);
-
-          let interactionObjects = panel.selectAll(".interaction").style('display', 'none');
-
-          svg.selectAll(".star-interaction")
-            .classed('hoverable', true)
-            .on('mouseover', (d) => {
-              interactionObjects.style('display', 'block');
-
-              let totalPercent = (lotData[d.key] / App.models.landInventory.getDataByFilter().length) * 100,
-                englewoodPercent = (englewoodKiviatData[d.key] / lotRanges[d.key][1]) * 100,
-                westEnglewoodPercent = (westEnglewoodKiviatData[d.key] / lotRanges[d.key][1]) * 100;
-
-              dataText.html(`<b><u>${propertyMap[d.key]}:</u></b><br>
+          return `<b><u>${propertyMap[d.key]}:</u></b><br>
                     <b>Overall:</b> ${lotData[d.key]} (${totalPercent.toFixed(2)}%) of ${App.models.landInventory.getDataByFilter().length} total lots<br>
                     <b class="text englewood">Englewood:</b> ${englewoodKiviatData[d.key]} (${englewoodPercent.toFixed(2)}%) of ${lotRanges[d.key][1]} lots<br>
                     <b class="text west-englewood">West Englewood:</b> ${westEnglewoodKiviatData[d.key]} (${westEnglewoodPercent.toFixed(2)}%) of ${lotRanges[d.key][1]} lots
-                  `).classed('empty',false);
-            }).on('mouseout', (d) => {
-              interactionObjects.style('display', 'none');
-              dataText.text(defaultText).classed("empty", true);
-            });
-        }
+                  `;
+        },
       });
   }
 
@@ -318,7 +299,7 @@ Promise.all([documentPromise, windowPromise, less.pageLoadFinished])
     let westEnglewoodKiviatData = generateLotKiviatData(App.models.aggregateData.westEnglewood.data.lot, false);
 
     let plotOptions = {
-      init: (panel) => {
+      init: (panel) => { // make panel collapsible
         let heading = panel.select('.panel-heading').classed('collapsible', true);
 
         panel.select('.panel-body').classed('collapse', true);
@@ -347,36 +328,17 @@ Promise.all([documentPromise, windowPromise, less.pageLoadFinished])
         groupID: 'westEnglewood',
         fillColor: App.models.aggregateData.westEnglewood.color,
         enableInteraction: true,
-        interactionFn: (panel, propertyMap) => {
-          let svg = panel.select('.panel-body svg');
-          let footer = panel.select('.panel-footer');
+        htmlFn: (d, propertyMap) => {
+          let totalPercent = (lotData[d.key] / lotRanges[d.key][1]) * 100,
+            englewoodPercent = (englewoodKiviatData[d.key] / lotRanges[d.key][1]) * 100,
+            westEnglewoodPercent = (westEnglewoodKiviatData[d.key] / lotRanges[d.key][1]) * 100;
 
-          let defaultText = "Mouseover the chart to view data";
-
-          let dataText = footer.append("div").attr("class", "data-text")
-            .text(defaultText).classed("empty",true);
-
-          let interactionObjects = panel.selectAll(".interaction").style('display', 'none');
-
-          svg.selectAll(".star-interaction")
-            .classed('hoverable', true)
-            .on('mouseover', (d) => {
-              interactionObjects.style('display', 'block');
-
-              let totalPercent = (lotData[d.key] / lotRanges[d.key][1]) * 100,
-                englewoodPercent = (englewoodKiviatData[d.key] / lotRanges[d.key][1]) * 100,
-                westEnglewoodPercent = (westEnglewoodKiviatData[d.key] / lotRanges[d.key][1]) * 100;
-
-              dataText.html(`<b><u>${propertyMap[d.key]}:</u></b><br>
+          return `<b><u>${propertyMap[d.key]}:</u></b><br>
                     <b style="background-color: rgb(232, 224, 49)">Overall:</b> ${lotData[d.key]} (${totalPercent.toFixed(2)}%) of ${lotRanges[d.key][1]} total lots<br>
                     <b class="text englewood">Englewood:</b> ${englewoodKiviatData[d.key]} (${englewoodPercent.toFixed(2)}%) of ${lotRanges[d.key][1]} total lots<br>
                     <b class="text west-englewood">West Englewood:</b> ${westEnglewoodKiviatData[d.key]} (${westEnglewoodPercent.toFixed(2)}%) of ${lotRanges[d.key][1]} total lots
-                  `).classed('empty',false);
-            }).on('mouseout', (d) => {
-              interactionObjects.style('display', 'none');
-              dataText.text(defaultText).classed("empty", true);
-            });
-        }
+                  `;
+        },
       });
   }
 

@@ -73,7 +73,7 @@ function VacantLotStarPlot(id, title, dataRanges, options = {}) {
       }
 
       if(options.enableInteraction){
-        options.interactionFn ? options.interactionFn(panel, self.propertyMap) : addInteraction(panel);
+        options.interactionFn ? options.interactionFn(panel, self.propertyMap) : addInteraction(panel, options);
       }
     } else {
       panel.style("display", "none"); // hide on no data
@@ -89,7 +89,7 @@ function VacantLotStarPlot(id, title, dataRanges, options = {}) {
   }
 
   // based off of http://bl.ocks.org/kevinschaul/8833989
-  function addInteraction(panel) {
+  function addInteraction(panel, interactionOptions) {
     let svg = panel.select('.panel-body svg');
     let footer = panel.select('.panel-footer');
 
@@ -107,7 +107,8 @@ function VacantLotStarPlot(id, title, dataRanges, options = {}) {
 
         let percent = (d.datum[d.key] / dataRanges[d.key][1]) * 100;
 
-        dataText.html(`<b>${self.propertyMap[d.key]}:</b><br>${d.datum[d.key]} (${percent.toFixed(2)}%) of ${dataRanges[d.key][1]} total lots`)
+        let htmlText = interactionOptions.htmlFn ? interactionOptions.htmlFn(d, self.propertyMap) : `<b>${self.propertyMap[d.key]}:</b><br>${d.datum[d.key]} (${percent.toFixed(2)}%) of ${dataRanges[d.key][1]} total lots`;
+        dataText.html(htmlText)
           .classed("empty", false);
       }).on('mouseout', (d) => {
         interactionObjects.style('display', 'none');

@@ -741,13 +741,12 @@ text.delete-button-symbol {
     font-family: 'Glyphicons Halflings';
     content: '\e080';
 
-    .transform(rotate(90deg));
-    // .transition(~"transform 0.5s, -moz-transform 0.5s, -webkit-transform 0.5s");
+    .transform(rotate(-90deg));
   }
 
   &.collapsed {
     &:after {
-      .transform(rotate(-90deg));
+      .transform(rotate(90deg));
     }
   }
 }
