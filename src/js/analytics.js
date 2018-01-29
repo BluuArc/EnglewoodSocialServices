@@ -268,7 +268,6 @@ Promise.all([documentPromise, windowPromise, less.pageLoadFinished])
     };
     App.views.chartList.addChart(new VacantLotStarPlot("vacant-lot-relative-star-plot", "<h4><b>Vacant Lots:</b> Relative Distribution</h4>", lotRanges, plotOptions));
     App.views.chartList.updateChart("vacant-lot-relative-star-plot", {}, { renderLabels: true }); // init labels and outline
-    // App.views.chartList.updateChart("vacant-lot-overall-star-plot", lotData, { groupID: 'overall', fillColor: '#e8e031' });
     App.views.chartList.updateChart("vacant-lot-relative-star-plot", englewoodKiviatData, { groupID: 'englewood', fillColor: App.models.aggregateData.englewood.color });
     App.views.chartList.updateChart("vacant-lot-relative-star-plot", westEnglewoodKiviatData,
       {

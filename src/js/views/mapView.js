@@ -77,7 +77,7 @@ let MapView = function (div) {
           return {
             weight: 3,
             opacity: 0.75,
-            fillOpacity: 0.35,
+            fillOpacity: 0.2,
             className: "geoJSON-englewoodOutline fill stroke " + feature.properties.community.toLowerCase().replace(/ /g, '-'),
           }
         }

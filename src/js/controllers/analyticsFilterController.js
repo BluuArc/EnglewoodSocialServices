@@ -29,19 +29,9 @@ let FilterDropdownController = function() {
   function resetFilters() {
     console.log("Reset Filters");
 
-    let current_service_properties = {
-      type: "service"
-    };
-
-    current_service_properties.subType = (Object.keys(self.filters).length === 1) ? Object.keys(self.filters)[0] : "All";
-    current_service_properties.subFilters = self.filters;
-
     self.filters = {};
 
     for (let mainCategory of Object.keys(self.mainCategoryStates)) {
-      if (self.mainCategoryStates[mainCategory] !== "none"){
-        current_service_properties.mainType = mainCategory;
-      }
       self.mainCategoryStates[mainCategory] = "none";
     }
 
@@ -87,16 +77,7 @@ let FilterDropdownController = function() {
         
         btnGroup.append("button").classed("btn btn-item btn-dropdown col-md-2", true)
           .html("<span class='caret'></span>")
-          .on("mouseover", function (d) {
-            d3.event.stopPropagation();
-            d3.event.preventDefault();
-            if (!d3.select(this).classed("disabled")) {
-              self.filterDropdownList.selectAll(".serviceType").each(function (d) {
-                let curGroup = d3.select(this).select(".btn-group");
-                curGroup.selectAll(".dropdown-menu").classed("hidden", !curGroup.classed("open"));
-              });
-            }
-          }).on("click", function (d) {
+          .on("click", function (d) {
             d3.event.stopPropagation();
             d3.event.preventDefault();
             if (d3.select(this).classed("disabled")) {
@@ -116,7 +97,6 @@ let FilterDropdownController = function() {
         //set total button
         totalBtn.datum(c1)
           .on("click", function (c1) {
-            // d3.event.stopPropagation(); // prevent menu close on link click
             self.filterDropdownList.selectAll(".serviceType").classed("open", false);
 
             //reset other filters to allow for only one main category selection at a time
@@ -151,17 +131,9 @@ let FilterDropdownController = function() {
 
             updateMainCategoryIcon(c1);
 
-            let current_service_properties = {
-              mainType: c1,
-              subType: "All",
-              subFilters: [],
-              type: "service"
-            }
-
             listItem.select("ul").selectAll(".serviceSubtype")
               .each(function (d) {
                 self.filters[d.subType] = selected;
-                current_service_properties.subFilters.push(d.subType);
 
                 updateSubCategoryIcon(d.subType,c1);
               });

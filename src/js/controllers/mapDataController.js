@@ -147,16 +147,7 @@ let MapDataController = function () {
 
         btnGroup.append("button").classed("btn btn-item btn-dropdown col-md-2",true)
           .html("<span class='caret'></span>")
-          .on("mouseover", function (d) {
-            d3.event.stopPropagation();
-            d3.event.preventDefault();
-            if(!d3.select(this).classed("disabled")){
-              self.censusDropdownList.selectAll(".serviceType").each(function(d){
-                let curGroup = d3.select(this).select(".btn-group");
-                curGroup.selectAll(".dropdown-menu").classed("hidden", !curGroup.classed("open"));
-              });
-            }
-          }).on("click",function(d){
+          .on("click",function(d){
             d3.event.stopPropagation();
             d3.event.preventDefault();
             if (d3.select(this).classed("disabled")) {
