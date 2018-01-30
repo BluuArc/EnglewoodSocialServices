@@ -45,7 +45,7 @@ Promise.all([documentPromise, windowPromise, less.pageLoadFinished])
 
 
   // controllers
-  App.controllers.serviceFilterDropdown = new FilterDropdownController();
+  App.controllers.serviceFilterDropdown = new ServiceFilterController();
   App.controllers.mapData = new MapDataController();
   // App.controllers.locationButton = new LocationButtonController();
   App.controllers.search = new SearchController();
@@ -68,7 +68,7 @@ Promise.all([documentPromise, windowPromise, less.pageLoadFinished])
     App.views.chartList.makeCollapsing("#toggleHideChartsButton", "#chartListWrapper");
 
     App.controllers.serviceFilterDropdown.setFilterDropdown("#filterDropdownList", "#filterDropdownButton");
-    App.controllers.serviceFilterDropdown.attachAllServicesButton("#allServicesButton");
+    App.controllers.serviceFilterDropdown.attachServiceResetBtn("#allServicesButton");
     
     App.controllers.serviceMarkerView = new LeafletMarkerViewController("#toggleServiceView","#serviceViewText", "Service");
     App.controllers.landMarkerView = new LeafletMarkerViewController("#toggleLotView", "#lotViewText", "Vacant Lot");

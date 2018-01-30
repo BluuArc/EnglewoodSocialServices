@@ -174,16 +174,14 @@ let FilterDropdownController = function() {
             }
             self.filterDropdownList.selectAll(".glyphicon")
               .attr("class", "glyphicon glyphicon-unchecked");
+
+            // clear out any other subtype selections
             listItem.select("ul").selectAll(".serviceSubtype")
               .each(function (subData) {
-                if (subData.subType !== d.subType) {
-                  self.filters[subData.subType] = false;
-
-                  updateSubCategoryIcon(subData.subType,c1);
-                }
+                updateSubCategoryIcon(subData.subType,c1);
               });
             let curSelection = self.filters[d.subType];
-            self.filters = {};
+            // self.filters = {};
 
             //select current subcategory if previous filters indicate a main category selection
             if (isMainCategorySelection) {
@@ -199,7 +197,7 @@ let FilterDropdownController = function() {
               self.filterDropdownButton.attr("class", "btn btn-success dropdown-toggle navbar-btn");
               self.allServicesButton.style('display', null);
             } else {
-              resetFilters();
+              // resetFilters();
             }
 
             updateSubCategoryIcon(d.subType,d.mainType);
