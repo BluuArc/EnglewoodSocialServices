@@ -124,7 +124,7 @@ function VacantLotStarPlot(id, title, dataRanges, options = {}) {
           dataText.html(htmlText)
             .classed("empty", false);
 
-          selectionElem = elem.style("stroke-width", "2px").style("fill-opacity","0.6");
+          selectionElem = elem.style("stroke-width", "2px").style("fill-opacity","0.4");
           selectionKey = d.key;
         }else{
           selectionKey = null;
