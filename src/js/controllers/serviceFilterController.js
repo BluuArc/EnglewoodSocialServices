@@ -179,6 +179,7 @@ let ServiceFilterController = function() {
         updateSubCategoryIcon(d.subType, d.mainType);
       });
 
+    App.controllers.serviceMarkerView.setVisibilityState(true); 
     filtersUpdated();
   }
 
@@ -244,6 +245,7 @@ let ServiceFilterController = function() {
         updateMainCategoryOnSubUpdate(d);
       });
 
+    App.controllers.serviceMarkerView.setVisibilityState(true); 
     filtersUpdated();
   }
 
