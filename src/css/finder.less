@@ -500,17 +500,22 @@ html {
     }
 
     .panel-body {
-      .description::before {
-        content: 'Description:';
-        display: block;
+      .description-title, .categories-title {
         font-weight: bold;
       }
 
-      .categories:before {
-        content: 'All Categories:';
-        display: block;
-        font-weight: bold;
+      .description-title::before, .categories-title::before{
+        display: inline-block;
+        font-family: 'Glyphicons Halflings';
+        content: '\e080';
+
+        .transform(rotate(90deg));
       }
+
+      .description-title.collapsed::before, .categories-title.collapsed::before{
+        .transform(rotate(0deg));
+      }
+
       border-color: @open-panel;
     }
 

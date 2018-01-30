@@ -54,6 +54,23 @@ let ServiceListView = function(listID) {
       .style("height", window.innerHeight - d3.select(".navbar").node().clientHeight + "px");
   }
 
+  function toggleDescription(elem, target, mode = "toggle") {
+    target.collapse(mode);
+    
+    return new Promise((fulfill,reject) => {
+      target.on('shown.bs.collapse', () => {
+        elem.classed("collapsed", false);
+        target.off('shown.bs.collapse');
+        fulfill();
+      });
+      target.on('hidden.bs.collapse', () => {
+        elem.classed("collapsed", true);
+        target.off('hidden.bs.collapse');
+        fulfill();
+      });
+    });
+  }
+
   function populateList(englewoodLocations, options) {
     console.log(options);
 
@@ -92,6 +109,13 @@ let ServiceListView = function(listID) {
         .append("div").attr("class", "panel panel-info serviceEntry")
         .each(function (d, i) {
           let panel = d3.select(this);
+          let inCategories = (() => {
+            let categories = {};
+            App.models.serviceTaxonomy.getTier1Categories().forEach(m => {
+              categories[m] = App.models.serviceTaxonomy.getTier2CategoriesOf(m).filter(s => d[s] == 1);
+            });
+            return categories;
+          })();
           let theseSubCategories = App.models.serviceTaxonomy.getAllTier2Categories().filter(c => d[c] == 1);
 
           // create heading
@@ -135,15 +159,14 @@ let ServiceListView = function(listID) {
             .text(function (d) {
               return _.startCase(d["Type of Organization"]);
             });
-          // .append("small")
-          //   .attr("class", "serviceDistance")
-          //   .html(function(d) {
-          //     let theseMainCategories = App.models.serviceTaxonomy.getTier1CategoriesOf(theseSubCategories);
-          //
-          //     return "<br>" + theseMainCategories.join(", ");
-          //   });
-
+            
           // add description to body
+          panelBody.append("p")
+            .classed("description-title", true)
+            .text("Description")
+            .on('click', function(){
+              toggleDescription(d3.select(this), $(panelBody.node()).find(".description"), "toggle");
+            });
           panelBody.append("p")
             .attr("class", "description")
             .text(function (d) {
@@ -151,9 +174,23 @@ let ServiceListView = function(listID) {
             });
 
           panelBody.append("p")
+            .classed("categories-title", true)
+            .text(`All Categories (${theseSubCategories.length})`)
+            .on('click', function () {
+              toggleDescription(d3.select(this), $(panelBody.node()).find(".categories"), "toggle");
+            });
+          panelBody.append("ul")
             .attr("class", "categories")
-            .text(function (d) {
-              return theseSubCategories.join(", ");
+            .html(function (d) {
+              let lines = [];
+              for(let mainCategory in inCategories){
+                for(let subCategory of inCategories[mainCategory]){
+                  lines.push(`<li>${mainCategory} - ${subCategory}</li>`);
+                }
+              }
+              return lines.join('');
+              // return theseSubCategories.map(s => `<li>${s}</li>`).join('');
+              // return theseSubCategories.join(", ");
             });
 
           // panelBody.append("p")
@@ -216,21 +253,34 @@ let ServiceListView = function(listID) {
           panelFooter.append("small")
             .attr("class", "serviceDistance");
         });
-      }else{
-        console.log("Filtering services");
-        selection
-          .style('display',function(d,i) {
-            if(knownNames.indexOf(d["Organization Name"]) === -1){
-              return 'none';
-            }else{
-              return null;
-            }
-          })
-      }
 
-      if (self.currentLocation) {
-        sortLocations(self.currentLocation);
-      }
+      // initialize collapsibles
+      self.serviceList.selectAll(".serviceEntry .panel-body")
+        .each(function(){
+          let d3Elem = d3.select(this);
+          let $elem = $(this);
+          toggleDescription(d3Elem.select(".descripton-title"), $elem.find(".description"), "show");
+
+          // initialize with categories list closed
+          toggleDescription(d3Elem.select(".categories-title"), $elem.find(".categories"), "show")
+            .then(() => toggleDescription(d3Elem.select(".categories-title"), $elem.find(".categories"), "toggle"));
+        });
+
+    }else{
+      console.log("Filtering services");
+      selection
+        .style('display',function(d,i) {
+          if(knownNames.indexOf(d["Organization Name"]) === -1){
+            return 'none';
+          }else{
+            return null;
+          }
+        })
+    }
+
+    if (self.currentLocation) {
+      sortLocations(self.currentLocation);
+    }
 
   }
 

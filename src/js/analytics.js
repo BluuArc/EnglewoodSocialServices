@@ -134,6 +134,8 @@ Promise.all([documentPromise, windowPromise, less.pageLoadFinished])
         // App.views.map.createMap();
         console.timeEnd("load data");
 
+        checkServicesWithoutCategory();
+
         console.time("plotting data");
         App.views.loadingMessage.updateAndRaise("Plotting services and lots");
         App.views.map.plotServices(App.models.socialServices.getData());
@@ -248,6 +250,7 @@ Promise.all([documentPromise, windowPromise, less.pageLoadFinished])
 
     let plotOptions = {
       init: (panel) => {
+        // setup custom toggle button
         let heading = panel.select('.panel-heading').classed('collapsible',true);
 
         panel.select('.panel-body').classed('collapse', true);
@@ -394,6 +397,26 @@ Promise.all([documentPromise, windowPromise, less.pageLoadFinished])
     };
 
     App.models.aggregateData = selectionData;
+  }
+
+  function checkServicesWithoutCategory() {
+    let serviceTypes = App.models.serviceTaxonomy.getAllTier2Categories();
+    let serviceData = App.models.socialServices.getData();
+
+    let filteredData = serviceData.filter(s => {
+      // let hasService = false;
+      // serviceTypes.forEach((t => {
+      //   if(s[t]){
+      //     hasService = true;
+      //   }
+      // }));
+      // return !hasService;
+      return serviceTypes.filter(t => s[t] == 1).length < 1;
+    });
+
+    if(filteredData.length > 0){
+      console.log("Services with no categories", filteredData);
+    }
   }
 
 })();
