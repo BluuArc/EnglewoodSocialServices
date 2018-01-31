@@ -189,15 +189,7 @@ let ServiceListView = function(listID) {
                 }
               }
               return lines.join('');
-              // return theseSubCategories.map(s => `<li>${s}</li>`).join('');
-              // return theseSubCategories.join(", ");
             });
-
-          // panelBody.append("p")
-          //   .attr("class", "proximity")
-          //   .text(function(d) {
-          //     return d["Proximity to Englewood"];
-          //   });
 
           // add link to address in footer
           if(d["Address"] && d["Address"].length > 0 && d.Latitude.length > 0 && d.Longitude.length > 0){
@@ -261,9 +253,9 @@ let ServiceListView = function(listID) {
           let $elem = $(this);
           toggleDescription(d3Elem.select(".descripton-title"), $elem.find(".description"), "show");
 
-          // initialize with categories list closed
           toggleDescription(d3Elem.select(".categories-title"), $elem.find(".categories"), "show")
-            .then(() => toggleDescription(d3Elem.select(".categories-title"), $elem.find(".categories"), "toggle"));
+          // initialize with categories list closed
+            // .then(() => toggleDescription(d3Elem.select(".categories-title"), $elem.find(".categories"), "toggle"));
         });
 
     }else{

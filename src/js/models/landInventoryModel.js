@@ -87,9 +87,25 @@ let LandInventoryModel = function () {
     return results;
   }
 
+  function getZoneClassification(lot, isFullName) {
+    let zone = lot["Zoning Classification"];
+    if (zone.indexOf("R") === 0) {
+      return "Residential";
+    } else if (zone.indexOf("PD") === 0 || zone.indexOf("PMD") === 0) {
+      return isFullName ? "Planned Manufacturing Districts and Development" : "PD";
+    } else if (zone.indexOf("POS") === 0) {
+      return isFullName ? "Parks and Open Space" : "POS";
+    } else if (zone.indexOf("B") === 0 || zone.indexOf("C") === 0 || zone.indexOf("M") === 0) {
+      return isFullName ? "Business, Commercial, and Manufacturing" : "BCM";
+    } else {
+      return "Other";
+    }
+  }
+
   return {
     loadData,
     getDataByFilter,
-    splitDataByEnglewood_WestEnglewood
+    splitDataByEnglewood_WestEnglewood,
+    getZoneClassification
   };
 };

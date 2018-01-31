@@ -87,18 +87,34 @@ let MapView = function (div) {
 
   // initialize the different icon options by color
   function initIcons() {
+    let defaultOptions = {
+      fillOpacity: 1,
+      circleWeight: 3.5,
+      iconSize: [25, 41],
+      iconAnchor: [12, 41],
+      popupAnchor: [1, -34],
+      shadowSize: [41, 41]
+    };
     for (let color in self.iconColors) {
-      self.icons[color] = new L.DivIcon.SVGIcon({
-        color: self.iconColors[color],
-        fillOpacity: 1,
-        circleWeight: 3.5,
-        iconSize: [25, 41],
-        iconAnchor: [12, 41],
-        popupAnchor: [1, -34],
-        shadowSize: [41, 41]
-      });
+      let { ...options} = defaultOptions;
+
+      options.color = self.iconColors[color];
+      self.icons[color] = new L.DivIcon.SVGIcon(options);
     }
 
+    const lotColors = {
+      Residential: '#8dd3c7',
+      BCM: '#ffffb3',
+      POS: '#fdb462',
+      PD: '#fb8072'
+    };
+    for(let lotType in lotColors){
+      let {...options} = defaultOptions;
+
+      options.color = self.iconColors.lotMarker;
+      options.circleFillColor = lotColors[lotType];
+      self.icons[lotType] = new L.DivIcon.SVGIcon(options);
+    }
   }
 
   function plotSchools(schoolData) {
@@ -167,15 +183,21 @@ let MapView = function (div) {
     for(let lot of landInventoryData){
       lot.visible = true;
 
+      let zoneType = App.models.landInventory.getZoneClassification(lot);
+      
       // create a marker for each lot location
       let curLot = L.marker(
         L.latLng(+lot.Latitude, +lot.Longitude), {
-          icon: self.icons.lotMarker,
+          // icon: self.icons.lotMarker,
+          icon: self.icons[zoneType !== "Other" ? zoneType : "lotMarker"],
           riseOnHover: true,
           data: lot
         }
       ).bindPopup(function(layer) {
-        return `<strong>${lot.Location}</strong><br><b>Size: </b> ${lot["Sq. Ft."]} sq. ft.`;
+        return `
+        <strong>${lot.Location}</strong><br>
+        <b>Size: </b> ${lot["Sq. Ft."]} sq. ft.<br>
+        <b>Zone Classification: </b>${App.models.landInventory.getZoneClassification(lot, true)}`;
       }).addTo(self.toggleableLotMarkerGroup)
       .on("mouseover", function (e) {
         if (self.lotMarkerVisCheck()) {

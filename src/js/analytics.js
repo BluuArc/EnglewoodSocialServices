@@ -212,16 +212,10 @@ Promise.all([documentPromise, windowPromise, less.pageLoadFinished])
     let total = lotData.length;
 
     lotData.forEach(d => {
-      let zone = d["Zoning Classification"];
-      if (zone.indexOf("R") === 0) {
-        data.Residential.push(d);
-      } else if (zone.indexOf("PD") === 0 || zone.indexOf("PMD") === 0) {
-        data.PD.push(d);
-      } else if (zone.indexOf("POS") === 0) {
-        data.POS.push(d);
-      } else if (zone.indexOf("B") === 0 || zone.indexOf("C") === 0 || zone.indexOf("M") === 0) {
-        data.BCM.push(d);
-      } else {
+      let zoneType = App.models.landInventory.getZoneClassification(d);
+      if(zoneType !== "Other"){
+        data[zoneType].push(d);
+      }else{
         console.log("Ignoring zone", zone);
       }
     });
