@@ -22,7 +22,9 @@ let MapView = function (div) {
     schoolVisCheck: () => { return true; }, // visible by default
 
     choroplethLayer: null,
-    choropleth: null
+    choropleth: null,
+
+    serviceLocations: {}
   };
 
   init();
@@ -115,6 +117,14 @@ let MapView = function (div) {
       options.circleFillColor = lotColors[lotType];
       self.icons[lotType] = new L.DivIcon.SVGIcon(options);
     }
+
+    let {...schoolOptions} = defaultOptions;
+    schoolOptions.fillColor = self.iconColors.schoolMarker;
+    schoolOptions.color = self.iconColors.serviceMarker;
+    schoolOptions.borderWeight = 1.5;
+    schoolOptions.circleColor = schoolOptions.fillColor;
+    self.icons.schoolServiceMarker = new L.DivIcon.SVGIcon(schoolOptions);
+
   }
 
   function plotSchools(schoolData) {
@@ -125,11 +135,17 @@ let MapView = function (div) {
     let schoolMarkers = schoolData.map(school => {
       school.visible = true;
 
+      let locationKey = `${school.Latitude},${school.Longitude}`, isService = false;
+      if (self.serviceLocations[locationKey]) {
+        isService = true;
+        console.log("School/service overlap at", locationKey, self.serviceLocations[locationKey], school);
+      }
+
       // create a marker for each location
       let curSchool = L.marker(
         L.latLng(+school.Latitude,+school.Longitude),
         {
-          icon: self.icons.schoolMarker,
+          icon: isService ? self.icons.schoolServiceMarker : self.icons.schoolMarker,
           data: school
         }
       ).bindPopup(() => {
@@ -154,6 +170,7 @@ let MapView = function (div) {
         }
       }).on("click", function (e) {
         if (self.schoolVisCheck()) {
+          console.log(school);
           //open popup forcefully
           if (!this._popup._latlng) {
             this._popup.setLatLng(new L.latLng(this.options.data.Latitude, this.options.data.Longitude));
@@ -282,6 +299,13 @@ let MapView = function (div) {
 
       loc.visible = true;
 
+      let locationKey = `${loc.Latitude},${loc.Longitude}`;
+      if (!self.serviceLocations[locationKey]){
+        self.serviceLocations[locationKey] = [loc];
+      }else{
+        self.serviceLocations[locationKey].push(loc);
+      }
+
 
       // create a marker for each social services location
       let curService = L.marker(
@@ -354,6 +378,12 @@ let MapView = function (div) {
         curService._icon.classList.add("serviceMarker");
       
         serviceMarkers.push(curService);
+    }
+
+    for(let location in self.serviceLocations){
+      if(self.serviceLocations[location].length > 1){
+        console.log("Service overlap at", location, self.serviceLocations[location]);
+      }
     }
 
     //pass new list to service marker view controller
