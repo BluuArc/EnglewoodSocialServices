@@ -61,6 +61,34 @@ function VacantLotStarPlot(id, title, dataRanges, options = {}) {
     }
   }
 
+  // add lot markers to graph
+  function addLotMarkers(panel) {
+    let svg = panel.select('svg');
+    let offsets = {
+      Residential: { x: 77.5, y: 60 },
+      BCM: { x: 0, y: 25 },
+      POS: { x: 65, y: 60 },
+      PD: { x: 0, y: 25 },
+    }
+
+    svg.selectAll('text.star-label')
+      .each(function(){
+        let elem = $(this);
+
+        if (!offsets[elem.attr("id")]){
+          return;
+        }
+        let icon = $(App.views.map.getIcon(elem.attr("id")).options.html)
+          .attr("id", elem.attr("id")).addClass("star-symbol")
+          .get(0);
+
+        svg.append(() => icon)
+          .attr('x', +elem.attr("x") + offsets[elem.attr("id")].x)
+          .attr('y', +elem.attr("y") + offsets[elem.attr("id")].y);
+        
+      });
+  }
+
   function update(panel, data, options = {renderLabels: false, enableInteraction: false} ) {
     if (data) {
       panel.style("display", null);
@@ -70,6 +98,7 @@ function VacantLotStarPlot(id, title, dataRanges, options = {}) {
 
       if(options.renderLabels){
         offsetLabels(panel);
+        addLotMarkers(panel);
       }
 
       if(options.enableInteraction){

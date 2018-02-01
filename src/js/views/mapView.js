@@ -573,6 +573,10 @@ let MapView = function (div) {
     return self.iconColors[name];
   }
 
+  function getIcon(name) {
+    return self.icons[name];
+  }
+
   return {
     createMap,
     plotSchools,
@@ -591,6 +595,7 @@ let MapView = function (div) {
     clearLocation,
     fitMapAroundServices,
 
-    getIconColor
+    getIconColor,
+    getIcon
   };
 };
