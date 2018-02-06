@@ -70,6 +70,7 @@
   <script src="./src/js/controllers/leafletMarkerViewController.js"></script>
   <script src="./src/js/controllers/browserMessageController.js"></script>
   <script src="./src/js/controllers/serviceFilterController.js"></script>
+  <script src="./src/js/controllers/lotMarkerTypeController.js"></script>
 
   <!-- Main Script -->
   <script src="./src/js/analytics.js"></script>
@@ -208,6 +209,13 @@
               </a>
             </li>
             <li>
+              <a id="toggleGeneralLotView" href="#">
+                <span class="glyphicon glyphicon-eye-close"></span>
+                <span id="generalLotViewText">Hide General Vacant Lot Markers</span>
+                <span class="svg-insert" id="lotMarker"></span>
+              </a>
+            </li>
+            <li>
               <a id="toggleSchoolView" href="#">
                 <span class="glyphicon glyphicon-eye-close"></span>
                 <span id="schoolViewText">Hide School Markers</span>
@@ -216,6 +224,11 @@
             </li>
           </ul>
         </div>
+
+        <button class="btn btn-success navbar-btn" id="toggleLotTypesButton">
+          <span class="glyphicon glyphicon-eye-close"></span>
+          <span id="lotTypesButtonText">Hide Lot Types</span>
+        </button>
         <div id="legend"></div>
       </div>
     </div>

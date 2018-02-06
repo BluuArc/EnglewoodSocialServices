@@ -58,13 +58,20 @@ let MapView = function (div) {
     self.choroplethLayer = L.layerGroup([]).addTo(self.map);
     self.serviceGroup = L.layerGroup([]).addTo(self.map);
     if (L.markerClusterGroup){
-      self.landInventoryGroup = L.markerClusterGroup({
+      self.lotTypeClusterGroup = L.markerClusterGroup({
         showCoverageOnHover: false,
-        disableClusteringAtZoom: 19
+        disableClusteringAtZoom: 18
       }).addTo(self.map);
-      self.toggleableLotMarkerGroup = L.featureGroup.subGroup(self.landInventoryGroup).addTo(self.map);
+      self.lotTypeMarkerGroup = L.featureGroup.subGroup(self.lotTypeClusterGroup).addTo(self.map);
+
+      self.generalLotClusterGroup = L.markerClusterGroup({
+        showCoverageOnHover: false,
+        disableClusteringAtZoom: 18
+      }).addTo(self.map);
+      self.generalLotMarkerGroup = L.featureGroup.subGroup(self.generalLotClusterGroup).addTo(self.map);
     }else{
-      self.landInventoryGroup = L.layerGroup([]).addTo(self.map);
+      self.lotTypeClusterGroup = L.layerGroup([]).addTo(self.map);
+      self.generalLotClusterGroup = L.layerGroup([]).addTo(self.map);
     }
     self.schoolGroup = L.layerGroup([]).addTo(self.map);
     self.map.zoomControl.setPosition('bottomright');
@@ -194,9 +201,43 @@ let MapView = function (div) {
   }
 
   function plotLandInventory(landInventoryData){
-    self.landInventoryGroup.clearLayers();
+    self.lotTypeClusterGroup.clearLayers();
+    self.generalLotClusterGroup.clearLayers();
 
-    let landMarkers = [];
+    let generalLotMarkers = [];
+    let lotTypeMarkers = [];
+
+    let markerInit = (marker, lot) => {
+      return marker.bindPopup(function (layer) {
+        return `
+        <strong>${lot.Location}</strong><br>
+        <b>Size: </b> ${lot["Sq. Ft."]} sq. ft.<br>
+        <b>Zone Classification: </b>${App.models.landInventory.getZoneClassification(lot, true)}`;
+      }).on("mouseover", function (e) {
+          if (self.lotMarkerVisCheck()) {
+            //open popup forcefully
+            if (!this._popup._latlng) {
+              this._popup.setLatLng(new L.latLng(this.options.data.Latitude, this.options.data.Longitude));
+            }
+
+            this._popup.openOn(self.map);
+          }
+        })
+        .on("mouseout", function (e) {
+          if (!this.options.data.expanded) {
+            self.map.closePopup();
+          }
+        }).on("click", function (e) {
+          if (self.lotMarkerVisCheck()) {
+            //open popup forcefully
+            if (!this._popup._latlng) {
+              this._popup.setLatLng(new L.latLng(this.options.data.Latitude, this.options.data.Longitude));
+            }
+
+            this._popup.openOn(self.map);
+          }
+        });
+    };
 
     // iterate through land inventory data
     for(let lot of landInventoryData){
@@ -205,49 +246,41 @@ let MapView = function (div) {
       let zoneType = App.models.landInventory.getZoneClassification(lot);
       
       // create a marker for each lot location
-      let curLot = L.marker(
-        L.latLng(+lot.Latitude, +lot.Longitude), {
-          // icon: self.icons.lotMarker,
-          icon: self.icons[zoneType !== "Other" ? zoneType : "lotMarker"],
-          riseOnHover: true,
-          data: lot
-        }
-      ).bindPopup(function(layer) {
-        return `
-        <strong>${lot.Location}</strong><br>
-        <b>Size: </b> ${lot["Sq. Ft."]} sq. ft.<br>
-        <b>Zone Classification: </b>${App.models.landInventory.getZoneClassification(lot, true)}`;
-      }).addTo(self.toggleableLotMarkerGroup)
-      .on("mouseover", function (e) {
-        if (self.lotMarkerVisCheck()) {
-          //open popup forcefully
-          if (!this._popup._latlng) {
-            this._popup.setLatLng(new L.latLng(this.options.data.Latitude, this.options.data.Longitude));
-          }
+      // let curLot = ;
+      lotTypeMarkers.push(
+        markerInit(
+          L.marker(
+            L.latLng(+lot.Latitude, +lot.Longitude), 
+            {
+              // icon: self.icons.lotMarker,
+              icon: self.icons[zoneType !== "Other" ? zoneType : "lotMarker"],
+              riseOnHover: true,
+              data: lot
+            }
+          ),
+          lot
+        ).addTo(self.lotTypeMarkerGroup)
+      );
 
-          this._popup.openOn(self.map);
-        }
-      })
-      .on("mouseout", function (e) {
-        if (!this.options.data.expanded) {
-          self.map.closePopup();
-        }
-      }).on("click",function(e){
-        if (self.lotMarkerVisCheck()) {
-          //open popup forcefully
-          if (!this._popup._latlng) {
-            this._popup.setLatLng(new L.latLng(this.options.data.Latitude, this.options.data.Longitude));
-          }
-
-          this._popup.openOn(self.map);
-        }
-      });
-      
-      landMarkers.push(curLot);
+      if (App.controllers.generalLotMarkerView){
+        generalLotMarkers.push(
+          markerInit(
+            L.marker(
+              L.latLng(+lot.Latitude, +lot.Longitude),
+              {
+                icon: self.icons.lotMarker,
+                riseOnHover: true,
+                data: lot
+              }
+            ),
+            lot
+          ).addTo(self.generalLotMarkerGroup)
+        );
+      }
     }
 
     //pass new list to marker view controller
-    if(App.controllers.landMarkerView){
+    if(App.controllers.lotTypeMarkerView){
       let landMarkersSelection = function () {
         // used to set the classes of both selections
         // return makes it so that usage is <selection>.classed("classname",true||false) as if it was a d3 selection
@@ -267,15 +300,54 @@ let MapView = function (div) {
           classed
         };
       };
-      App.controllers.landMarkerView.attachMarkers(landMarkers, landMarkersSelection);
-      self.lotMarkerVisCheck = App.controllers.landMarkerView.markersAreVisible;
+      App.controllers.lotTypeMarkerView.attachMarkers(lotTypeMarkers, landMarkersSelection);
+      self.lotMarkerVisCheck = App.controllers.lotTypeMarkerView.markersAreVisible;
 
       // add/remove layer subgroup on toggle
-      App.controllers.landMarkerView.setCustomToggleFunction((state,markerArray,d3Selection) => {
+      App.controllers.lotTypeMarkerView.setCustomToggleFunction((state,markerArray,d3Selection) => {
+        let lotTypeController = App.controllers.lotMarkerType;
         if(state){
-          self.map.addLayer(self.toggleableLotMarkerGroup);
+          self.map.addLayer(self.lotTypeMarkerGroup);
+          lotTypeController.showButton();
         }else{
-          self.map.removeLayer(self.toggleableLotMarkerGroup);
+          self.map.removeLayer(self.lotTypeMarkerGroup);
+          lotTypeController.hideButton();
+        }
+      });
+    }
+
+    if(App.controllers.generalLotMarkerView){
+      let landMarkersSelection = function () {
+        // used to set the classes of both selections
+        // return makes it so that usage is <selection>.classed("classname",true||false) as if it was a d3 selection
+        let classed = function (className, state) {
+          let clusterMarkerSelection = d3.select("#" + div).selectAll('.leaflet-marker-icon.marker-cluster');
+          clusterMarkerSelection.classed(className, state);
+
+          let lotMarkerSelection = $(".leaflet-marker-icon.leaflet-zoom-animated.leaflet-interactive[src*=violet]");
+          if (state) {
+            lotMarkerSelection.addClass(className);
+          } else {
+            lotMarkerSelection.removeClass(className);
+          }
+        };
+
+        return {
+          classed
+        };
+      };
+      App.controllers.generalLotMarkerView.attachMarkers(generalLotMarkers, landMarkersSelection);
+      self.lotMarkerVisCheck = App.controllers.generalLotMarkerView.markersAreVisible;
+
+      // add/remove layer subgroup on toggle
+      App.controllers.generalLotMarkerView.setCustomToggleFunction((state, markerArray, d3Selection) => {
+        let lotTypeController = App.controllers.lotMarkerType;
+        if (state) {
+          self.map.addLayer(self.generalLotMarkerGroup);
+          lotTypeController.showButton();
+        } else {
+          self.map.removeLayer(self.generalLotMarkerGroup);
+          lotTypeController.hideButton();
         }
       });
     }

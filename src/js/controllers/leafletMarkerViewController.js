@@ -2,7 +2,7 @@
 
 var App = App || {};
 
-let LeafletMarkerViewController = function (buttonID, buttonTextID, markerName) {
+let LeafletMarkerViewController = function (buttonID, buttonTextID, markerName, options = {}) {
     let self = {
         button: null,
 
@@ -82,11 +82,16 @@ let LeafletMarkerViewController = function (buttonID, buttonTextID, markerName) 
         }
     }
 
+    function getButton() {
+        return self.button;
+    }
+
     return {
         markersAreVisible,
         attachMarkers,
         setVisibilityState,
         setCustomToggleFunction,
-        raise
+        raise,
+        getButton
     }
 }

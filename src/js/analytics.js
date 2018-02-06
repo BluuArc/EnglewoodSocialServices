@@ -71,8 +71,11 @@ Promise.all([documentPromise, windowPromise, less.pageLoadFinished])
     App.controllers.serviceFilterDropdown.attachServiceResetBtn("#allServicesButton");
     
     App.controllers.serviceMarkerView = new LeafletMarkerViewController("#toggleServiceView","#serviceViewText", "Service");
-    App.controllers.landMarkerView = new LeafletMarkerViewController("#toggleLotView", "#lotViewText", "Vacant Lot");
     App.controllers.schoolMarkerView = new LeafletMarkerViewController("#toggleSchoolView", "#schoolViewText", "School");
+    App.controllers.lotTypeMarkerView = new LeafletMarkerViewController("#toggleLotView", "#lotViewText", "Vacant Lot");
+    App.controllers.generalLotMarkerView = new LeafletMarkerViewController("#toggleGeneralLotView", "#generalLotViewText", "Vacant Lot");
+
+    App.controllers.lotMarkerType = new LotMarkerTypeController("#toggleLotTypesButton","#lotTypesButtonText");
 
     App.controllers.mapData.setupDataPanel("#mapPanelToggle", "#mapSettingsPanel");
     App.controllers.mapData.attachResetOverlayButton("#resetMaps");
@@ -151,8 +154,12 @@ Promise.all([documentPromise, windowPromise, less.pageLoadFinished])
 
         //start off with markers hidden
         console.time("setting marker visibility");
+        App.controllers.lotMarkerType.attachMarkerControllers(App.controllers.generalLotMarkerView, App.controllers.lotTypeMarkerView);
+        App.controllers.lotMarkerType.setState(true);
+        App.controllers.lotMarkerType.hideButton();
         App.controllers.serviceMarkerView.setVisibilityState(false); 
-        App.controllers.landMarkerView.setVisibilityState(false); 
+        App.controllers.lotTypeMarkerView.setVisibilityState(false);
+        App.controllers.generalLotMarkerView.setVisibilityState(false);
         App.controllers.schoolMarkerView.setVisibilityState(false);
         console.timeEnd("setting marker visibility");
 
