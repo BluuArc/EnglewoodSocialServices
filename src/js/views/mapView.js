@@ -18,7 +18,8 @@ let MapView = function (div) {
     },
 
     markerVisibilityCheck: () => { return true; }, //markers always visible by default
-    lotMarkerVisCheck: () => { return true; }, //markers always visible by default
+    lotTypeMarkerVisCheck: () => { return true; }, //markers always visible by default
+    generalLotMarkerVisCheck: () => { return true; }, //markers always visible by default
     schoolVisCheck: () => { return true; }, // visible by default
 
     choroplethLayer: null,
@@ -213,28 +214,9 @@ let MapView = function (div) {
         <strong>${lot.Location}</strong><br>
         <b>Size: </b> ${lot["Sq. Ft."]} sq. ft.<br>
         <b>Zone Classification: </b>${App.models.landInventory.getZoneClassification(lot, true)}`;
-      }).on("mouseover", function (e) {
-          if (self.lotMarkerVisCheck()) {
-            //open popup forcefully
-            if (!this._popup._latlng) {
-              this._popup.setLatLng(new L.latLng(this.options.data.Latitude, this.options.data.Longitude));
-            }
-
-            this._popup.openOn(self.map);
-          }
-        })
-        .on("mouseout", function (e) {
+      }).on("mouseout", function (e) {
           if (!this.options.data.expanded) {
             self.map.closePopup();
-          }
-        }).on("click", function (e) {
-          if (self.lotMarkerVisCheck()) {
-            //open popup forcefully
-            if (!this._popup._latlng) {
-              this._popup.setLatLng(new L.latLng(this.options.data.Latitude, this.options.data.Longitude));
-            }
-
-            this._popup.openOn(self.map);
           }
         });
     };
@@ -260,6 +242,25 @@ let MapView = function (div) {
           ),
           lot
         ).addTo(self.lotTypeMarkerGroup)
+          .on("mouseover", function (e) {
+            if (self.lotTypeMarkerVisCheck()) {
+              //open popup forcefully
+              if (!this._popup._latlng) {
+                this._popup.setLatLng(new L.latLng(this.options.data.Latitude, this.options.data.Longitude));
+              }
+
+              this._popup.openOn(self.map);
+            }
+          }).on("click", function (e) {
+            if (self.lotTypeMarkerVisCheck()) {
+              //open popup forcefully
+              if (!this._popup._latlng) {
+                this._popup.setLatLng(new L.latLng(this.options.data.Latitude, this.options.data.Longitude));
+              }
+
+              this._popup.openOn(self.map);
+            }
+          })
       );
 
       if (App.controllers.generalLotMarkerView){
@@ -275,6 +276,25 @@ let MapView = function (div) {
             ),
             lot
           ).addTo(self.generalLotMarkerGroup)
+            .on("mouseover", function (e) {
+              if (self.generalLotMarkerVisCheck()) {
+                //open popup forcefully
+                if (!this._popup._latlng) {
+                  this._popup.setLatLng(new L.latLng(this.options.data.Latitude, this.options.data.Longitude));
+                }
+
+                this._popup.openOn(self.map);
+              }
+            }).on("click", function (e) {
+              if (self.generalLotMarkerVisCheck()) {
+                //open popup forcefully
+                if (!this._popup._latlng) {
+                  this._popup.setLatLng(new L.latLng(this.options.data.Latitude, this.options.data.Longitude));
+                }
+
+                this._popup.openOn(self.map);
+              }
+            })
         );
       }
     }
@@ -301,7 +321,7 @@ let MapView = function (div) {
         };
       };
       App.controllers.lotTypeMarkerView.attachMarkers(lotTypeMarkers, landMarkersSelection);
-      self.lotMarkerVisCheck = App.controllers.lotTypeMarkerView.markersAreVisible;
+      self.lotTypeMarkerVisCheck = App.controllers.lotTypeMarkerView.markersAreVisible;
 
       // add/remove layer subgroup on toggle
       App.controllers.lotTypeMarkerView.setCustomToggleFunction((state,markerArray,d3Selection) => {
@@ -337,7 +357,7 @@ let MapView = function (div) {
         };
       };
       App.controllers.generalLotMarkerView.attachMarkers(generalLotMarkers, landMarkersSelection);
-      self.lotMarkerVisCheck = App.controllers.generalLotMarkerView.markersAreVisible;
+      self.generalLotMarkerVisCheck = App.controllers.generalLotMarkerView.markersAreVisible;
 
       // add/remove layer subgroup on toggle
       App.controllers.generalLotMarkerView.setCustomToggleFunction((state, markerArray, d3Selection) => {
