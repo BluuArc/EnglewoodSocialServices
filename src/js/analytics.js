@@ -177,7 +177,7 @@ Promise.all([documentPromise, windowPromise, less.pageLoadFinished])
         // App.views.chartList.addChart(new VacantLotBarChart(App.models.aggregateData.englewood,App.models.aggregateData.westEnglewood));
         // App.views.chartList.updateChart("vacant-lots-total");
         
-        addOverallLotKiviatChart();
+        // addOverallLotKiviatChart();
         addRelativeKiviatChart();
 
         // insert icons
