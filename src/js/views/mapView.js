@@ -121,7 +121,7 @@ let MapView = function (div) {
     let {...schoolOptions} = defaultOptions;
     schoolOptions.fillColor = self.iconColors.schoolMarker;
     schoolOptions.color = self.iconColors.serviceMarker;
-    schoolOptions.borderWeight = 1.5;
+    schoolOptions.weight = 3;
     schoolOptions.circleColor = schoolOptions.fillColor;
     self.icons.schoolServiceMarker = new L.DivIcon.SVGIcon(schoolOptions);
 
