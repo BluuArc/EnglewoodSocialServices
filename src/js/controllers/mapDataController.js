@@ -20,6 +20,32 @@ let MapDataController = function () {
       "none": "glyphicon-unchecked",
       "some": "glyphicon-plus",
       "all": "glyphicon-check"
+    },
+
+    customCharts: {
+      RACE_OF_HOUSEHOLDER: {
+        "Householder who is White alone": {
+          label: "White Alone",
+        },
+        "Householder who is Black or African American alone": {
+          label: "Black or African American Alone",
+        },
+        "Householder who is American Indian and Alaska Native alone": {
+          label: "American Indian or Alaska Native Alone",
+        },
+        "Householder who is Asian alone": {
+          label: "Asian Alone",
+        },
+        "Householder who is Native Hawaiian and Other Pacific Islander alone": {
+          label: "Native Hawaiian and Other Pacific Islander Alone",
+        },
+        "Householder who is Some Other Race alone": {
+          label: "Other Race Alone",
+        },
+        "Householder who is Two or More Races": {
+          label: "Two or More Races"
+        },
+      }
     }
   };
 
@@ -99,10 +125,10 @@ let MapDataController = function () {
 
 
     if (self.lastShownProperty) {
-      let id = createPropertyID(self.lastShownProperty);
+      let prop = self.lastShownProperty;
       self.lastShownProperty = null;
       if (!isConsecutiveCall && self.chartList) {
-        self.chartList.removeChart(id, true);
+        removeChartFromList(prop);
       }
     } else {
       console.log("no last shown property found");
@@ -350,6 +376,22 @@ let MapDataController = function () {
     App.views.map.drawChoropleth();
   }
 
+  function initializeCustomCharts() {
+    let englewoodData = App.models.aggregateData.englewood.data.census;
+    let westEnglewoodData = App.models.aggregateData.westEnglewood.data.census;
+
+    let customCharts = self.customCharts;
+
+    for(let field in customCharts.RACE_OF_HOUSEHOLDER){
+      let axis = customCharts.RACE_OF_HOUSEHOLDER[field];
+      axis.propertyName = field;
+      axis.min = 0;
+      axis.max = Math.max(englewoodData.RACE_OF_HOUSEHOLDER[field],westEnglewoodData.RACE_OF_HOUSEHOLDER[field]);
+    }
+
+    console.log("custom chart data",customCharts);
+  }
+
   function chartButtonClick(d) {
     if(!self.chartList){
       console.error("No chart list specified");
@@ -357,19 +399,31 @@ let MapDataController = function () {
     }
 
     if(self.lastShownProperty){
-      self.chartList.removeChart(createPropertyID(self.lastShownProperty), true);
+      removeChartFromList(self.lastShownProperty);
     }
     self.lastShownProperty = d;
     
     console.log("Create chart for", d);
-    if(d.type !== "census"){
-      self.chartList.addChart(new CensusBarChart(d,createPropertyID(d)));
+    if(self.customCharts[d.mainType]){
+      console.log("Create custom chart for",d);
+      self.chartList.addChart(new CensusStarPlot(
+        d.mainType,d.mainType,
+        {
+          axes: Object.keys(self.customCharts[d.mainType])
+            .map(k => self.customCharts[d.mainType][k])
+        }
+      ));
+
+      self.chartList.updateChart(d.mainType, {}, { renderLabels: true })
+      self.chartList.updateChart(d.mainType, App.models.aggregateData.englewood.data.census[d.mainType], { groupID: 'englewood', fillColor: App.models.aggregateData.englewood.color })
+      self.chartList.updateChart(d.mainType, App.models.aggregateData.westEnglewood.data.census[d.mainType], { groupID: 'westEnglewood', fillColor: App.models.aggregateData.westEnglewood.color })
+      // App.views.chartList.addChart(new VacantLotStarPlot("vacant-lot-relative-star-plot", "<h4><b>Vacant Lots:</b> Relative Distribution</h4>", lotRanges, plotOptions));
     }else{
       let title = d.title ? `<b>${d.subType}</b>` : undefined;
       self.chartList.addChart(new CensusBarChart(d, createPropertyID(d), title));
+      self.chartList.updateChart(createPropertyID(d));
     }
 
-    self.chartList.updateChart(createPropertyID(d));
   }
 
   function addChart(d) {
@@ -382,24 +436,12 @@ let MapDataController = function () {
       .style("display", numCharts <= 0 ? "none" : "inline");
   }
 
-  function removeChart(d) {
-    d3.select(this).attr("class", "btn btn-success chartButton");
-
-    let panelHeading = d3.select(self.mapDataPanel.selectAll("#" + _.kebabCase("main_" + d.mainType)).node().parentNode).selectAll(".panel-heading");
-    // update chart Number
-
-    let chartLabel = panelHeading.selectAll(".numCharts");
-    let numCharts = +chartLabel.attr("data-count") - 1;
-
-    chartLabel.attr("data-count", numCharts)
-      .text(numCharts + (numCharts === 1 ? " Chart" : " Charts"))
-      .style("display", numCharts <= 0 ? "none" : "inline");
-  }
-
-  function removeChartFromList(propertyTypes) {
-    d3.selectAll("#" + _.kebabCase("main_" + propertyTypes.mainType)).selectAll("#" + _.kebabCase("sub_" + propertyTypes.subType))
-      .select(".chartButton")
-      .each(removeChart);
+  function removeChartFromList(propertyType) {
+    if (self.customCharts[propertyType.mainType]) {
+      self.chartList.removeChart(propertyType.mainType, true);
+    } else {
+      self.chartList.removeChart(createPropertyID(propertyType), true);
+    }
   }
 
   function updateMainCategoryOnSubUpdate(category) {
@@ -474,6 +516,8 @@ let MapDataController = function () {
     populateDropdown,
     removeChartFromList,
     setCensusClearButton,
-    setChartList
+    setChartList,
+
+    initializeCustomCharts
   };
 }

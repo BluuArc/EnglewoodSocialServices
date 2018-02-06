@@ -163,6 +163,8 @@ Promise.all([documentPromise, windowPromise, less.pageLoadFinished])
         console.timeEnd("getting selection data");
         console.log(App.models.aggregateData);
 
+        App.controllers.mapData.initializeCustomCharts();
+
         App.views.loadingMessage.updateAndRaise("Adding charts");
 
         // App.views.chartList.addChart(new VacantLotBarChart(App.models.aggregateData.englewood,App.models.aggregateData.westEnglewood));
