@@ -105,16 +105,18 @@ let MapView = function (div) {
     }
 
     const lotColors = {
-      Residential: '#8dd3c7',
-      BCM: '#ffffb3',
-      POS: '#fdb462',
-      PD: '#fb8072'
+      Residential: '#999999',
+      BCM: '#ff7f00',
+      POS: '#4daf4a',
+      PD: '#e78ac3'
     };
     for(let lotType in lotColors){
       let {...options} = defaultOptions;
 
       options.color = self.iconColors.lotMarker;
-      options.circleFillColor = lotColors[lotType];
+      options.fillColor = lotColors[lotType];
+      options.weight = 3;
+      options.circleColor = options.fillColor;
       self.icons[lotType] = new L.DivIcon.SVGIcon(options);
     }
 
