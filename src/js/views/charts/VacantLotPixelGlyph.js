@@ -43,6 +43,10 @@ function VacantLotPixelGlyph(id, title, dataRanges, options = {}) {
     });
 
     self.pixelGlyph.init(chartPanel);
+
+    if(options.init){
+      options.init(chartPanel);
+    }
   }
 
   function initQuadrants() {

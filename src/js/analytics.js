@@ -257,11 +257,33 @@ Promise.all([documentPromise, windowPromise, less.pageLoadFinished])
     let englewoodKiviatData = generateLotKiviatData(App.models.aggregateData.englewood.data.lot, false);
     let westEnglewoodKiviatData = generateLotKiviatData(App.models.aggregateData.westEnglewood.data.lot, false);
 
+    let plotOptions = {
+      init: (panel) => {
+        // setup custom toggle button
+        let heading = panel.select('.panel-heading').classed('collapsible', true);
+
+        panel.select('.panel-body').classed('collapse', true);
+        panel.select('.panel-footer').classed('collapse', true);
+
+        let isClosed = false;
+
+        let toggle = () => {
+          $(panel.node()).find(".collapse").collapse(isClosed ? "show" : "hide");
+
+          heading.classed("collapsed", !isClosed);
+          isClosed = !isClosed;
+        };
+
+        heading.on('click', toggle);
+        toggle(); toggle();
+      }
+    };
+
     console.log(englewoodKiviatData,westEnglewoodKiviatData, lotRanges);
-    App.views.chartList.addChart(new VacantLotPixelGlyph('pixel-englewood', "<h4><b>Vacant Lots: <span class='text englewood'>Englewood</span></b></h4>",lotData));
+    App.views.chartList.addChart(new VacantLotPixelGlyph('pixel-englewood', "<h4><b>Vacant Lots: <span class='text englewood'>Englewood</span></b></h4>",lotData, plotOptions));
     App.views.chartList.updateChart('pixel-englewood', englewoodKiviatData);
 
-    App.views.chartList.addChart(new VacantLotPixelGlyph('pixel-west-englewood', "<h4><b>Vacant Lots: <span class='text west-englewood'>West Englewood</span></b></h4>", lotData));
+    App.views.chartList.addChart(new VacantLotPixelGlyph('pixel-west-englewood', "<h4><b>Vacant Lots: <span class='text west-englewood'>West Englewood</span></b></h4>", lotData, plotOptions));
     App.views.chartList.updateChart('pixel-west-englewood', westEnglewoodKiviatData);
   }
 
