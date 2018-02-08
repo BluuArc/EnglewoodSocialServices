@@ -21,7 +21,7 @@ function PixelGlyph(options) {
   };
 
   function init(targetDiv) {
-    let svg = targetDiv.select(".panel-body").append("svg");
+    let svg = targetDiv.append("svg");
     self.graph = svg.append('g').classed('graph-group', true);
 
     // overall glyph size

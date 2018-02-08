@@ -42,7 +42,7 @@ function VacantLotPixelGlyph(id, title, dataRanges, options = {}) {
       quadrants: self.quadrants
     });
 
-    // self.pixelGlyph.init(chartPanel);
+    self.pixelGlyph.init(chartPanel.select(".panel-footer"));
 
     if(options.init){
       options.init(chartPanel);
@@ -59,11 +59,11 @@ function VacantLotPixelGlyph(id, title, dataRanges, options = {}) {
 
   function update(panel, data) {
     console.log("pixel glyph data",data);
-    // self.pixelGlyph.update(panel, data);
-    updateFooter(panel, data);
+    self.pixelGlyph.update(panel, data);
+    updateStatistics(panel, data);
   }
 
-  function updateFooter(panel,data) {
+  function updateStatistics(panel,data) {
     let body = panel.select('.panel-body');
 
     if(!body.select('table').empty()){
