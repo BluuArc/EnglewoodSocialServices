@@ -178,7 +178,7 @@ Promise.all([documentPromise, windowPromise, less.pageLoadFinished])
         // App.views.chartList.updateChart("vacant-lots-total");
         
         // addOverallLotKiviatChart();
-        addRelativeKiviatChart();
+        // addRelativeKiviatChart();
         addLotPixelGlyphs();
 
         App.insertIcons();
