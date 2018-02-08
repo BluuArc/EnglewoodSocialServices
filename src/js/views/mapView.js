@@ -16,6 +16,12 @@ let MapView = function (div) {
       schoolMarker: "#f781bf",
       locationMarker: "#cb2d40"
     },
+    lotColors: {
+      Residential: '#999999',
+      BCM: '#ff7f00',
+      POS: '#4daf4a',
+      PD: '#e78ac3'
+    },
 
     markerVisibilityCheck: () => { return true; }, //markers always visible by default
     lotTypeMarkerVisCheck: () => { return true; }, //markers always visible by default
@@ -112,17 +118,11 @@ let MapView = function (div) {
       self.icons[color] = new L.DivIcon.SVGIcon(options);
     }
 
-    const lotColors = {
-      Residential: '#999999',
-      BCM: '#ff7f00',
-      POS: '#4daf4a',
-      PD: '#e78ac3'
-    };
-    for(let lotType in lotColors){
+    for(let lotType in self.lotColors){
       let {...options} = defaultOptions;
 
       options.color = self.iconColors.lotMarker;
-      options.fillColor = lotColors[lotType];
+      options.fillColor = self.lotColors[lotType];
       options.weight = 3;
       options.circleColor = options.fillColor;
       self.icons[lotType] = new L.DivIcon.SVGIcon(options);
@@ -694,7 +694,7 @@ let MapView = function (div) {
   }
 
   function getIconColor(name){
-    return self.iconColors[name];
+    return self.iconColors[name] || self.lotColors[name];
   }
 
   function getIcon(name) {

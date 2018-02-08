@@ -99,7 +99,6 @@ function PixelGlyph(options) {
   */
   function update(panel, data) {
     Object.keys(self.quadrants).forEach(q => {
-      console.log(data[getQuadrantName(q)], self.quadrants[q].scale(data[getQuadrantName(q)]));
       self.quadrants[q].rectangle
         .style('opacity', self.quadrants[q].scale(data[getQuadrantName(q)]));
     });

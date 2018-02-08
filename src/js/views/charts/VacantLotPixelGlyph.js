@@ -1,0 +1,103 @@
+"use strict";
+
+function VacantLotPixelGlyph(id, title, dataRanges, options = {}) {
+  let self = {
+    title: title,
+    id: id,
+    pixelGlyph: null,
+    quadrants: {
+      topLeft: {
+        name: 'Residential',
+        color: '#999999',
+        maxValue: null,
+      },
+      topRight: {
+        name: "BCM",
+        label: "Business, Commercial, and Manufacturing",
+        color: '#ff7f00',
+        maxValue: null,
+      },
+      bottomLeft: {
+        name: 'POS',
+        label: "Parks and Open Space",
+        color: '#4daf4a',
+        maxValue: null,
+      },
+      bottomRight: {
+        name: "PD",
+        label: "Planned Manufacturing Districts and Development",
+        color: '#e78ac3',
+        maxValue: null,
+      },
+    }
+  };
+
+  function init(chartPanel) {
+    initQuadrants();
+    console.log(self.quadrants);
+    self.pixelGlyph = new PixelGlyph({
+      quadrants: self.quadrants
+    });
+
+    self.pixelGlyph.init(chartPanel);
+  }
+
+  function initQuadrants() {
+    for(let q in self.quadrants){
+      let quadrant = self.quadrants[q];
+
+      quadrant.maxValue = dataRanges[quadrant.name];
+    }
+  }
+
+  function update(panel, data) {
+    console.log("pixel glyph data",data);
+    self.pixelGlyph.update(panel, data);
+    updateFooter(panel, data);
+  }
+
+  function updateFooter(panel,data) {
+    let footer = panel.select('.panel-footer');
+
+    if(!footer.select('table').empty()){
+      footer.select('table').remove();
+    }
+    let table = footer.append('table').classed('container', true)
+      .style('width', '100%').append('tbody');
+
+    let propertiesLines = Object.keys(self.quadrants).map(d => {
+      let value = data[self.quadrants[d].name];
+      return { 
+        value, 
+        name: self.quadrants[d].name,
+        label: self.quadrants[d].label,
+        total: self.quadrants[d].maxValue,
+        color: self.quadrants[d].color
+       };
+    });
+
+    let colorScale = d3.scaleLinear().domain([0, 1]);
+    table.selectAll('tr').data(propertiesLines)
+      .enter().append('tr')
+      // .style("background-color", d => colorScale.range(["#FFF", d.color])(0.75))
+      .each(function(d){
+        let row = d3.select(this);
+
+        row.append('td').classed('align-middle', true)
+          .style("width", "50px")
+          .html(`<span id=${d.name} class="svg-insert"></span><b>${d.label || d.name}</b>`)
+        row.append('td').classed('align-middle', true)
+          .style("width", "50px")
+          .text(`${d.value} of ${d.total} lots`)
+      });
+
+    App.insertIcons();
+  }
+
+  return {
+    title: self.title,
+    id: self.id,
+    init,
+    update
+  };
+}

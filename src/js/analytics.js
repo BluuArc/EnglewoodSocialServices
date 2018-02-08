@@ -179,22 +179,9 @@ Promise.all([documentPromise, windowPromise, less.pageLoadFinished])
         
         // addOverallLotKiviatChart();
         addRelativeKiviatChart();
+        addLotPixelGlyphs();
 
-        // insert icons
-        d3.selectAll(".svg-insert").html(function(){
-          let id = d3.select(this).attr("id");
-          console.log("svg id", id);
-          if(!id ){
-            return "";
-          }else{
-            return new L.DivIcon.SVGIcon({
-              color: App.views.map.getIconColor(id) || "black",
-              fillOpacity: 1,
-              // circleWeight: 3.5,
-              iconSize: [14, 23],
-            }).options.html;
-          }
-        });
+        App.insertIcons();
 
         App.views.loadingMessage.finishLoading();
 
@@ -211,7 +198,25 @@ Promise.all([documentPromise, windowPromise, less.pageLoadFinished])
       });
   };
 
-  function generateLotKiviatData(lotData, generateRange) {
+  App.insertIcons = function(){
+    // insert icons
+    d3.selectAll(".svg-insert").html(function () {
+      let id = d3.select(this).attr("id");
+      console.log("svg id", id);
+      if (!id) {
+        return "";
+      } else {
+        return new L.DivIcon.SVGIcon({
+          color: App.views.map.getIconColor(id) || "black",
+          fillOpacity: 1,
+          // circleWeight: 3.5,
+          iconSize: [14, 23],
+        }).options.html;
+      }
+    }).classed('svg-insert', false);
+  }
+
+  function generateLotKiviatData(lotData, doGenerateRange) {
     let data = {
       Residential: [],
       PD: [],
@@ -237,7 +242,25 @@ Promise.all([documentPromise, windowPromise, less.pageLoadFinished])
       zoneRanges[zoneType] = [0, total];
     }
 
-    return generateRange ? [filteredData, zoneRanges] : filteredData;
+    return doGenerateRange ? [filteredData, zoneRanges] : filteredData;
+  }
+
+  function addLotPixelGlyphs() {
+    let [lotData, lotRanges] = generateLotKiviatData(App.models.landInventory.getDataByFilter(), true);
+
+    for(let type in lotRanges){
+      lotRanges[type] = lotRanges[type][1];
+    }
+
+    let englewoodKiviatData = generateLotKiviatData(App.models.aggregateData.englewood.data.lot, false);
+    let westEnglewoodKiviatData = generateLotKiviatData(App.models.aggregateData.westEnglewood.data.lot, false);
+
+    console.log(englewoodKiviatData,westEnglewoodKiviatData, lotRanges);
+    App.views.chartList.addChart(new VacantLotPixelGlyph('pixel-englewood', "<h4><b>Vacant Lots: </b>Englewood</h4>",lotData));
+    App.views.chartList.updateChart('pixel-englewood', englewoodKiviatData);
+
+    App.views.chartList.addChart(new VacantLotPixelGlyph('pixel-west-englewood', "<h4><b>Vacant Lots: </b>West Englewood</h4>", lotData));
+    App.views.chartList.updateChart('pixel-west-englewood', westEnglewoodKiviatData);
   }
 
   function addRelativeKiviatChart() {
