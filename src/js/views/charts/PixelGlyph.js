@@ -47,6 +47,7 @@ function PixelGlyph(options) {
 
   function initializeQuadrants() {
     const quadrants = ['topLeft', 'topRight', 'bottomLeft', 'bottomRight'];
+    const padding = 6.5;
 
     // quadrant data includes: color, maxValue, name
     quadrants.forEach((q,i) => { 
@@ -61,8 +62,17 @@ function PixelGlyph(options) {
         .style('fill', self.quadrants[q].color).attr('id', q)
         .attr('stroke', 'none');
 
+      self.graph.content.append('rect')
+        .attr('width', +self.quadrants[q].rectangle.attr("width") - padding)
+        .attr('height', +self.quadrants[q].rectangle.attr("height") - padding)
+        .attr('x', +self.quadrants[q].rectangle.attr("x") + padding/2)
+        .attr('y', +self.quadrants[q].rectangle.attr("y") + padding/2)
+        .style('fill', 'none').style('stroke', self.quadrants[q].color)
+        .style('stroke-width', padding);
+
       self.quadrants[q].scale = d3.scaleLinear().domain([0, self.quadrants[q].maxValue]).range([0,1]);
     });
+    
   }
 
   function getQuadrant(name) {
@@ -91,7 +101,7 @@ function PixelGlyph(options) {
     self.graph.layout.append('path').datum(horizontalAxis).attr("d", line)
       .attr('stroke', self.colors.outline).attr("stroke-width", "3px");
 
-    drawLabels(true);
+    drawLabels(false);
   }
 
   // based off of http://bl.ocks.org/nitaku/8745933
