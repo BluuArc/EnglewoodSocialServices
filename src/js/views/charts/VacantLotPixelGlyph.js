@@ -14,18 +14,21 @@ function VacantLotPixelGlyph(id, title, dataRanges, options = {}) {
       topRight: {
         name: "BCM",
         label: "Business, Commercial, and Manufacturing",
+        graphLabel: ["Business,", "Commercial,", "and Manufacturing"],
         color: '#ff7f00',
         maxValue: null,
       },
       bottomLeft: {
         name: 'POS',
         label: "Parks and Open Space",
+        graphLabel: ["Parks and", "Open Space"],
         color: '#4daf4a',
         maxValue: null,
       },
       bottomRight: {
         name: "PD",
         label: "Planned Manufacturing Districts and Development",
+        graphLabel: ["Planned", "Manufacturing", "Districts and", "Development"],
         color: '#e78ac3',
         maxValue: null,
       },
@@ -67,12 +70,14 @@ function VacantLotPixelGlyph(id, title, dataRanges, options = {}) {
 
     let propertiesLines = Object.keys(self.quadrants).map(d => {
       let value = data[self.quadrants[d].name];
+      let percent = ((value / self.quadrants[d].maxValue) * 100).toFixed(2);
       return { 
         value, 
+        percent,
         name: self.quadrants[d].name,
         label: self.quadrants[d].label,
         total: self.quadrants[d].maxValue,
-        color: self.quadrants[d].color
+        color: self.quadrants[d].color,
        };
     });
 
@@ -84,11 +89,16 @@ function VacantLotPixelGlyph(id, title, dataRanges, options = {}) {
         let row = d3.select(this);
 
         row.append('td').classed('align-middle', true)
-          .style("width", "50px")
-          .html(`<span id=${d.name} class="svg-insert"></span><b>${d.label || d.name}</b>`)
+          .style("width", "50px").style("text-align", "left")
+          .html(`<span id=${d.name} class="svg-insert">`)
+
         row.append('td').classed('align-middle', true)
-          .style("width", "50px")
-          .text(`${d.value} of ${d.total} lots`)
+          .style("width", "47.5%").style("text-align", "left")
+          .style("padding-left", "5px")
+          .html(`</span><b>${d.label || d.name}</b>`)
+        row.append('td').classed('align-middle', true)
+          .style("width", "52.5%")
+          .text(`${d.value} (${d.percent}%) of ${d.total} lots`)
       });
 
     App.insertIcons();

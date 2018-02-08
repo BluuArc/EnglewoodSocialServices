@@ -5,8 +5,8 @@ var App = App || {};
 function PixelGlyph(options) {
   let self = {
     chartMargins: {
-      top: 30,
-      bottom: 30,
+      top: 10,
+      bottom: 10,
       left: 50,
       right: 50
     },
@@ -24,6 +24,7 @@ function PixelGlyph(options) {
     let svg = targetDiv.select(".panel-body").append("svg");
     self.graph = svg.append('g').classed('graph-group', true);
 
+    // overall glyph size
     let size = $(svg.node()).width() - self.chartMargins.left - self.chartMargins.right;
     svg.style("height", size + self.chartMargins.top + self.chartMargins.bottom);
 
@@ -89,6 +90,55 @@ function PixelGlyph(options) {
       .attr('stroke', self.colors.outline).attr("stroke-width", "3px");
     self.graph.layout.append('path').datum(horizontalAxis).attr("d", line)
       .attr('stroke', self.colors.outline).attr("stroke-width", "3px");
+
+    drawLabels(true);
+  }
+
+  // based off of http://bl.ocks.org/nitaku/8745933
+  function addBorderAroundLabel(d3Label, targetGroup, color) {
+    let bBox = d3Label.node().getBBox();
+    let ctm = d3Label.node().getCTM();
+
+    let setTransform = (element, matrix) => element.transform.baseVal.initialize(element.ownerSVGElement.createSVGTransformFromMatrix(matrix));
+
+    const padding = 2;
+    let borderRect = targetGroup.insert('rect','text')
+      .attr('x', bBox.x - padding/2).attr('y', bBox.y - padding/2)
+      .attr('width', bBox.width + padding).attr('height', bBox.height + padding)
+      .style('stroke', color).style('stroke-width', '2px');
+      
+    setTransform(borderRect.node(),ctm);
+  }
+
+  function drawLabels(doAddBorder) {
+    let labelGroup = self.graph.layout.append('g').attr("id", "label-group");
+    Object.keys(self.quadrants).forEach((q,i) => {
+      let quadrant = self.quadrants[q];
+      let topLeftCoords = [
+        self.chartMargins.left + ((i % 2 == 0) ? 0 : (self.size / 2)),
+        self.chartMargins.top + ((i < 2) ? 0 : (self.size / 2))
+      ]
+
+      let label = labelGroup.append('text')
+        .attr('x', topLeftCoords[0] + self.size / 4)
+        .attr('y', topLeftCoords[1] + self.size / 4)
+        .style('text-anchor', 'middle').style('dominant-baseline', 'central')
+        .attr('id', quadrant.name);
+      
+      if(quadrant.graphLabel){
+        quadrant.graphLabel.forEach((d,i) => {
+          label.append("tspan")
+            .attr('x', label.attr('x')).attr('dy', i == 0 ? `-${quadrant.graphLabel.length/2}em` : '1.2em')
+            .text(d);
+        });
+      }else{
+        label.text(quadrant.name);
+      }
+
+      if(doAddBorder){
+        addBorderAroundLabel(label, labelGroup, quadrant.color);
+      }
+    });
   }
 
   /*

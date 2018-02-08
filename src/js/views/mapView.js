@@ -8,6 +8,7 @@ let MapView = function (div) {
     serviceLayer: null,
     currentLocationMarker: null,
     icons: {},
+    smallIcons: {},
 
     iconColors: {
       serviceMarker: "#2e84cb",
@@ -111,11 +112,18 @@ let MapView = function (div) {
       popupAnchor: [1, -34],
       shadowSize: [41, 41]
     };
+    const smallIconSize = [14, 23];
+    const smallCircleRatio = 0.60;
     for (let color in self.iconColors) {
       let { ...options} = defaultOptions;
 
       options.color = self.iconColors[color];
       self.icons[color] = new L.DivIcon.SVGIcon(options);
+
+      options.iconSize = smallIconSize;
+      options.circleRatio = smallCircleRatio;
+      options.circleRatio = smallCircleRatio;
+      self.smallIcons[color] = new L.DivIcon.SVGIcon(options);
     }
 
     for(let lotType in self.lotColors){
@@ -126,6 +134,11 @@ let MapView = function (div) {
       options.weight = 3;
       options.circleColor = options.fillColor;
       self.icons[lotType] = new L.DivIcon.SVGIcon(options);
+
+      options.iconSize = smallIconSize;
+      options.circleRatio = smallCircleRatio;
+      options.weight = 1.5;
+      self.smallIcons[lotType] = new L.DivIcon.SVGIcon(options);
     }
 
     let {...schoolOptions} = defaultOptions;
@@ -135,6 +148,9 @@ let MapView = function (div) {
     schoolOptions.circleColor = schoolOptions.fillColor;
     self.icons.schoolServiceMarker = new L.DivIcon.SVGIcon(schoolOptions);
 
+    schoolOptions.iconSize = smallIconSize;
+    schoolOptions.circleRatio = smallCircleRatio;
+    self.smallIcons.schoolServiceMarker = new L.DivIcon.SVGIcon(schoolOptions);
   }
 
   function plotSchools(schoolData) {
@@ -701,6 +717,10 @@ let MapView = function (div) {
     return self.icons[name];
   }
 
+  function getSmallIcon(name) {
+    return self.smallIcons[name];
+  }
+
   return {
     createMap,
     plotSchools,
@@ -720,6 +740,7 @@ let MapView = function (div) {
     fitMapAroundServices,
 
     getIconColor,
-    getIcon
+    getIcon,
+    getSmallIcon
   };
 };

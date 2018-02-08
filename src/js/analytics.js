@@ -206,14 +206,16 @@ Promise.all([documentPromise, windowPromise, less.pageLoadFinished])
       if (!id) {
         return "";
       } else {
-        return new L.DivIcon.SVGIcon({
-          color: App.views.map.getIconColor(id) || "black",
-          fillOpacity: 1,
-          // circleWeight: 3.5,
-          iconSize: [14, 23],
-        }).options.html;
+        return (
+          App.views.map.getSmallIcon(id) || 
+          (new L.DivIcon.SVGIcon({
+            color: App.views.map.getIconColor(id) || "black",
+            fillOpacity: 1,
+            iconSize: [14, 23],
+          }))
+        ).options.html;
       }
-    }).classed('svg-insert', false);
+    }).classed('svg-insert', false).classed('svg-inserted', true);
   }
 
   function generateLotKiviatData(lotData, doGenerateRange) {
@@ -256,10 +258,10 @@ Promise.all([documentPromise, windowPromise, less.pageLoadFinished])
     let westEnglewoodKiviatData = generateLotKiviatData(App.models.aggregateData.westEnglewood.data.lot, false);
 
     console.log(englewoodKiviatData,westEnglewoodKiviatData, lotRanges);
-    App.views.chartList.addChart(new VacantLotPixelGlyph('pixel-englewood', "<h4><b>Vacant Lots: </b>Englewood</h4>",lotData));
+    App.views.chartList.addChart(new VacantLotPixelGlyph('pixel-englewood', "<h4><b>Vacant Lots: <span class='text englewood'>Englewood</span></b></h4>",lotData));
     App.views.chartList.updateChart('pixel-englewood', englewoodKiviatData);
 
-    App.views.chartList.addChart(new VacantLotPixelGlyph('pixel-west-englewood', "<h4><b>Vacant Lots: </b>West Englewood</h4>", lotData));
+    App.views.chartList.addChart(new VacantLotPixelGlyph('pixel-west-englewood', "<h4><b>Vacant Lots: <span class='text west-englewood'>West Englewood</span></b></h4>", lotData));
     App.views.chartList.updateChart('pixel-west-englewood', westEnglewoodKiviatData);
   }
 
