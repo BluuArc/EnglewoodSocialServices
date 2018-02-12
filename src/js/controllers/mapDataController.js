@@ -407,8 +407,9 @@ let MapDataController = function () {
     console.log("Create chart for", d);
     if(self.customCharts[d.mainType]){
       console.log("Create custom chart for",d);
+      const title = d.mainType.split("_").map(d => `${d[0].toUpperCase()}${d.slice(1).toLowerCase()}`).join(" ");
       self.chartList.addChart(new CensusStarPlot(
-        d.mainType,d.mainType,
+        d.mainType, `<h4><b>${title}</b></h4>`,
         {
           axes: Object.keys(self.customCharts[d.mainType])
             .map(k => self.customCharts[d.mainType][k])
