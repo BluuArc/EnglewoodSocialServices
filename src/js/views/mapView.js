@@ -14,7 +14,7 @@ let MapView = function (div) {
       serviceMarker: "#2e84cb",
       serviceMarkerSelected: "#cc852a",
       lotMarker: "#9c2bcb",
-      schoolMarker: "#f781bf",
+      schoolMarker: "#b15928",
       locationMarker: "#cb2d40"
     },
     lotColors: {
@@ -77,6 +77,10 @@ let MapView = function (div) {
         disableClusteringAtZoom: 18
       }).addTo(self.map);
       self.generalLotMarkerGroup = L.featureGroup.subGroup(self.generalLotClusterGroup).addTo(self.map);
+
+      self.generalLotClusterGroup.on('clustermouseover', function() {
+        console.log(arguments);
+      });
     }else{
       self.lotTypeClusterGroup = L.layerGroup([]).addTo(self.map);
       self.generalLotClusterGroup = L.layerGroup([]).addTo(self.map);
