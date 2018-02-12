@@ -26,7 +26,7 @@ function PixelGlyph(options) {
 
     // overall glyph size
     let size = $(svg.node()).width() - self.chartMargins.left - self.chartMargins.right;
-    svg.style("height", size + self.chartMargins.top + self.chartMargins.bottom);
+    svg.style("height", `${size + self.chartMargins.top + self.chartMargins.bottom}px`);
 
     self.graph.content = self.graph.append("g").classed("graph-content", true);
 
