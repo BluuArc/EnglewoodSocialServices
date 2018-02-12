@@ -25,25 +25,25 @@ let MapDataController = function () {
     customCharts: {
       RACE_OF_HOUSEHOLDER: {
         "Householder who is White alone": {
-          label: "White Alone",
+          label: ["White Alone"]
         },
         "Householder who is Black or African American alone": {
-          label: "Black or African American Alone",
+          label: ["Black or African", "American Alone"]
         },
         "Householder who is American Indian and Alaska Native alone": {
-          label: "American Indian or Alaska Native Alone",
+          label: ["American Indian or", "Alaska Native Alone"]
         },
         "Householder who is Asian alone": {
-          label: "Asian Alone",
+          label: ["Asian", "Alone"]
         },
         "Householder who is Native Hawaiian and Other Pacific Islander alone": {
-          label: "Native Hawaiian and Other Pacific Islander Alone",
+          label: ["Native Hawaiian", "and Other Pacific", "Islander", "Alone"]
         },
         "Householder who is Some Other Race alone": {
-          label: "Other Race Alone",
+          label: ["Other Race Alone"]
         },
         "Householder who is Two or More Races": {
-          label: "Two or More Races"
+          label: ["Two or More Races"]
         },
       }
     }
@@ -387,6 +387,7 @@ let MapDataController = function () {
       axis.propertyName = field;
       axis.min = 0;
       axis.max = Math.max(englewoodData.RACE_OF_HOUSEHOLDER[field],westEnglewoodData.RACE_OF_HOUSEHOLDER[field]);
+      axis.label.push(`(max: ${axis.max.toFixed(0)})`);
     }
 
     console.log("custom chart data",customCharts);
