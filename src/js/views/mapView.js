@@ -87,6 +87,7 @@ let MapView = function (div) {
     }
     self.schoolGroup = L.layerGroup([]).addTo(self.map);
     self.map.zoomControl.setPosition('bottomright');
+    drawLegend();
   }
 
   function drawEnglewoodOutline() {
@@ -536,13 +537,74 @@ let MapView = function (div) {
     self.map.fitBounds(selection.bounds);
   }
 
+  function drawLegend(censusOptions) {
+    if(!d3.select("#svgLegend").empty()){
+      d3.select("#svgLegend").remove();
+    }
+    let mapColorCodes = d3.scaleOrdinal()
+      .domain(["West Englewood", "Englewood"])
+      .range(["#1f77b4", "#ff7f0e"]);
+    let svg = d3.select("#legend").append("svg").attr("width", 175).attr("height", 150)
+      .style('background-color', "rgba(150,150,150,0.75)")
+      .attr('id', 'svgLegend');
+
+    let group = svg.append("g")
+      .attr("class", "legendOrdinal")
+      .attr("transform", "translate(25,20)");
+      
+      var legendOrdinal = d3.legendColor()
+      .shapeWidth(30)
+      .title("Legend")
+      .titleWidth(120)
+      .scale(mapColorCodes);
+      
+    svg.select(".legendOrdinal")
+      .call(legendOrdinal);
+
+    svg.select(".legendTitle")
+      .attr("text-anchor", "middle")
+      .attr("transform", "translate(62.5,5)");
+
+    let backgroundHeight = +group.node().getBBox().height * 1.4;
+
+    if(censusOptions){
+      let censusGroup = svg.append("g")
+        .attr("class", "legendLinear")
+        .attr("transform", `translate(25,${30 + +group.node().getBBox().height})`);
+
+      let legendLinear = d3.legendColor()
+        .shapeWidth(30)
+        .labelFormat(d3.format(".0f"))
+        .title("Census Block Color Scale")
+        .titleWidth(120)
+        .scale(censusOptions.colorScale);
+
+      censusGroup.call(legendLinear);
+
+      censusGroup.select(".legendTitle")
+        .attr("text-anchor", "middle")
+        .attr("transform", "translate(62.5,5)");
+
+      censusGroup.selectAll('.legendCells text.label')
+        .each(function(){
+          let elem = d3.select(this);
+          elem.text(elem.text() + " people");
+        });
+
+      backgroundHeight += +censusGroup.node().getBBox().height;
+    }
+
+    //based off of https://stackoverflow.com/questions/7620509/how-does-one-get-the-height-width-of-an-svg-group-element
+    svg.attr("height", backgroundHeight);
+  }
+
   function drawChoropleth(data, title, options = {}) {
     // remove old choropleth
     if (self.choropleth) {
       self.choroplethLayer.removeLayer(self.choropleth);
 
       self.englewoodOutline.setStyle({ fillOpacity: 0.35 });
-      d3.select("#svgLegend").remove();
+      drawLegend();
     }
 
     // if data specified, add new choropleth
@@ -565,34 +627,8 @@ let MapView = function (div) {
         .domain([0,4]).range(colorScale.range())
       let colorScaleQ = d3.scaleQuantize()
         .domain(colorScale.domain()).range(d3.range(5).map((i) => simpleColorScale(i)));
-
-      // console.log(colorScale.domain(), colorScale.range());
-
-      let svg = d3.select("#legend").append("svg").attr("width", 160).attr("height", 150)
-        .style('background-color',"rgba(150,150,150,0.75)")
-        .attr('id','svgLegend');
-
-      let group = svg.append("g")
-        .attr("class", "legendLinear")
-        .attr("transform", "translate(25,20)");
-
-      var legendLinear = d3.legendColor()
-        .shapeWidth(30)
-        .labelFormat(d3.format(".0f"))
-        .title(((title) ? title : "Census Count") + " per census block")
-        .titleWidth(120)
-        .scale(colorScaleQ);
-
-      svg.select(".legendLinear")
-        .call(legendLinear);
-
-      svg.select(".legendTitle")
-        .attr("text-anchor", "middle")
-        .attr("transform", "translate(55,0)");
-
-      //based off of https://stackoverflow.com/questions/7620509/how-does-one-get-the-height-width-of-an-svg-group-element
-      svg.attr("height",+group.node().getBBox().height * 1.1)
-
+      
+      drawLegend({ colorScale: colorScaleQ });
 
       self.choropleth = L.geoJSON(data, {
           style: function (feature) {
