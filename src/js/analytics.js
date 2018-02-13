@@ -115,7 +115,7 @@ Promise.all([documentPromise, windowPromise, less.pageLoadFinished])
         console.log("Loaded Land Inventory Data", ++numFinished);
         return data;
       });
-    let schoolDataP = App.models.schoolData.loadData("./data/17-12-05 Englewood Schools.csv")
+    let schoolDataP = App.models.schoolData.loadData("./data/18-02-12 Rev Englewood Schools.csv")
       .then(data => {
         console.log("Loaded School Data", ++numFinished);
         return data;

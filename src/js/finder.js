@@ -83,7 +83,7 @@ window.onresize = function() {
     App.views.loadingMessage.updateAndRaise("Loading location and service data");
     let socialServiceP = App.models.socialServices.loadData("./admin-data/EnglewoodLocations.csv")
     let serviceTaxonomyP = App.models.serviceTaxonomy.loadData("./data/serviceTaxonomy.json");
-    let schoolDataP = App.models.schoolData.loadData("./data/17-12-05 Englewood Schools.csv");
+    let schoolDataP = App.models.schoolData.loadData("./data/18-02-12 Rev Englewood Schools.csv");
 
     App.controllers.modal = new modalController();
 
