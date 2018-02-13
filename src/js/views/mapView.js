@@ -184,7 +184,7 @@ let MapView = function (div) {
           ${school.Address}<br>
           ${school.City}, ${school.State}, ${school.Zip}
         `;
-      }).addTo(self.schoolGroup).on("mouseover", function (e) {
+      }, { autoPan: false }).addTo(self.schoolGroup).on("mouseover", function (e) {
         if (self.schoolVisCheck()) {
           //open popup forcefully
           if (!this._popup._latlng) {
@@ -234,7 +234,7 @@ let MapView = function (div) {
         <strong>${lot.Location}</strong><br>
         <b>Size: </b> ${lot["Sq. Ft."]} sq. ft.<br>
         <b>Zone Classification: </b>${App.models.landInventory.getZoneClassification(lot, true)}`;
-      }).on("mouseout", function (e) {
+      }, { autoPan: false }).on("mouseout", function (e) {
           if (!this.options.data.expanded) {
             self.map.closePopup();
           }
@@ -446,7 +446,7 @@ let MapView = function (div) {
             (loc["Website"] && loc["Website"].toLowerCase().trim() !== "no website" ?
               ("<strong><a href='" + loc["Website"] + "'target='_blank'>" +
                 "<span class='glyphicon glyphicon-home'></span> " + loc["Website"] + "</a></strong><br>") : "");
-        }).addTo(self.serviceGroup)
+        }, { autoPan: false }).addTo(self.serviceGroup)
         .on("click", function (e) {
           if (self.markerVisibilityCheck() && this.options.data.visible && App.controllers.listToMapLink) {
             App.controllers.listToMapLink.mapMarkerSelected(this.options.data);
@@ -627,7 +627,7 @@ let MapView = function (div) {
           }).join(" ");
           let subTypeTitle = `${description.subType.replace(/[^a-zA-Z0-9- ]/g, "")}`;
           return `<b>Count of <em>${mainTypeTitle} - ${subTypeTitle}</em> on this block:</b> ${layer.feature.properties.data}`;
-        }).addTo(self.choroplethLayer);
+        }, { autoPan: false }).addTo(self.choroplethLayer);
     }
 
   }
