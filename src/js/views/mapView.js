@@ -430,25 +430,6 @@ let MapView = function (div) {
             data: loc
           }
         ).bindPopup(function (layer) { // allow for the popup on click with the name of the location
-          // let phoneRegex = /(\d{3})\D*(\d{3})\D*(\d{4})(x\d+)?/g;
-          // let match = phoneRegex.exec(loc["Contact Phone Number"]);
-          // let matches = [];
-
-          // while (match != null) {
-          //   matches.push(match.slice(1, 5));
-          //   match = phoneRegex.exec(loc["Contact Phone Number"]);
-          // }
-
-          // matches = matches.map((num) => {
-          //   let phone = num.slice(0, 3).join("-");
-          //   if (num[3]) {
-          //     return [phone, num[3]].join(" ");
-          //   }
-
-          //   return phone;
-          // });
-
-          
           let addressLink;
           if(loc["Address"] && loc["Address"].length > 0){
             let address = `${loc["Address"]}, ${loc["City"]}, ${loc["State"]}, ${loc["Zip"]}`;
