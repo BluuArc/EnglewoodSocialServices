@@ -23,7 +23,7 @@ let StarPlotView = function(options){
     };
 
     function init() {
-        const plotRange = [0,100];
+        const plotRange = [d3.starPlot().zeroValue(),100];
 
         self.parent = options.parent; //parent element as a d3 selection
         self.svg = options.svg; //optional, as a new svg will be created if not specified
@@ -57,11 +57,23 @@ let StarPlotView = function(options){
         let properties = [], scales = [], labels = [];
         for(let a of options.axes){
             properties.push(a.propertyName);
-            scales.push(
-                d3.scaleLinear()
+
+            let axisScale;
+            
+            axisScale = d3.scaleLinear()
+                .domain([a.min, a.max])
+                .range(plotRange);
+            if(a.logScale){
+                let linearScale = d3.scaleLinear()
+                    .domain([a.min, a.max]).range([1,10]);
+                let logScale = d3.scaleLog().range(plotRange); // domain is [1,10]
+                axisScale = (value) => logScale(linearScale(value));
+            }else{
+                axisScale = d3.scaleLinear()
                     .domain([a.min, a.max])
-                    .range(plotRange)
-            );
+                    .range(plotRange);
+            }
+            scales.push(axisScale);
             labels.push(a.label || a.propertyName);
         }
         self.plotFn = d3.starPlot()
@@ -122,7 +134,13 @@ let StarPlotView = function(options){
                     .style("transform", `translateX(${self.titleMargin.left - self.titleMargin.right}px) translateY(${self.titleMargin.top - self.titleMargin.bottom}px)`);
 
             if(fillColor){
-                self.svgGroup[groupID].select("path.star-path").style('fill', fillColor);
+                self.svgGroup[groupID].select("path.star-path")
+                    .style('fill', fillColor).style('fill-opacity', '0.35')
+                    .style('stroke', fillColor).style('stroke-opacity', 1)
+                    .style('stroke-width', '2px');
+
+                self.svgGroup[groupID].selectAll(".data-point")
+                    .style('fill', fillColor);
             }
 
             if(self.interaction){

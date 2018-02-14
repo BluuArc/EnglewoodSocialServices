@@ -386,8 +386,10 @@ let MapDataController = function () {
       let axis = customCharts.RACE_OF_HOUSEHOLDER[field];
       axis.propertyName = field;
       axis.min = 0;
-      axis.max = Math.max(englewoodData.RACE_OF_HOUSEHOLDER[field],westEnglewoodData.RACE_OF_HOUSEHOLDER[field]);
-      axis.label.push(`(max: ${axis.max.toFixed(0)})`);
+      // axis.max = Math.max(englewoodData.RACE_OF_HOUSEHOLDER[field],westEnglewoodData.RACE_OF_HOUSEHOLDER[field]);
+      axis.max = Math.max(englewoodData.RACE_OF_HOUSEHOLDER["Total:"], westEnglewoodData.RACE_OF_HOUSEHOLDER["Total:"]);
+      axis.logScale = true;
+      // axis.label.push(`(max: ${Math.log10(axis.max).toFixed(0)})`);
     }
 
     console.log("custom chart data",customCharts);
@@ -416,9 +418,9 @@ let MapDataController = function () {
         }
       ));
 
-      self.chartList.updateChart(d.mainType, {}, { renderLabels: true })
-      self.chartList.updateChart(d.mainType, App.models.aggregateData.englewood.data.census[d.mainType], { groupID: 'englewood', fillColor: App.models.aggregateData.englewood.color })
-      self.chartList.updateChart(d.mainType, App.models.aggregateData.westEnglewood.data.census[d.mainType], { groupID: 'westEnglewood', fillColor: App.models.aggregateData.westEnglewood.color })
+      self.chartList.updateChart(d.mainType, {}, { renderLabels: true });
+      self.chartList.updateChart(d.mainType, App.models.aggregateData.englewood.data.census[d.mainType], { groupID: 'englewood', fillColor: App.models.aggregateData.englewood.color });
+      self.chartList.updateChart(d.mainType, App.models.aggregateData.westEnglewood.data.census[d.mainType], { groupID: 'westEnglewood', fillColor: App.models.aggregateData.westEnglewood.color });
       // App.views.chartList.addChart(new VacantLotStarPlot("vacant-lot-relative-star-plot", "<h4><b>Vacant Lots:</b> Relative Distribution</h4>", lotRanges, plotOptions));
     }else{
       let title = d.title ? `<b>${d.subType}</b>` : undefined;
