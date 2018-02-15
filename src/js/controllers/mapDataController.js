@@ -388,8 +388,8 @@ let MapDataController = function () {
       axis.min = 0;
       // axis.max = Math.max(englewoodData.RACE_OF_HOUSEHOLDER[field],westEnglewoodData.RACE_OF_HOUSEHOLDER[field]);
       axis.max = Math.max(englewoodData.RACE_OF_HOUSEHOLDER["Total:"], westEnglewoodData.RACE_OF_HOUSEHOLDER["Total:"]);
-      axis.logScale = true;
-      // axis.label.push(`(max: ${Math.log10(axis.max).toFixed(0)})`);
+      // axis.logScale = true;
+      axis.label.push(`(max: ${axis.max.toFixed(0)})`);
     }
 
     console.log("custom chart data",customCharts);

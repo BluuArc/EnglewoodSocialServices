@@ -14,7 +14,6 @@
 .star-axis {
     stroke: #ccc;
     stroke-width: 2px;
-    stroke-dasharray: 4 5;
 }
 
 .star-axis-outer {
@@ -25,6 +24,7 @@
 .star-axis-inner {
     stroke: #aaa;
     stroke-width: 2px;
+    stroke-dasharray: 4 5;
 }
 
 .star-path {
