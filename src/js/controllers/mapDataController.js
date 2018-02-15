@@ -389,7 +389,7 @@ let MapDataController = function () {
       // axis.max = Math.max(englewoodData.RACE_OF_HOUSEHOLDER[field],westEnglewoodData.RACE_OF_HOUSEHOLDER[field]);
       axis.max = Math.max(englewoodData.RACE_OF_HOUSEHOLDER["Total:"], westEnglewoodData.RACE_OF_HOUSEHOLDER["Total:"]);
       // axis.logScale = true;
-      axis.label.push(`(max: ${axis.max.toFixed(0)})`);
+      // axis.label.push(`(max: ${axis.max.toFixed(0)})`);
     }
 
     console.log("custom chart data",customCharts);
@@ -410,33 +410,53 @@ let MapDataController = function () {
     if(self.customCharts[d.mainType]){
       console.log("Create custom chart for",d);
       const title = d.mainType.split("_").map(d => `${d[0].toUpperCase()}${d.slice(1).toLowerCase()}`).join(" ");
-      let censusStarPlot = new CensusStarPlot(
+      // let censusStarPlot = new CensusStarPlot(
+      //   d.mainType, `<h4><b>${title}</b></h4>`,
+      //   {
+      //     axes: Object.keys(self.customCharts[d.mainType])
+      //       .map(k => self.customCharts[d.mainType][k]),
+      //     init: (panel) => {
+      //       let button = panel.select('.panel-footer').append('button')
+      //         .classed('button btn englewood', true)
+      //         .text("Move Englewood Layer to Front")
+      //         .style("color", "white");
+      //       let englewoodOnTop = false;
+
+      //       button.on('click', () => {
+      //         englewoodOnTop = !englewoodOnTop;
+      //         censusStarPlot.raiseGroup(englewoodOnTop ? 'englewood' : 'westEnglewood');
+      //         button.text(`Move ${englewoodOnTop ? "West Englewood" : "Englewood"} Layer to Front`)
+      //           .classed('englewood', !englewoodOnTop).classed('west-englewood', englewoodOnTop);
+      //       });
+      //     }
+      //   }
+      // );
+      // self.chartList.addChart(censusStarPlot);
+
+      // self.chartList.updateChart(d.mainType, {}, { renderLabels: true });
+      // self.chartList.updateChart(d.mainType, App.models.aggregateData.englewood.data.census[d.mainType], { groupID: 'englewood', fillColor: App.models.aggregateData.englewood.color });
+      // self.chartList.updateChart(d.mainType, App.models.aggregateData.westEnglewood.data.census[d.mainType], { groupID: 'westEnglewood', fillColor: App.models.aggregateData.westEnglewood.color });
+      
+      let censusStarPlot = new CensusMultiStarPlot(
         d.mainType, `<h4><b>${title}</b></h4>`,
         {
           axes: Object.keys(self.customCharts[d.mainType])
             .map(k => self.customCharts[d.mainType][k]),
-          init: (panel) => {
-            let button = panel.select('.panel-footer').append('button')
-              .classed('button btn englewood', true)
-              .text("Move Englewood Layer to Front")
-              .style("color", "white");
-            let englewoodOnTop = false;
+          labels: function(labelElement, datum, property) { 
+            console.log({ labelElement, datum, property}); 
+            let parentClass = d3.select(labelElement.node().parentNode.parentNode.parentNode).attr('class');
+            let isEnglewood = parentClass.indexOf("englewood") > -1 && parentClass.indexOf("west-englewood") === -1;
 
-            button.on('click', () => {
-              englewoodOnTop = !englewoodOnTop;
-              censusStarPlot.raiseGroup(englewoodOnTop ? 'englewood' : 'westEnglewood');
-              button.text(`Move ${englewoodOnTop ? "West Englewood" : "Englewood"} Layer to Front`)
-                .classed('englewood', !englewoodOnTop).classed('west-englewood', englewoodOnTop);
-            });
+            let label = self.customCharts[d.mainType][property].label.slice();
+            let value = App.models.aggregateData[isEnglewood ? "englewood" : "westEnglewood"].data.census[d.mainType][property];
+            return label.concat([`(value: ${value.toFixed(0)})`]);
           }
         }
       );
       self.chartList.addChart(censusStarPlot);
-
       self.chartList.updateChart(d.mainType, {}, { renderLabels: true });
       self.chartList.updateChart(d.mainType, App.models.aggregateData.englewood.data.census[d.mainType], { groupID: 'englewood', fillColor: App.models.aggregateData.englewood.color });
       self.chartList.updateChart(d.mainType, App.models.aggregateData.westEnglewood.data.census[d.mainType], { groupID: 'westEnglewood', fillColor: App.models.aggregateData.westEnglewood.color });
-      // App.views.chartList.addChart(new VacantLotStarPlot("vacant-lot-relative-star-plot", "<h4><b>Vacant Lots:</b> Relative Distribution</h4>", lotRanges, plotOptions));
     }else{
       let title = d.title ? `<b>${d.subType}</b>` : undefined;
       self.chartList.addChart(new CensusBarChart(d, createPropertyID(d), title));
