@@ -8,6 +8,12 @@ function CensusStarPlot(id, title, options = {}) {
     starPlot: null,
     axes: options.axes || []
   };
+  let publicFunctions = {
+    title: self.title,
+    id: self.id,
+    init,
+    update,
+  };
 
   function init(chartPanel) {
     self.starPlot = new StarPlotView({
@@ -23,6 +29,8 @@ function CensusStarPlot(id, title, options = {}) {
       rotate: 0,
       interaction: true
     });
+
+    publicFunctions.raiseGroup = self.starPlot.raiseGroup;
 
     if(options.init){
       options.init(chartPanel);
@@ -98,10 +106,5 @@ function CensusStarPlot(id, title, options = {}) {
       });
   }
 
-  return {
-    title: self.title,
-    id: self.id,
-    init,
-    update
-  };
+  return publicFunctions;
 }

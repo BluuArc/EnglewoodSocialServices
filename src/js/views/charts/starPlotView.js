@@ -155,7 +155,12 @@ let StarPlotView = function(options){
         }
     }
 
+    function raiseGroup(groupID) {
+        self.svgGroup[groupID].raise();
+    }
+
     return {
-        render
+        render,
+        raiseGroup
     };
 };

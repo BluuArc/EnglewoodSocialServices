@@ -20,7 +20,7 @@ let SocialServiceModel = function() {
     return new Promise(function(resolve, reject) {
       d3.csv(dataPath, function(err, data) {
         if (err) reject(err);
-        
+
         //filter out empty entries
         self.data = data.filter((d) => {
           let isNotEmpty = false;

@@ -410,13 +410,28 @@ let MapDataController = function () {
     if(self.customCharts[d.mainType]){
       console.log("Create custom chart for",d);
       const title = d.mainType.split("_").map(d => `${d[0].toUpperCase()}${d.slice(1).toLowerCase()}`).join(" ");
-      self.chartList.addChart(new CensusStarPlot(
+      let censusStarPlot = new CensusStarPlot(
         d.mainType, `<h4><b>${title}</b></h4>`,
         {
           axes: Object.keys(self.customCharts[d.mainType])
-            .map(k => self.customCharts[d.mainType][k])
+            .map(k => self.customCharts[d.mainType][k]),
+          init: (panel) => {
+            let button = panel.select('.panel-footer').append('button')
+              .classed('button btn englewood', true)
+              .text("Move Englewood Layer to Front")
+              .style("color", "white");
+            let englewoodOnTop = false;
+
+            button.on('click', () => {
+              englewoodOnTop = !englewoodOnTop;
+              censusStarPlot.raiseGroup(englewoodOnTop ? 'englewood' : 'westEnglewood');
+              button.text(`Move ${englewoodOnTop ? "West Englewood" : "Englewood"} Layer to Front`)
+                .classed('englewood', !englewoodOnTop).classed('west-englewood', englewoodOnTop);
+            });
+          }
         }
-      ));
+      );
+      self.chartList.addChart(censusStarPlot);
 
       self.chartList.updateChart(d.mainType, {}, { renderLabels: true });
       self.chartList.updateChart(d.mainType, App.models.aggregateData.englewood.data.census[d.mainType], { groupID: 'englewood', fillColor: App.models.aggregateData.englewood.color });

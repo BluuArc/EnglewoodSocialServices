@@ -717,6 +717,8 @@ text.delete-button-symbol {
 
 .englewood {
   --englewood-color: rgb(255, 127, 14);
+  @englewood-color: rgb(255, 127, 14);
+  @englewood-color-shade: shade(@englewood-color, 15%);
   &.text {
     color: var(--englewood-color);
   }
@@ -732,10 +734,17 @@ text.delete-button-symbol {
   &.bg {
     background-color: var(--englewood-color);
   }
+
+  &.btn {
+    .btn-gradient(to top, @englewood-color-shade, @englewood-color, @englewood-color-shade);
+  }
 }
 
 .west-englewood {
   --west-englewood-color: rgb(31, 119, 180);
+  @west-englewood-color: rgb(31, 119, 180);
+  @west-englewood-color-shade: shade(@west-englewood-color, 15%);
+
   &.text {
     color: var(--west-englewood-color);
   }
@@ -750,6 +759,10 @@ text.delete-button-symbol {
 
   &.bg {
     background-color: var(--west-englewood-color);
+  }
+
+  &.btn {
+    .btn-gradient(to top, @west-englewood-color-shade, @west-englewood-color, @west-englewood-color-shade);
   }
 }
 
