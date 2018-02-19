@@ -422,6 +422,9 @@ let MapDataController = function () {
 
             let label = self.customCharts[d.mainType][property].label.slice();
             let value = App.models.aggregateData[isEnglewood ? "englewood" : "westEnglewood"].data.census[d.mainType][property];
+
+            labelElement.style('font-weight', d.subType === property ? "bolder" : "unset");
+            labelElement.style('font-size', d.subType === property ? "unset" : "smaller");
             return label.concat([`(value: ${value.toFixed(0)})`]);
           }
         }
