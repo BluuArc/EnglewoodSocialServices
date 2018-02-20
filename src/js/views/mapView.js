@@ -273,7 +273,6 @@ let MapView = function (div) {
               this._popup.openOn(self.map);
             }
           });
-        console.log("adding marker to ", zoneType);
         lotMarker.addTo(self[`group${zoneType}`]);
       }else {
         console.error("Ignoring marker",lot,"due to unknown type", zoneType)

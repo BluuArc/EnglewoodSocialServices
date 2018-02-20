@@ -32,10 +32,10 @@ let MarkerToggleController = function (buttonID, buttonTextID, name) {
   }
 
   function handleButtonClick() {
-    setVisibilityState(!self.visibleMarkers);
+    setVisibilityState(!self.visibleMarkers, d3.event);
   }
 
-  function setVisibilityState(bool) {
+  function setVisibilityState(bool, event) {
     self.visibleMarkers = bool == true;
 
     let buttonGlyph = self.button.select('.glyphicon');
@@ -57,7 +57,7 @@ let MarkerToggleController = function (buttonID, buttonTextID, name) {
       toggleFunc();
     }else {
       // send self parameters and next() function
-      self.customToggleFunc(self, toggleFunc);
+      self.customToggleFunc(self, event, toggleFunc);
     }
   }
 

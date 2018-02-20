@@ -168,6 +168,18 @@ Promise.all([documentPromise, windowPromise, less.pageLoadFinished])
           button.style("display", showMarkers ? null : "none");
         });
 
+        // prevent closing of dropdown
+        Object.keys(markerStates).forEach(type => {
+          const controller = App.controllers[type];
+          controller.setCustomToggleFunction((context, event, next) => {
+            if(event){
+              event.preventDefault();
+              event.stopPropagation();
+            }
+            next();
+          });
+        });
+
         // App.views.chartList...
         console.timeEnd("plotting data");
 
