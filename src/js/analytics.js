@@ -72,10 +72,12 @@ Promise.all([documentPromise, windowPromise, less.pageLoadFinished])
     
     App.controllers.serviceMarkerView = new LeafletMarkerViewController("#toggleServiceView","#serviceViewText", "Service");
     App.controllers.schoolMarkerView = new LeafletMarkerViewController("#toggleSchoolView", "#schoolViewText", "School");
-    App.controllers.lotTypeMarkerView = new LeafletMarkerViewController("#toggleLotView", "#lotViewText", "Vacant Lot");
-    App.controllers.generalLotMarkerView = new LeafletMarkerViewController("#toggleGeneralLotView", "#generalLotViewText", "Vacant Lot");
-
-    App.controllers.lotMarkerType = new LotMarkerTypeController("#toggleLotTypesButton","#lotTypesButtonText");
+    
+    App.controllers.lotTypeMarkerView = new MarkerToggleController("#toggleLotView", "#lotViewText", "Vacant Lot");
+    App.controllers.lotViewResidential = new MarkerToggleController("#toggleResidential", "#textResidential", "Residential");
+    App.controllers.lotViewBCM = new MarkerToggleController("#toggleBCM", "#textBCM", "Business/Commercial/Manufacturing");
+    App.controllers.lotViewPOS = new MarkerToggleController("#togglePOS", "#textPOS", "Parks and Open Space");
+    App.controllers.lotViewPD = new MarkerToggleController("#togglePD", "#textPD", "Planned Manufacturing Districts and Development");
 
     App.controllers.mapData.setupDataPanel("#mapPanelToggle", "#mapSettingsPanel");
     App.controllers.mapData.attachResetOverlayButton("#resetMaps");
@@ -145,6 +147,28 @@ Promise.all([documentPromise, windowPromise, less.pageLoadFinished])
         App.views.map.plotLandInventory(App.models.landInventory.getDataByFilter());
         App.views.map.plotSchools(App.models.schoolData.getData());
 
+        const markerStates = {
+          lotViewResidential: true,
+          lotViewBCM: true,
+          lotViewPOS: true,
+          lotViewPD: true,
+        };
+        App.controllers.lotTypeMarkerView.setCustomToggleFunction((context) => {
+          const showMarkers = context.visibleMarkers;
+          const button = d3.select("#lot-type-toggle-group");
+          for(const group in markerStates){
+            const controller = App.controllers[group];
+            if(showMarkers) {
+              controller.setVisibilityState(markerStates[group]);
+            } else { // hide markers
+              markerStates[group] = controller.markersAreVisible();
+              controller.setVisibilityState(false);
+            }
+          }
+
+          button.style("display", showMarkers ? null : "none");
+        });
+
         // App.views.chartList...
         console.timeEnd("plotting data");
 
@@ -154,13 +178,9 @@ Promise.all([documentPromise, windowPromise, less.pageLoadFinished])
 
         //start off with markers hidden
         console.time("setting marker visibility");
-        App.controllers.lotMarkerType.attachMarkerControllers(App.controllers.generalLotMarkerView, App.controllers.lotTypeMarkerView);
-        App.controllers.lotMarkerType.setState(true);
-        App.controllers.lotMarkerType.hideButton();
         App.controllers.serviceMarkerView.setVisibilityState(false); 
-        App.controllers.lotTypeMarkerView.setVisibilityState(false);
-        App.controllers.generalLotMarkerView.setVisibilityState(false);
         App.controllers.schoolMarkerView.setVisibilityState(false);
+        App.controllers.lotTypeMarkerView.setVisibilityState(false);
         console.timeEnd("setting marker visibility");
 
         //set two selections to be west englewood and englewood

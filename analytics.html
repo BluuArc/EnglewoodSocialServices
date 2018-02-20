@@ -73,7 +73,7 @@
   <script src="./src/js/controllers/leafletMarkerViewController.js"></script>
   <script src="./src/js/controllers/browserMessageController.js"></script>
   <script src="./src/js/controllers/serviceFilterController.js"></script>
-  <script src="./src/js/controllers/lotMarkerTypeController.js"></script>
+  <script src="./src/js/controllers/markerToggleController.js"></script>
 
   <!-- Main Script -->
   <script src="./src/js/analytics.js"></script>
@@ -212,13 +212,6 @@
               </a>
             </li>
             <li>
-              <a id="toggleGeneralLotView" href="#">
-                <span class="glyphicon glyphicon-eye-close"></span>
-                <span id="generalLotViewText">Hide General Vacant Lot Markers</span>
-                <span class="svg-insert" id="lotMarker"></span>
-              </a>
-            </li>
-            <li>
               <a id="toggleSchoolView" href="#">
                 <span class="glyphicon glyphicon-eye-close"></span>
                 <span id="schoolViewText">Hide School Markers</span>
@@ -228,10 +221,40 @@
           </ul>
         </div>
 
-        <button class="btn btn-success navbar-btn" id="toggleLotTypesButton">
-          <span class="glyphicon glyphicon-eye-close"></span>
-          <span id="lotTypesButtonText">Hide Lot Types</span>
-        </button>
+        <div class="btn-group" id="lot-type-toggle-group">
+          <button type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown">Toggle Lot Markers <span class="caret"></span></button>
+          <ul class="dropdown-menu" role="menu">
+            <li>
+              <a id="toggleResidential" href="#">
+                <span class="glyphicon glyphicon-eye-close"></span>
+                <span id="textResidential">Hide Residential Markers</span>
+                <span class="svg-insert" id="Residential"></span>
+              </a>
+            </li>
+            <li>
+              <a id="toggleBCM" href="#">
+                <span class="glyphicon glyphicon-eye-close"></span>
+                <span id="textBCM">Hide Business/Commercial/Manufacturing Markers</span>
+                <span class="svg-insert" id="BCM"></span>
+              </a>
+            </li>
+            <li>
+              <a id="togglePOS" href="#">
+                <span class="glyphicon glyphicon-eye-close"></span>
+                <span id="textPOS">Hide Parks and Open Space Markers</span>
+                <span class="svg-insert" id="POS"></span>
+              </a>
+            </li>
+            <li>
+              <a id="togglePD" href="#">
+                <span class="glyphicon glyphicon-eye-close"></span>
+                <span id="textPD">Hide Planned Manufacturing Districts and Development Markers</span>
+                <span class="svg-insert" id="PD"></span>
+              </a>
+            </li>
+          </ul>
+        </div>
+        
         <div id="legend"></div>
       </div>
     </div>
