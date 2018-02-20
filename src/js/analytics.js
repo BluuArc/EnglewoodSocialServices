@@ -71,8 +71,8 @@ Promise.all([documentPromise, windowPromise, less.pageLoadFinished])
     App.controllers.serviceFilterDropdown.attachServiceResetBtn("#allServicesButton");
     
     App.controllers.serviceMarkerView = new LeafletMarkerViewController("#toggleServiceView","#serviceViewText", "Service");
-    App.controllers.schoolMarkerView = new LeafletMarkerViewController("#toggleSchoolView", "#schoolViewText", "School");
     
+    App.controllers.schoolMarkerView = new MarkerToggleController("#toggleSchoolView", "#schoolViewText", "School");
     App.controllers.lotTypeMarkerView = new MarkerToggleController("#toggleLotView", "#lotViewText", "Vacant Lot");
     App.controllers.lotViewResidential = new MarkerToggleController("#toggleResidential", "#textResidential", "Residential");
     App.controllers.lotViewBCM = new MarkerToggleController("#toggleBCM", "#textBCM", "Business/Commercial/Manufacturing");

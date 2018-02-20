@@ -214,11 +214,8 @@ let MapView = function (div) {
       return curSchool;
     });
 
-    if(App.controllers.schoolMarkerView) {
-      let schoolMarkerSelection = d3.select("#" + div).selectAll(".leaflet-marker-icon.schoolMarker");
-      App.controllers.schoolMarkerView.attachMarkers(schoolMarkers,schoolMarkerSelection);
-      self.schoolVisCheck = App.controllers.schoolMarkerView.markersAreVisible;
-    }
+    App.controllers.schoolMarkerView.attachMap(self.map);
+    App.controllers.schoolMarkerView.attachMarkerGroup(self.schoolGroup);
   }
 
   function plotLandInventory(landInventoryData){
@@ -383,10 +380,6 @@ let MapView = function (div) {
       let serviceMarkersSelection = d3.select("#" + div).selectAll('.leaflet-marker-icon.leaflet-zoom-animated.leaflet-interactive.serviceMarker');
       App.controllers.serviceMarkerView.attachMarkers(serviceMarkers, serviceMarkersSelection);
       self.markerVisibilityCheck = App.controllers.serviceMarkerView.markersAreVisible;
-    }
-
-    if(App.controllers.schoolMarkerView){
-      App.controllers.schoolMarkerView.raise(); //keep school markers on top
     }
   }
 
