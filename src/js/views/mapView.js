@@ -377,9 +377,8 @@ let MapView = function (div) {
 
     //pass new list to service marker view controller
     if(App.controllers.serviceMarkerView){
-      let serviceMarkersSelection = d3.select("#" + div).selectAll('.leaflet-marker-icon.leaflet-zoom-animated.leaflet-interactive.serviceMarker');
-      App.controllers.serviceMarkerView.attachMarkers(serviceMarkers, serviceMarkersSelection);
-      self.markerVisibilityCheck = App.controllers.serviceMarkerView.markersAreVisible;
+      App.controllers.serviceMarkerView.attachMap(self.map);
+      App.controllers.serviceMarkerView.attachMarkerGroup(self.serviceGroup);
     }
   }
 
