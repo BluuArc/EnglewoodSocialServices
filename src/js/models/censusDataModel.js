@@ -15,7 +15,7 @@ let CensusDataModel = function() {
   function loadData() {
     // load mapTypeNames.json as well as allDataBlocks.geojson
     let allDataBlocksdP = new Promise(function(resolve, reject) {
-      d3.json("./data/allDataBlocks.geojson", function(err, json) {
+      d3.json("./data/censusDataBlocks.geojson", function(err, json) {
         if (err) reject(err);
 
         self.gridData = json;
@@ -41,7 +41,7 @@ let CensusDataModel = function() {
     });
 
     let mapTypeNamesP = new Promise(function(resolve, reject) {
-      d3.json("./data/mapTypeNames.json", function(err, json) {
+      d3.json("./data/censusDataNames.json", function(err, json) {
         if (err) reject(err);
 
         self.mapTypeNames = json;

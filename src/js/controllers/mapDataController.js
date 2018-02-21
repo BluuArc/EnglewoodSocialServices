@@ -262,33 +262,36 @@ let MapDataController = function () {
               type: "census"
             };
 
-            if (property_data.subType.indexOf("Total") !== 0) {
+            if (property_data.subType.indexOf("Total") > -1) {
               property_data.title = property_data.subType;
+            } else if (property_data.mainType.toLowerCase().replace(/_/g, ' ').indexOf("sex by age") > -1) {
+              const type = property_data.mainType.split('(')[1].split(')')[0].toLowerCase();
+              property_data.title = `${_.startCase(type)}: ${property_data.subType}`;
             }
             return property_data;
           }).attr("id", d => "sub_" + convertPropertyToID(d.subType))
           .html(function (d) {
             return "<span class='glyphicon glyphicon-unchecked'></span>" + d.subType;
           })
-          .on("click", function (d) {
+          .on("click", function (datum) {
             //reset other filters to allow for only one sub category selection at a time
             let isMainCategorySelection = Object.keys(self.filters).length > 1;
             for (let mainCategory of Object.keys(self.mainCategoryStates)) {
-              if (mainCategory !== d.mainType) {
+              if (mainCategory !== datum.mainType) {
                 self.mainCategoryStates[mainCategory] = "none";
               }
             }
-            let filterKey = getFilterKey(d.mainType,d.subType);
+            let filterKey = getFilterKey(datum.mainType,datum.subType);
 
             self.censusDropdownList.selectAll(".glyphicon")
               .attr("class", "glyphicon glyphicon-unchecked");
             listItem.select("ul").selectAll(".serviceSubtype")
               .each(function (subType) {
-                let curKey = getFilterKey(d.mainType,subType);
+                let curKey = getFilterKey(datum.mainType,subType);
                 if (curKey !== filterKey) {
                   self.filters[curKey] = false;
 
-                  updateSubCategoryIcon(d.mainType, subType);
+                  updateSubCategoryIcon(datum.mainType, subType);
                 }
               });
             let curSelection = self.filters[filterKey];
@@ -305,20 +308,21 @@ let MapDataController = function () {
             if (self.filters[filterKey]) {
               var button = d3.select("#censusDropdownButton");
 
-              button.selectAll('#currentServiceSelection').text(`${_.truncate(d.subType, { length: 30 })}`);
+              console.log(datum, arguments);
+              button.selectAll('#currentServiceSelection').text(`${_.truncate(datum.title || datum.subType, { length: 30 })}`);
               button.attr("class", "btn btn-success navbar-btn dropdown-toggle");
 
               document.getElementById("allCensusButton").style.display = "";
 
-              addMap(d);
+              addMap(datum);
 
-              chartButtonClick(d);
+              chartButtonClick(datum);
             } else {
               resetFilters();
             }
 
-            updateSubCategoryIcon(d.mainType, d.subType);
-            updateMainCategoryOnSubUpdate(d.mainType);
+            updateSubCategoryIcon(datum.mainType, datum.subType);
+            updateMainCategoryOnSubUpdate(datum.mainType);
           });
 
       });
@@ -387,7 +391,7 @@ let MapDataController = function () {
       axis.propertyName = field;
       axis.min = 0;
       // axis.max = Math.max(englewoodData.RACE_OF_HOUSEHOLDER[field],westEnglewoodData.RACE_OF_HOUSEHOLDER[field]);
-      axis.max = Math.max(englewoodData.RACE_OF_HOUSEHOLDER["Total:"], westEnglewoodData.RACE_OF_HOUSEHOLDER["Total:"]);
+      axis.max = Math.max(englewoodData.RACE_OF_HOUSEHOLDER.Total, westEnglewoodData.RACE_OF_HOUSEHOLDER.Total);
       // axis.logScale = true;
       // axis.label.push(`(max: ${axis.max.toFixed(0)})`);
     }
