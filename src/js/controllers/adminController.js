@@ -127,14 +127,14 @@ function sendCSV(e) {
 }
 
 function restoreFile(d){
-  console.log("WE IN");
+  console.debug("WE IN");
   let xhr = new XMLHttpRequest();
   xhr.open("PUT", "/admin/chooseold");
   xhr.setRequestHeader("Content-type", "application/json");
 
   xhr.onload = function () {
     // LOG file received in this.responseText -- populate log
-    console.log(this.responseText);
+    console.debug(this.responseText);
     location.reload();
   };
   xhr.onerror = function (e) {
