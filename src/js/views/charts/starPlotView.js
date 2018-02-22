@@ -83,7 +83,9 @@ let StarPlotView = function(options){
             .labels(options.labels || labels)
             .includeGuidelines(false)
             .includeLabels(false)
-            .includeChart(true)
+            .includeChart(true);
+
+        console.debug(self);
     };
 
     init();
@@ -110,6 +112,7 @@ let StarPlotView = function(options){
         self.svgGroup[groupID] = self.svg.append('g').attr("id","starplot-" + self.name);
 
         if(groupID === 'chart-outline'){
+            console.debug("Drawing outline");
             let group = self.svgGroup[groupID].datum({})
                 .call(
                     self.plotFn

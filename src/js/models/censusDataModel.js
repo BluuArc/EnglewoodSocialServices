@@ -36,6 +36,7 @@ let CensusDataModel = function() {
           self.tree.insert(item);
         }
 
+        console.debug("Loaded grid data",json);
         resolve(json);
       });
     });
@@ -46,6 +47,7 @@ let CensusDataModel = function() {
 
         self.mapTypeNames = json;
 
+        console.debug("Loaded map type names", json);
         resolve(json);
       });
     });
@@ -53,7 +55,7 @@ let CensusDataModel = function() {
     return Promise.all([allDataBlocksdP, mapTypeNamesP]);
   }
 
-  function getSubsetGeoJSON(propertyTypes, getMainType) {
+  function getSubsetGeoJSON(propertyTypes, type = '') {
     // return (self.gridData);
 
     let subset = {
@@ -64,7 +66,7 @@ let CensusDataModel = function() {
           geometry: feature.geometry,
           properties: {
             data: feature.properties.census[propertyTypes.mainType][propertyTypes.subType],
-            fullData: (getMainType) ? feature.properties.census[propertyTypes.mainType] : undefined,
+            fullData: (type === 'full') ? feature.properties.census : ((type === 'main') ? feature.properties.census[propertyTypes.mainType] : undefined),
             blockName: feature.properties.name10,
             description: propertyTypes
           }

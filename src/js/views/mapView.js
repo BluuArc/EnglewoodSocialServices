@@ -542,13 +542,43 @@ let MapView = function (div) {
         // })
         .bindPopup(function (layer) {
           console.debug(layer.feature.properties.data);
-          let data = layer.feature.properties.data;
-          let description = layer.feature.properties.description;
-          let mainTypeTitle = description.mainType.split("_").map((d) => {
-            return `${d[0].toUpperCase()}${d.slice(1).toLowerCase()}`;
-          }).join(" ");
-          let subTypeTitle = `${description.subType.replace(/[^a-zA-Z0-9- ]/g, "")}`;
-          return `<b>Count of <em>${mainTypeTitle} - ${subTypeTitle}</em> on this block:</b> ${layer.feature.properties.data}`;
+          const data = layer.feature.properties;
+          const title = ((property_data) => {
+            let title = '';
+            if (property_data.subType.indexOf("Total") > -1) {
+              title = `${_.startCase(property_data.mainType.replace(/_/g,' ').toLowerCase())}: ${property_data.subType}`;
+            } else if (property_data.mainType.toLowerCase().replace(/_/g, ' ').indexOf("sex by age") > -1) {
+              const type = property_data.mainType.split('(')[1].split(')')[0].toLowerCase();
+              title = `${_.startCase(type)}: ${property_data.subType}`;
+            } else {
+              title = property_data.subType;
+            }
+            return title;
+          })(data.description);
+          let html = `<u><b>${title}</b></u><br><b>${data.blockName}</b><br>${data.data} people in this block`;
+
+          // let svgContainer = d3.select('body')
+          //   .append('div').style('display','none')
+          //   .append('div').classed('panel-body', true);
+          // const axisData = App.controllers.mapData.getAxisData(data.description.mainType);
+          // if(axisData && data.fullData) {
+          //   const censusStarPlot = new CensusStarPlot(
+          //     data.description.mainType, `<h4><b>${title}</b></h4>`,
+          //     {
+          //       axes: Object.keys(axisData)
+          //         .map(k => axisData[k]),
+          //     }
+          //   );
+
+          //   censusStarPlot.init(svgContainer);
+          //   censusStarPlot.update(svgContainer, {});
+
+          //   html += svgContainer.node().outerHTML;
+          //   svgContainer.remove();
+          //   console.debug(html,svgContainer);
+          // }
+
+          return html;
         }, { autoPan: false }).addTo(self.choroplethLayer);
     }
 

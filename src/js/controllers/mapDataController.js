@@ -367,9 +367,9 @@ let MapDataController = function () {
     console.info("Adding map",d);
     let reducedData, starGraph;
     const aggregatedMainTypes = Object.keys(self.customCharts);
-    if(d.type === "census" && d.subType.indexOf("Total") > -1 && aggregatedMainTypes.indexOf(d.mainType) > -1){
+    if(d.type === "census" && aggregatedMainTypes.indexOf(d.mainType) > -1){
       console.debug("Found an aggregated type", d);
-      reducedData = App.models.censusData.getSubsetGeoJSON(d/*,true*/);
+      reducedData = App.models.censusData.getSubsetGeoJSON(d, 'main');
     }else{
       reducedData = App.models.censusData.getSubsetGeoJSON(d);
     }
@@ -564,6 +564,9 @@ let MapDataController = function () {
       .attr("class", "glyphicon " + (state ? "glyphicon-check" : "glyphicon-unchecked"));
   }
 
+  function getAxisData(mainType) {
+    return self.customCharts[mainType];
+  }
 
   return {
     setupDataPanel,
@@ -574,6 +577,7 @@ let MapDataController = function () {
     setCensusClearButton,
     setChartList,
 
-    initializeCustomCharts
+    initializeCustomCharts,
+    getAxisData
   };
 }
