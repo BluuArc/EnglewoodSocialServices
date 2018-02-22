@@ -65,10 +65,18 @@ function CensusMultiStarPlot(id, title, options = {}) {
     }
   }
 
+  function remove(skipReset) {
+    console.log("Removing chart for", self.title);
+    if (!skipReset) {
+      App.controllers.mapData.resetFilters(true);
+    }
+  }
+
   return {
     title: self.title,
     id: self.id,
     init,
     update,
+    remove
   };
 }
