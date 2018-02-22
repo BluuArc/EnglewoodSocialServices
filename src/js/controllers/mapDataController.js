@@ -23,7 +23,7 @@ let MapDataController = function () {
     },
 
     customCharts: {
-      RACE_OF_HOUSEHOLDER: {
+      RACE_OF_HOUSEHOLDER: { // only input data for sub types that have custom info
         "Householder who is White alone": {
           label: ["White Alone"]
         },
@@ -45,7 +45,10 @@ let MapDataController = function () {
         "Householder who is Two or More Races": {
           label: ["Two or More Races"]
         },
-      }
+      },
+      "SEX_BY_AGE_(OVERALL)": {},
+      "SEX_BY_AGE_(MALE)": {},
+      "SEX_BY_AGE_(FEMALE)": {},
     }
   };
 
@@ -340,21 +343,9 @@ let MapDataController = function () {
   function addMap(d) {
     console.log("Adding map",d);
     let reducedData, starGraph;
-    const aggregatedMainTypes = ['Race of Householder', 'Household Size', 'Sex by Age'].map((m) => m.toLowerCase());
-    if(d.type === "census" && d.subType.indexOf("Total") > -1 && aggregatedMainTypes.indexOf(d.mainType.toLowerCase().replace(/_/g,' ')) > -1){
+    const aggregatedMainTypes = Object.keys(self.customCharts);
+    if(d.type === "census" && d.subType.indexOf("Total") > -1 && aggregatedMainTypes.indexOf(d.mainType) > -1){
       console.log("Found an aggregated type", d);
-      // d.graph = {
-      //   init: (parent) => {
-      //     // console.log(parent.datum()); //array of features
-
-      //     // initiialize starplotview graph
-      //     // starGraph = new StarPlotView({
-      //     //   parent,
-      //     //   name: d.mainType
-      //     // }); //
-      //   },
-      //   update: () => {}
-      // }
       reducedData = App.models.censusData.getSubsetGeoJSON(d/*,true*/);
     }else{
       reducedData = App.models.censusData.getSubsetGeoJSON(d);
@@ -381,19 +372,42 @@ let MapDataController = function () {
   }
 
   function initializeCustomCharts() {
-    let englewoodData = App.models.aggregateData.englewood.data.census;
-    let westEnglewoodData = App.models.aggregateData.westEnglewood.data.census;
+    const englewoodData = App.models.aggregateData.englewood.data.census;
+    const westEnglewoodData = App.models.aggregateData.westEnglewood.data.census;
 
-    let customCharts = self.customCharts;
+    const customCharts = self.customCharts;
 
-    for(let field in customCharts.RACE_OF_HOUSEHOLDER){
-      let axis = customCharts.RACE_OF_HOUSEHOLDER[field];
-      axis.propertyName = field;
-      axis.min = 0;
-      // axis.max = Math.max(englewoodData.RACE_OF_HOUSEHOLDER[field],westEnglewoodData.RACE_OF_HOUSEHOLDER[field]);
-      axis.max = Math.max(englewoodData.RACE_OF_HOUSEHOLDER.Total, westEnglewoodData.RACE_OF_HOUSEHOLDER.Total);
-      // axis.logScale = true;
-      // axis.label.push(`(max: ${axis.max.toFixed(0)})`);
+    for(const mainType in customCharts) {
+      // const overallMax = Math.max(englewoodData[mainType].Total, westEnglewoodData[mainType].Total);
+
+      // largest value of all subcategories between the 2 neighborhoods
+      let overallMax = 0;
+      const subTypes = App.models.censusData.getSubCategories(mainType);
+      
+      subTypes.forEach(subType => {
+          if (subType.toLowerCase().indexOf("total") === -1) {
+            overallMax = Math.max(overallMax, englewoodData[mainType][subType], westEnglewoodData[mainType][subType])
+          }
+        });
+
+      subTypes.filter(t => t !== "Total").forEach(subType => {
+        const axis = customCharts[mainType][subType] || {};
+
+        axis.propertyName = axis.propertyName || subType;
+        axis.min = +axis.min || 0;
+
+        // uniform scale
+        axis.max = +axis.max || overallMax;
+
+        // relative (per-axis) scale
+        // axis.max = Math.max(englewoodData[mainType][subType],westEnglewoodData[mainType][subType]);
+
+        axis.label = axis.label || [subType];
+
+        axis.logScale = axis.logScale || false;
+
+        customCharts[mainType][subType] = axis;
+      });
     }
 
     console.log("custom chart data",customCharts);
