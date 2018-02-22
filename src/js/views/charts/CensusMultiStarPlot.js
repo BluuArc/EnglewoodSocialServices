@@ -49,7 +49,7 @@ function CensusMultiStarPlot(id, title, options = {}) {
   function update(panel, data, options = { renderLabels: false, enableInteraction: false }) {
     if (data) {
       panel.style("display", null);
-      console.log(options.fillColor);
+      console.debug(options.fillColor);
       if(options.groupID === 'englewood'){
         self.englewoodStarPlot.render(data, options.groupID, options.fillColor);
       }else if(options.groupID === 'westEnglewood'){
@@ -66,7 +66,7 @@ function CensusMultiStarPlot(id, title, options = {}) {
   }
 
   function remove(skipReset) {
-    console.log("Removing chart for", self.title);
+    console.info("Removing census kiviat chart for", self.title);
     if (!skipReset) {
       App.controllers.mapData.resetFilters(true);
     }

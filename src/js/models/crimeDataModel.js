@@ -47,8 +47,8 @@ let CrimeDataModel = function () {
       .then(() => {
         //combine the data and sort in ascending order by date
         self.data = englewoodData.concat(westEnglewoodData).sort((a,b) => { return new Date(a.Date) - new Date(b.Date); });
-        console.log("Done loading 2001-2016 crime data");
-        console.log(self);
+        console.debug("Done loading 2001-2016 crime data");
+        console.debug(self);
       });
   }
 

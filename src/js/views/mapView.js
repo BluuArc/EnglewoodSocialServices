@@ -42,10 +42,10 @@ let MapView = function (div) {
   }
 
   function createMap() {
-    console.log(d3.select("#" + div).node().clientWidth);
+    console.debug(d3.select("#" + div).node().clientWidth);
 
     self.map = L.map(div);
-    console.log(self.map.getSize());
+    console.debug(self.map.getSize());
 
     if (self.map.getSize().y === 1) {
       alert("Error loading map. Please reload your page");
@@ -76,7 +76,7 @@ let MapView = function (div) {
       self.groupPD = L.featureGroup.subGroup(self.lotTypeClusterGroup).addTo(self.map);
 
       self.lotTypeClusterGroup.on('clustermouseover', function() {
-        console.log(arguments);
+        console.debug(arguments);
       });
     }else{
       self.lotTypeClusterGroup = L.layerGroup([]).addTo(self.map);
@@ -92,7 +92,7 @@ let MapView = function (div) {
   function drawEnglewoodOutline() {
     //add outline of Englewood
     d3.json("./data/EnglewoodCommunityAreaBoundaries.geojson", function (error, d) {
-      console.log(d);
+      console.debug(d);
       self.englewoodOutline = L.geoJSON(d, {
         style: function(feature){
           return {
@@ -160,7 +160,7 @@ let MapView = function (div) {
   function plotSchools(schoolData) {
     self.schoolGroup.clearLayers();
 
-    console.log("schoolData",schoolData);
+    console.debug("schoolData",schoolData);
 
     let schoolMarkers = schoolData.map(school => {
       school.visible = true;
@@ -168,7 +168,7 @@ let MapView = function (div) {
       let locationKey = `${school.Latitude},${school.Longitude}`, isService = false;
       if (self.serviceLocations[locationKey]) {
         isService = true;
-        console.log("School/service overlap at", locationKey, self.serviceLocations[locationKey], school);
+        console.debug("School/service overlap at", locationKey, self.serviceLocations[locationKey], school);
       }
 
       // create a marker for each location
@@ -200,7 +200,7 @@ let MapView = function (div) {
         }
       }).on("click", function (e) {
         if (self.schoolVisCheck()) {
-          console.log(school);
+          console.debug(school);
           //open popup forcefully
           if (!this._popup._latlng) {
             this._popup.setLatLng(new L.latLng(this.options.data.Latitude, this.options.data.Longitude));
@@ -289,7 +289,7 @@ let MapView = function (div) {
   function plotServices(englewoodLocations) {
     self.serviceGroup.clearLayers();
     let serviceMarkers = [];
-    console.log("serviceData",englewoodLocations);
+    console.debug("serviceData",englewoodLocations);
 
     // iterate through the social services location file
     for (let loc of englewoodLocations) {
@@ -370,7 +370,7 @@ let MapView = function (div) {
 
     for(let location in self.serviceLocations){
       if(self.serviceLocations[location].length > 1){
-        console.log("Service overlap at", location, self.serviceLocations[location]);
+        console.debug("Service overlap at", location, self.serviceLocations[location]);
       }
     }
 
@@ -386,7 +386,7 @@ let MapView = function (div) {
   }
 
   function setSelectedService(service) {
-    console.log(service);
+    console.debug(service);
     self.serviceGroup.eachLayer(function (layer) {
       if (service && service["Organization Name"] === layer.options.data["Organization Name"]) {
         layer.setIcon(self.icons.serviceMarkerSelected);
@@ -496,7 +496,7 @@ let MapView = function (div) {
 
     // if data specified, add new choropleth
     if (data) {
-      console.log("drawChloropleth",data);
+      console.debug("drawChloropleth",data);
       self.englewoodOutline.setStyle({fillOpacity: 0});
       let description;
 
@@ -507,7 +507,7 @@ let MapView = function (div) {
           return Math.ceil(f.properties.data*100)/100;
         })).range(['#9ebcda', '#6e016b']);
 
-      console.log(description);
+      console.debug(description);
 
       //create scale for 5 cells with unit ranges
       let simpleColorScale = d3.scaleLinear()
@@ -528,21 +528,20 @@ let MapView = function (div) {
           }
         })
         .on("mouseover", function (geojson) {
-          // console.log(layer);
           geojson.layer.bringToFront();
         })
         .on("click", function(geojson){
-          // console.log(geojson.layer);
+          console.debug(geojson);
           if(typeof options.clickHandler === "function"){
             options.clickHandler(geojson.layer);
           }
         })
         // .on("mouseout", function(geojson) {
-        //   // console.log(layer);
+        //   // console.debug(layer);
         //   geojson.layer.bringToBack();
         // })
         .bindPopup(function (layer) {
-          // console.log(layer.feature.properties.data);
+          console.debug(layer.feature.properties.data);
           let data = layer.feature.properties.data;
           let description = layer.feature.properties.description;
           let mainTypeTitle = description.mainType.split("_").map((d) => {

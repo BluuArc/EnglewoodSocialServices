@@ -27,7 +27,7 @@ let FilterDropdownController = function() {
   }
 
   function resetFilters() {
-    console.log("Reset Filters");
+    console.debug("Reset Filters");
 
     self.filters = {};
 

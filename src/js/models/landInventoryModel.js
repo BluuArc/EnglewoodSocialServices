@@ -26,7 +26,7 @@ let LandInventoryModel = function () {
       d3.json(path, function (error, json) {
         if (error) reject(error);
 
-        console.log(json.length);
+        console.info(json.length);
         fulfill(json);
       });
     });
@@ -70,8 +70,8 @@ let LandInventoryModel = function () {
         self.splitData.englewood = englewoodData;
         self.splitData.westEnglewood = westEnglewoodData;
         self.data = englewoodData.concat(westEnglewoodData);
-        console.log("Done loading land inventory data");
-        console.log(self);
+        console.debug("Done loading land inventory data");
+        console.debug(self);
       });
   }
 

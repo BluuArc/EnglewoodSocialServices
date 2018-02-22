@@ -119,7 +119,7 @@ let MapDataController = function () {
   function resetOverlay() {
     self.mapDataPanel.selectAll(".mapButton").each(removeMap);
     App.views.map.drawChoropleth();
-    console.log("Reset Overlay");
+    console.debug("Reset Overlay");
   }
 
   function createPropertyID(property_data) {
@@ -132,7 +132,7 @@ let MapDataController = function () {
     console.trace("Reset Filters");
     self.filters = {};
 
-    console.log(self.mainCategoryStates)
+    console.debug(self.mainCategoryStates)
     for (let mainCategory of Object.keys(self.mainCategoryStates)) {
       self.mainCategoryStates[mainCategory] = "none";
     }
@@ -157,7 +157,7 @@ let MapDataController = function () {
         removeChartFromList(prop);
       }
     } else {
-      console.log("no last shown property found");
+      console.debug("no last shown property found");
     }
   }
 
@@ -221,7 +221,7 @@ let MapDataController = function () {
           subType: categories[c1][0],
           type: "census"
         }).on("click", function(d){
-            console.log(d);
+            console.debug(d);
             // set other filters to allow for only one sub category selection at a time
             let isMainCategorySelection = Object.keys(self.filters).length > 1;
             for (let mainCategory of Object.keys(self.mainCategoryStates)) {
@@ -334,7 +334,7 @@ let MapDataController = function () {
             if (self.filters[filterKey]) {
               var button = d3.select("#censusDropdownButton");
 
-              console.log(datum, arguments);
+              console.debug(datum, arguments);
               button.selectAll('#currentServiceSelection').text(`${_.truncate(datum.title || datum.subType, { length: 30 })}`);
               button.attr("class", "btn btn-success navbar-btn dropdown-toggle");
 
@@ -364,11 +364,11 @@ let MapDataController = function () {
   }
 
   function addMap(d) {
-    console.log("Adding map",d);
+    console.info("Adding map",d);
     let reducedData, starGraph;
     const aggregatedMainTypes = Object.keys(self.customCharts);
     if(d.type === "census" && d.subType.indexOf("Total") > -1 && aggregatedMainTypes.indexOf(d.mainType) > -1){
-      console.log("Found an aggregated type", d);
+      console.debug("Found an aggregated type", d);
       reducedData = App.models.censusData.getSubsetGeoJSON(d/*,true*/);
     }else{
       reducedData = App.models.censusData.getSubsetGeoJSON(d);
@@ -383,8 +383,8 @@ let MapDataController = function () {
         clickHandler: (layer) => {
           if(!d.graph) return;
 
-          console.log(layer);
-          console.log(App.models.censusData.getSubCategories(d.mainType));
+          console.debug(layer);
+          console.debug(App.models.censusData.getSubCategories(d.mainType));
         } //update bars on click
       }
     );
@@ -433,7 +433,7 @@ let MapDataController = function () {
       });
     }
 
-    console.log("custom chart data",customCharts);
+    console.debug("custom chart data",customCharts);
   }
 
   function chartButtonClick(d) {
@@ -447,9 +447,9 @@ let MapDataController = function () {
     }
     self.lastShownProperty = d;
     
-    console.log("Create chart for", d);
+    console.info("Create chart for", d);
     if(self.customCharts[d.mainType]){
-      console.log("Create custom chart for",d);
+      console.debug("Create custom chart for",d);
       const title = d.mainType.split("_").map(d => `${d[0].toUpperCase()}${d.slice(1).toLowerCase()}`).join(" ");
       let censusStarPlot = new CensusMultiStarPlot(
         d.mainType, `<h4><b>${title}</b></h4>`,
@@ -457,7 +457,7 @@ let MapDataController = function () {
           axes: Object.keys(self.customCharts[d.mainType])
             .map(k => self.customCharts[d.mainType][k]),
           labels: function(labelElement, datum, property) { 
-            console.log({ labelElement, datum, property}); 
+            console.debug({ labelElement, datum, property}); 
             let parentClass = d3.select(labelElement.node().parentNode.parentNode.parentNode).attr('class');
             let isEnglewood = parentClass.indexOf("englewood") > -1 && parentClass.indexOf("west-englewood") === -1;
 
@@ -501,7 +501,7 @@ let MapDataController = function () {
   }
 
   function updateMainCategoryOnSubUpdate(category) {
-    // console.log(self.data[category]);
+    // console.debug(self.data[category]);
     let subcategories = self.data[category];
     let hasChecked = false;
     let hasUnchecked = false;
@@ -519,7 +519,7 @@ let MapDataController = function () {
       }
     }
 
-    console.log(self.filters);
+    console.debug(self.filters);
 
     if (hasChecked && hasUnchecked && !isTotal) {
       self.mainCategoryStates[category] = "some";
@@ -558,7 +558,7 @@ let MapDataController = function () {
     let item = d3.select(self.censusDropdownList.selectAll(main_id).node().parentNode).selectAll(id);
     let state = self.filters[getFilterKey(mainCategory,subCategory)];
 
-    // console.log(...arguments,main_id,id,state);
+    // console.debug(...arguments,main_id,id,state);
 
     item.select(".glyphicon")
       .attr("class", "glyphicon " + (state ? "glyphicon-check" : "glyphicon-unchecked"));

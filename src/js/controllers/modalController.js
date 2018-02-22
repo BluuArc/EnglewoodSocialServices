@@ -26,7 +26,7 @@ let modalController = function () {
       .on("input", onInput)
       .on("keyup", function () {
         if (d3.event.keyCode == 13) {
-          console.log("enter!");
+          console.debug("enter!");
           // hitting enter in the input is equivalent to pressing accept button
           acceptButtonClicked();
         }
@@ -36,7 +36,7 @@ let modalController = function () {
       .on("input", changeButtonState)
       .on("keyup", function () {
         if (d3.event.keyCode == 13) {
-          console.log("enter!");
+          console.debug("enter!");
           // hitting enter in the input is equivalent to pressing accept button
           acceptButtonClicked();
         }
@@ -124,9 +124,9 @@ let modalController = function () {
 
     // var service = document.getElementById("currentServiceSelection").innerHTML;
     //make sure at least one option is chosen
-    console.log(service);
+    console.debug(service);
     if (searchTerm.length == 0 && address.length == 0 && service.includes("Select Services...")) {
-      console.log("its empty!!");
+      console.warn("its empty!!");
     } else {
       if (address.length !== 0) {
         App.controllers.locationButton.getLatLngFromAddress(address, function(pos) {

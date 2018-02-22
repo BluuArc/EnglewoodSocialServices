@@ -4,14 +4,14 @@ var App = App || {};
 
 let documentPromise = new Promise(function(resolve, reject) {
   $(document).ready(function() {
-    console.log("$(document).ready done");
+    console.debug("$(document).ready done");
     resolve();
   });
 });
 
 let windowPromise = new Promise(function(resolve, reject) {
   $(window).on("load", function() {
-    console.log("$(window).on('load') done");
+    console.debug("$(window).on('load') done");
     resolve();
   });
 });
@@ -24,7 +24,7 @@ Promise.all([documentPromise, windowPromise, less.pageLoadFinished])
     }, 500);
   })
   .catch(function(err) {
-    console.log(err);
+    console.error(err);
   });
 
 window.onresize = function() {
@@ -62,7 +62,7 @@ window.onresize = function() {
     App.models.browser = new BrowserModel();
     App.controllers.browserMessage = new BrowserMessageController();
 
-    console.log("Loading Finder");
+    console.info("Loading Finder");
     App.views.loadingMessage.startLoading("Loading Map");
     App.views.map = new MapView("serviceMap");
     App.views.serviceList = new ServiceListView("#serviceList");
@@ -107,7 +107,7 @@ window.onresize = function() {
         App.controllers.browserMessage.runBrowserCheck();
       })
       .catch(function(err) {
-        console.log(err);
+        console.error(err);
       });
   };
 

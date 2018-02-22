@@ -16,7 +16,7 @@ let ServiceFilterController = function() {
       some: "glyphicon-plus",
       all: "glyphicon-check"
     },
-    log: (...args) => console.log("[ServiceFilterController]", ...args)
+    debug: (...args) => console.debug("[ServiceFilterController]", ...args),
   };
 
   init();
@@ -140,7 +140,7 @@ let ServiceFilterController = function() {
   }
 
   function onMainCategoryClick(c1, listItem) {
-    self.log("Clicked total button for", c1);
+    self.debug("Clicked total button for", c1);
     d3.event.stopPropagation(); // prevent menu close on link click
     self.dropdownList.selectAll(".serviceType").classed("open", false);
 
@@ -241,7 +241,7 @@ let ServiceFilterController = function() {
 
     self.dropdownList.selectAll(".serviceType")
       .each(function(d){
-        self.log(d);
+        self.debug(d);
         updateMainCategoryOnSubUpdate(d);
       });
 
@@ -289,7 +289,7 @@ let ServiceFilterController = function() {
 
   // update UI with new filters
   function filtersUpdated() {
-    self.log("Filters", self.filters);
+    self.debug("Filters", self.filters);
     let activeFilters = Object.keys(self.filters).filter(d => self.filters[d]);
     let mainCategory = Object.keys(self.mainCategoryStates).filter(d => self.mainCategoryStates[d] === "all" || self.mainCategoryStates[d] === "some");
     if(activeFilters.length < 1){
@@ -309,7 +309,7 @@ let ServiceFilterController = function() {
           button.text("Various Services");
         }
         if(mainCategory.length > 1){
-          self.log("main categories", mainCategory);
+          self.debug("main categories", mainCategory);
         }
       }
       self.dropdownBtn.selectAll('#service-dropdown-marker').style('color', 'white');

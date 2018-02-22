@@ -5,7 +5,7 @@ let input = document.getElementById("exampleInputFile");
 
 getLogFile()
   .then(function (data) {
-    console.log(data);
+    console.debug(data);
 
     var logText = data.split(/\n/);
 
@@ -13,8 +13,8 @@ getLogFile()
       var entry = logText[i].split(',');
       var rows = "";
       entry[2] = entry[2].replace(/\s/g, "");
-      console.log(JSON.stringify(entry[2]));
-      // console.log("equals false?",entry[2].toString() == 'false');
+      console.debug(JSON.stringify(entry[2]));
+      // console.debug("equals false?",entry[2].toString() == 'false');
       var r= $('<input type="button" value="new button"/>');
 
       if(entry[2] == 'false'){
@@ -43,10 +43,10 @@ d3.select("#exampleInputFile")
     var testing = document.getElementById("exampleInputFile").value;
 
     if (testing.length !== 0) {
-      console.log("File selected!");
+      console.info("File selected!");
       document.getElementById("submitButton").disabled = false;
     } else {
-      console.log("No file!");
+      console.warn("No file!");
       document.getElementById("submitButton").disabled = true;
     }
   });
@@ -109,11 +109,11 @@ function sendCSV(e) {
   xhr.open("PUT", "/admin/savenew");
   xhr.setRequestHeader("Content-type", "application/json");
 
-  console.log(e);
+  console.debug(e);
 
   xhr.onload = function () {
     // LOG file received in this.responseText -- populate log 
-    console.log(this.responseText);
+    console.debug(this.responseText);
     location.reload();
   };
   xhr.onerror = function (e) {

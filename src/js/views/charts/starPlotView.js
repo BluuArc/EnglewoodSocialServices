@@ -144,7 +144,7 @@ let StarPlotView = function(options){
             }
 
             if(self.interaction){
-                console.log("Adding interaction to star plot");
+                console.debug("Adding interaction to star plot");
                 group.call(self.plotFn.interaction);
             }
         }else{

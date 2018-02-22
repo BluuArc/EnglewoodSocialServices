@@ -4,14 +4,14 @@ var App = App || {};
 
 let documentPromise = new Promise(function(resolve, reject) {
   $(document).ready(function() {
-    console.log("$(document).ready done");
+    console.debug("$(document).ready done");
     resolve();
   });
 });
 
 let windowPromise = new Promise(function(resolve, reject) {
   $(window).on("load", function() {
-    console.log("$(window).on('load') done");
+    console.debug("$(window).on('load') done");
     resolve();
   });
 });
@@ -22,9 +22,8 @@ Promise.all([documentPromise, windowPromise, less.pageLoadFinished])
     setTimeout(function() {
       App.init();
     }, 500);
-  })
-  .catch(function(err) {
-    console.log(err);
+  }).catch(function(err) {
+    console.error(err);
   });
 
 (function() {
@@ -58,7 +57,7 @@ Promise.all([documentPromise, windowPromise, less.pageLoadFinished])
     App.models.browser = new BrowserModel();
     App.controllers.browserMessage = new BrowserMessageController();
     
-    console.log("Loading Analytics");
+    console.info("Loading Analytics");
     App.views.loadingMessage.startLoading("Loading Map");
     App.views.map = new MapView("serviceMap");
     App.views.map.drawEnglewoodOutline();
@@ -88,17 +87,17 @@ Promise.all([documentPromise, windowPromise, less.pageLoadFinished])
     let numFinished = 0;
     let socialServiceP = App.models.socialServices.loadData("./admin-data/EnglewoodLocations.csv")
       .then((data) => {
-        console.log("Loaded Social Services", ++numFinished);
+        console.info("Loaded Social Services", ++numFinished);
         return data;
       });
     let serviceTaxonomyP = App.models.serviceTaxonomy.loadData("./data/serviceTaxonomy.json")
       .then((data) => {
-        console.log("Loaded Service Taxonomy", ++numFinished);
+        console.info("Loaded Service Taxonomy", ++numFinished);
         return data;
       });
     let boundaryDataP = App.models.boundaryData.loadData()
       .then((data) => {
-        console.log("Loaded Boundary Data", ++numFinished);
+        console.info("Loaded Boundary Data", ++numFinished);
         return data;
       });
     let censusDataP = App.models.censusData.loadData()
@@ -108,22 +107,22 @@ Promise.all([documentPromise, windowPromise, less.pageLoadFinished])
 
         App.controllers.mapData.populateDropdown(overlayCategories, max_subdropdown_height);
 
-        console.log("Loaded Census Data", ++numFinished);
+        console.info("Loaded Census Data", ++numFinished);
         return data;
       });
     let landInventoryP = App.models.landInventory.loadData()
       .then((data) => {
-        console.log("Loaded Land Inventory Data", ++numFinished);
+        console.info("Loaded Land Inventory Data", ++numFinished);
         return data;
       });
     let schoolDataP = App.models.schoolData.loadData("./data/18-02-12 Rev Englewood Schools.csv")
       .then(data => {
-        console.log("Loaded School Data", ++numFinished);
+        console.info("Loaded School Data", ++numFinished);
         return data;
       });
     // let crimeDataP = App.models.crimeData.loadData()
     //   .then((data) => {
-    //     console.log("Loaded Crime Data");
+    //     console.info("Loaded Crime Data");
     //     return data;
     //   });
 
@@ -199,7 +198,7 @@ Promise.all([documentPromise, windowPromise, less.pageLoadFinished])
         App.views.loadingMessage.updateAndRaise("Filtering data for West Englewood and Englewood");
         aggregateData();
         console.timeEnd("getting selection data");
-        console.log(App.models.aggregateData);
+        console.debug(App.models.aggregateData);
 
         App.controllers.mapData.initializeCustomCharts();
 
@@ -223,7 +222,7 @@ Promise.all([documentPromise, windowPromise, less.pageLoadFinished])
         try{
           App.views.loadingMessage.updateAndRaise("Encountered an error.<br>Please try reloading or contact technical support.");
         }catch(loadingError){
-          console.log("Error showing loading message:",loadingError);
+          console.error("Error showing loading message:",loadingError);
         }
         
       });
@@ -233,7 +232,7 @@ Promise.all([documentPromise, windowPromise, less.pageLoadFinished])
     // insert icons
     d3.selectAll(".svg-insert").html(function () {
       let id = d3.select(this).attr("id");
-      console.log("svg id", id);
+      console.debug("svg id", id);
       if (!id) {
         return "";
       } else {
@@ -263,7 +262,7 @@ Promise.all([documentPromise, windowPromise, less.pageLoadFinished])
       if(zoneType !== "Other"){
         data[zoneType].push(d);
       }else{
-        console.log("Ignoring zone", zone);
+        console.debug("Ignoring zone", zone);
       }
     });
 
@@ -310,7 +309,7 @@ Promise.all([documentPromise, windowPromise, less.pageLoadFinished])
       }
     };
 
-    console.log(englewoodKiviatData,westEnglewoodKiviatData, lotRanges);
+    console.debug(englewoodKiviatData,westEnglewoodKiviatData, lotRanges);
     App.views.chartList.addChart(new VacantLotPixelGlyph('pixel-englewood', "<h4><b>Vacant Lots: <span class='text englewood'>Englewood</span></b></h4>",lotData, plotOptions));
     App.views.chartList.updateChart('pixel-englewood', englewoodKiviatData);
 
@@ -376,7 +375,7 @@ Promise.all([documentPromise, windowPromise, less.pageLoadFinished])
 
     let [lotData, lotRanges] = generateLotKiviatData(App.models.landInventory.getDataByFilter(), true);
 
-    console.log(lotRanges, lotData);
+    console.debug(lotRanges, lotData);
 
     let englewoodKiviatData = generateLotKiviatData(App.models.aggregateData.englewood.data.lot, false);
     let westEnglewoodKiviatData = generateLotKiviatData(App.models.aggregateData.westEnglewood.data.lot, false);
@@ -496,7 +495,7 @@ Promise.all([documentPromise, windowPromise, less.pageLoadFinished])
     });
 
     if(filteredData.length > 0){
-      console.log("Services with no categories", filteredData);
+      console.info("Services with no categories", filteredData);
     }
   }
 

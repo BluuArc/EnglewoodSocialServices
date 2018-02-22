@@ -41,7 +41,7 @@ function VacantLotStarPlot(id, title, dataRanges, options = {}) {
   };
 
   function init(chartPanel) {
-    console.log(self.axes);
+    console.debug(self.axes);
     self.starPlot = new StarPlotView({
       parent: chartPanel.select(".panel-body"),
       name: id,
@@ -92,7 +92,7 @@ function VacantLotStarPlot(id, title, dataRanges, options = {}) {
   function update(panel, data, options = {renderLabels: false, enableInteraction: false} ) {
     if (data) {
       panel.style("display", null);
-      console.log(options.fillColor);
+      console.debug(options.fillColor);
       self.starPlot.render(data, options.groupID, options.fillColor);
 
 

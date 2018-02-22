@@ -75,7 +75,7 @@ let CensusDataModel = function() {
     // ignore any features with no data
     subset.features = _.filter(subset.features, o => o.properties.data);
 
-    console.log(subset);
+    console.debug(subset);
 
     return subset;
   }

@@ -40,7 +40,7 @@ function CensusStarPlot(id, title, options = {}) {
   function update(panel, data, options = { renderLabels: false, enableInteraction: false}) {
     if (data) {
       panel.style("display", null);
-      console.log(options.fillColor);
+      console.debug(options.fillColor);
       self.starPlot.render(data, options.groupID, options.fillColor);
 
 

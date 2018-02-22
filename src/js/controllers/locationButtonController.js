@@ -19,7 +19,7 @@ let LocationButtonController = function() {
     self.locationButton = d3.select('#addressInput')
       .on("keyup", function() {
         if (d3.event.keyCode == 13) {
-          console.log("enter!");
+          console.debug("enter!");
           // hitting enter in the input is equivalent to pressing accept button
           var address = d3.select('#addressInput').node().value;
           getLatLngFromAddress(address);
@@ -32,7 +32,7 @@ let LocationButtonController = function() {
   function attachLocationButton(id) {
     self.locationButton = d3.select(id)
       .on('click', updateLocationOnMap);
-    console.log('adding event handler to ', id);
+    console.debug('adding event handler to ', id);
 
   }
 
@@ -44,7 +44,7 @@ let LocationButtonController = function() {
         getLatLngFromAddress(address);
       });
 
-    console.log('adding event handler to ', id);
+    console.debug('adding event handler to ', id);
   }
 
   function updateLocationOnMap() {
@@ -70,7 +70,7 @@ let LocationButtonController = function() {
     }
 
     function highAccuracyErr(error) {
-      console.log("Can't get your location (high accuracy attempt)");
+      console.warn("Can't get your location (high accuracy attempt)");
       navigator.geolocation.getCurrentPosition(
         successCallback,
         lowAccuracyErr, {
@@ -99,12 +99,12 @@ let LocationButtonController = function() {
     //    https://developers.google.com/maps/documentation/geocoding/start#get-a-key
     // API Key: AIzaSyAUDFjBPoiSQprcBvEhc9w6SJeR3EK4IGI
 
-    // console.log(d3.select('#addressInput').node().value);
+    // console.debug(d3.select('#addressInput').node().value);
 
     // var address = d3.select('#addressInput').node().value;
 
     var replaced = address.split(' ').join('+');
-    console.log(replaced);
+    console.debug(replaced);
 
     var object = d3.json("https://maps.googleapis.com/maps/api/geocode/json?address=" + replaced + "&key=AIzaSyAUDFjBPoiSQprcBvEhc9w6SJeR3EK4IGI", function(err, d) {
       
@@ -121,7 +121,7 @@ let LocationButtonController = function() {
   }
 
   function updateCurrentLocation(pos) {
-    console.log(pos);
+    console.debug(pos);
 
     self.currentlyEnteredLocation = pos;
     // App.views.map.jumpToLocation(pos);

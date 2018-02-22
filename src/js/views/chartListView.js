@@ -88,7 +88,7 @@ let ChartListView = function(listID){
     }
   */
   function addChart(options){
-    console.log("Adding chart:", options.id);
+    console.info("Adding chart:", options.id);
     let chartList = self.chartList;
 
     if(chartList[options.id]){
@@ -98,14 +98,14 @@ let ChartListView = function(listID){
     chartList[options.id] = {
       el: initializeDefaultChart(options.id, options.title, options.remove),
       update: options.update,
-      remove: options.remove || function(){ console.log("removing chart", options.id); }
+      remove: options.remove || function(){ console.info("removing chart", options.id); }
     };
 
     options.init(chartList[options.id].el);
   }
 
   function removeChart(id, ...data) {
-    console.log("Removing chart:", id);
+    console.info("Removing chart:", id);
     if(self.chartList[id].remove){
       self.chartList[id].remove(...data);
     }
@@ -114,7 +114,7 @@ let ChartListView = function(listID){
   }
 
   function updateChart(id, ...data) {
-    console.log("Updating chart:", id);
+    console.info("Updating chart:", id);
     self.chartList[id].update(self.chartList[id].el, ...data);
   }
 

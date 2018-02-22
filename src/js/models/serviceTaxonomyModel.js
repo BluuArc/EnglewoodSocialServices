@@ -25,7 +25,7 @@ let ServiceTaxonomyModel = function() {
           self.categoryCodeMap[self.data[code].description] = code;
         }
 
-        console.log(self.data);
+        console.debug(self.data);
 
         resolve();
       })

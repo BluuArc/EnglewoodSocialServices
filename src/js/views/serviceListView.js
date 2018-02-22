@@ -72,7 +72,7 @@ let ServiceListView = function(listID) {
   }
 
   function populateList(englewoodLocations, options) {
-    console.log(options);
+    console.debug(options);
 
     if(options) {
       let html = "Services";
@@ -95,7 +95,7 @@ let ServiceListView = function(listID) {
     }
 
     let knownNames = englewoodLocations.map((d) => { return d["Organization Name"]; });
-    // console.log(knownNames);
+    console.debug(knownNames);
 
     //remove previous entries
     // self.serviceList.selectAll(".serviceEntry").remove();
@@ -103,7 +103,7 @@ let ServiceListView = function(listID) {
     let selection = self.serviceList.selectAll(".serviceEntry");
     if(selection.empty()){
       //add new entries
-      console.log("Populating service list");
+      console.info("Populating service list");
       selection.data(englewoodLocations)
         .enter()
         .append("div").attr("class", "panel panel-info serviceEntry")
@@ -226,7 +226,7 @@ let ServiceListView = function(listID) {
                 });
               d["Phone Number"] = numbers;
             }else{
-              console.log(d["Phone Number"]);
+              console.debug(d["Phone Number"]);
             }
           }
 
@@ -259,7 +259,7 @@ let ServiceListView = function(listID) {
         });
 
     }else{
-      console.log("Filtering services");
+      console.info("Filtering services");
       selection
         .style('display',function(d,i) {
           if(knownNames.indexOf(d["Organization Name"]) === -1){

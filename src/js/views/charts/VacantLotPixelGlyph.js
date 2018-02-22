@@ -37,7 +37,7 @@ function VacantLotPixelGlyph(id, title, dataRanges, options = {}) {
 
   function init(chartPanel) {
     initQuadrants();
-    console.log(self.quadrants);
+    console.debug(self.quadrants);
     self.pixelGlyph = new PixelGlyph({
       quadrants: self.quadrants
     });
@@ -58,7 +58,7 @@ function VacantLotPixelGlyph(id, title, dataRanges, options = {}) {
   }
 
   function update(panel, data) {
-    console.log("pixel glyph data",data);
+    console.debug("pixel glyph data",data);
     self.pixelGlyph.update(panel, data);
     updateStatistics(panel, data);
   }
