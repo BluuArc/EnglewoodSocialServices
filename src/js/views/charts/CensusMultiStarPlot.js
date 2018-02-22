@@ -18,7 +18,7 @@ function CensusMultiStarPlot(id, title, options = {}) {
       height: '300px',
       margin: {
         top: 50,
-        left: 90
+        left: 75
       },
       axes: self.axes,
       rotate: 0,
@@ -33,7 +33,7 @@ function CensusMultiStarPlot(id, title, options = {}) {
       height: '300px',
       margin: {
         top: 50,
-        left: 90
+        left: 75
       },
       axes: self.axes,
       rotate: 0,

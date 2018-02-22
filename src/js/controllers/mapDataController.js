@@ -34,10 +34,10 @@ let MapDataController = function () {
           label: ["American Indian or", "Alaska Native Alone"]
         },
         "Householder who is Asian alone": {
-          label: ["Asian", "Alone"]
+          label: ["Asian Alone"]
         },
         "Householder who is Native Hawaiian and Other Pacific Islander alone": {
-          label: ["Native Hawaiian", "and Other Pacific", "Islander", "Alone"]
+          label: ["Native Hawaiian", "and Other Pacific", "Islander Alone"]
         },
         "Householder who is Some Other Race alone": {
           label: ["Other Race Alone"]
