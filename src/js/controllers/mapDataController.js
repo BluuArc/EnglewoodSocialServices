@@ -49,6 +49,29 @@ let MapDataController = function () {
       "SEX_BY_AGE_(OVERALL)": {},
       "SEX_BY_AGE_(MALE)": {},
       "SEX_BY_AGE_(FEMALE)": {},
+      HOUSEHOLD_SIZE: {
+        "1-person household": {
+          label: ["1-person"],
+        },
+        "2-person household": {
+          label: ["2-person"],
+        },
+        "3-person household": {
+          label: ["3-person"],
+        },
+        "4-person household": {
+          label: ["4-person"],
+        },
+        "5-person household": {
+          label: ["5-person"],
+        },
+        "6-person household": {
+          label: ["6-person"],
+        },
+        "7-or-more-person household": {
+          label: ["7-or-more-person"],
+        },
+      },
     }
   };
 
