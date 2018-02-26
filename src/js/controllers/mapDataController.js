@@ -401,17 +401,18 @@ let MapDataController = function () {
     const customCharts = self.customCharts;
 
     for(const mainType in customCharts) {
-      // const overallMax = Math.max(englewoodData[mainType].Total, westEnglewoodData[mainType].Total);
+      const subTypes = App.models.censusData.getSubCategories(mainType);
+      const overallMax = Math.max(englewoodData[mainType].Total, westEnglewoodData[mainType].Total);
+      console.debug(mainType, { overallMax });
 
       // largest value of all subcategories between the 2 neighborhoods
-      let overallMax = 0;
-      const subTypes = App.models.censusData.getSubCategories(mainType);
+      // let overallMax = 0;
       
-      subTypes.forEach(subType => {
-          if (subType.toLowerCase().indexOf("total") === -1) {
-            overallMax = Math.max(overallMax, englewoodData[mainType][subType], westEnglewoodData[mainType][subType])
-          }
-        });
+      // subTypes.forEach(subType => {
+      //     if (subType.toLowerCase().indexOf("total") === -1) {
+      //       overallMax = Math.max(overallMax, englewoodData[mainType][subType], westEnglewoodData[mainType][subType])
+      //     }
+      //   });
 
       subTypes.filter(t => t !== "Total").forEach(subType => {
         const axis = customCharts[mainType][subType] || {};
@@ -457,7 +458,7 @@ let MapDataController = function () {
           axes: Object.keys(self.customCharts[d.mainType])
             .map(k => self.customCharts[d.mainType][k]),
           labels: function(labelElement, datum, property) { 
-            console.debug({ labelElement, datum, property}); 
+            // console.debug({ labelElement, datum, property}); 
             let parentClass = d3.select(labelElement.node().parentNode.parentNode.parentNode).attr('class');
             let isEnglewood = parentClass.indexOf("englewood") > -1 && parentClass.indexOf("west-englewood") === -1;
 
