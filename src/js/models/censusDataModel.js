@@ -84,6 +84,7 @@ let CensusDataModel = function() {
 
   function getDataWithinPolygon(boundsPolygon){
     console.time("getDataWithinPolygon");
+    
     let boundData = {};
     let bbox = turf.bbox(boundsPolygon);
 
@@ -138,6 +139,10 @@ let CensusDataModel = function() {
     return getDataWithinPolygon(boundsPolygon);
   }
 
+  function getBlockLevelData() {
+    return self.gridData.features;
+  }
+
   function getSubCategories(mainType) {
     return self.mapTypeNames[mainType];
   }
@@ -147,6 +152,7 @@ let CensusDataModel = function() {
     getSubsetGeoJSON,
     getDataWithinBounds,
     getDataWithinPolygon,
-    getSubCategories
+    getSubCategories,
+    getBlockLevelData
   };
 };

@@ -416,8 +416,34 @@ let MapDataController = function () {
   function initializeCustomCharts() {
     const englewoodData = App.models.aggregateData.englewood.data.census;
     const westEnglewoodData = App.models.aggregateData.westEnglewood.data.census;
-
+    const overallData = App.models.censusData.getBlockLevelData();
+    const blockLevelMax = {};
     const customCharts = self.customCharts;
+
+    // get the max of every sub category at the block level
+    overallData.forEach(feature => {
+      const blockData = feature.properties.census;
+      for(const mainType in customCharts) {
+        const subTypes = App.models.censusData.getSubCategories(mainType);
+        
+        if (!blockLevelMax[mainType]) {
+          blockLevelMax[mainType] = {};
+        }
+
+        subTypes.forEach(subType => {
+            if (subType.toLowerCase().indexOf("total") === -1) {
+              if (!blockLevelMax[mainType][subType]) {
+                blockLevelMax[mainType][subType] = 0;
+              }
+              const currentMax = blockLevelMax[mainType][subType];
+              blockLevelMax[mainType][subType] = Math.max(currentMax, blockData[mainType][subType]);
+              // console.log('old value:', currentMax, 'new value:', blockLevelMax[mainType][subType])
+            }
+          });
+      }
+    });
+
+    console.debug({ blockLevelMax });
 
     for(const mainType in customCharts) {
       const subTypes = App.models.censusData.getSubCategories(mainType);
@@ -440,9 +466,10 @@ let MapDataController = function () {
         axis.min = +axis.min || 0;
 
         // uniform scale
-        axis.max = +axis.max || overallMax;
+        // axis.max = +axis.max || overallMax;
 
         // relative (per-axis) scale
+        axis.max = blockLevelMax[mainType][subType];
         // axis.max = Math.max(englewoodData[mainType][subType],westEnglewoodData[mainType][subType]);
 
         axis.label = axis.label || [subType];
@@ -471,7 +498,7 @@ let MapDataController = function () {
     if(self.customCharts[d.mainType]){
       console.debug("Create custom chart for",d);
       const title = d.mainType.split("_").map(d => `${d[0].toUpperCase()}${d.slice(1).toLowerCase()}`).join(" ");
-      let censusStarPlot = new CensusMultiStarPlot(
+      let censusStarPlot = new InteractiveStarPlot(
         d.mainType, `<h4><b>${title}</b></h4>`,
         {
           axes: Object.keys(self.customCharts[d.mainType])
@@ -492,8 +519,8 @@ let MapDataController = function () {
       );
       self.chartList.addChart(censusStarPlot);
       self.chartList.updateChart(d.mainType, {}, { renderLabels: true });
-      self.chartList.updateChart(d.mainType, App.models.aggregateData.englewood.data.census[d.mainType], { groupID: 'englewood', fillColor: App.models.aggregateData.englewood.color });
-      self.chartList.updateChart(d.mainType, App.models.aggregateData.westEnglewood.data.census[d.mainType], { groupID: 'westEnglewood', fillColor: App.models.aggregateData.westEnglewood.color });
+      self.chartList.updateChart(d.mainType, App.models.censusData.getBlockLevelData()[0].properties.census[d.mainType], { fillColor: 'rgb(134, 95, 163)' });
+      // self.chartList.updateChart(d.mainType, App.models.aggregateData.westEnglewood.data.census[d.mainType], { groupID: 'westEnglewood', fillColor: App.models.aggregateData.westEnglewood.color });
     }else{
       let title = d.title ? `<b>${d.subType}</b>` : undefined;
       self.chartList.addChart(new CensusBarChart(d, createPropertyID(d), title));
