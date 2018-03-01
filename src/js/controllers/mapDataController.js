@@ -395,7 +395,7 @@ let MapDataController = function () {
     let index = 0;
     App.views.map.drawChoropleth(
       reducedData, 
-      d.title || d.mainType.split('').map((d) => {
+      d.mainType.split('').map((d) => {
         return index++ === 0 ? d.toUpperCase() : d.toLowerCase()
       }).join('').replace(/_/g," "),
       {
@@ -467,7 +467,7 @@ let MapDataController = function () {
     }
     self.lastShownProperty = d;
     
-    console.info("Create chart for", d);
+    console.debug("Create chart for", d);
     if(self.customCharts[d.mainType]){
       console.debug("Create custom chart for",d);
       const title = d.mainType.split("_").map(d => `${d[0].toUpperCase()}${d.slice(1).toLowerCase()}`).join(" ");

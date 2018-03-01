@@ -462,7 +462,7 @@ let MapView = function (div) {
       let legendLinear = d3.legendColor()
         .shapeWidth(30)
         .labelFormat(d3.format(".0f"))
-        .title("Census Block Color Scale")
+        .title(`${_.startCase(censusOptions.title)}\n(Block Level)`)
         .titleWidth(120)
         .scale(censusOptions.colorScale);
 
@@ -515,7 +515,7 @@ let MapView = function (div) {
       let colorScaleQ = d3.scaleQuantize()
         .domain(colorScale.domain()).range(d3.range(5).map((i) => simpleColorScale(i)));
       
-      drawLegend({ colorScale: colorScaleQ });
+      drawLegend({ colorScale: colorScaleQ, title });
 
       self.choropleth = L.geoJSON(data, {
           style: function (feature) {
@@ -555,7 +555,7 @@ let MapView = function (div) {
             }
             return title;
           })(data.description);
-          let html = `<u><b>${title}</b></u><br><b>${data.blockName}</b><br>${data.data} people in this block`;
+          let html = `<u><b>${title}</b></u><br><b>${data.blockName}</b><br>${data.data} ${data.data == 1 ? 'person' : 'people'} in this block`;
 
           // let svgContainer = d3.select('body')
           //   .append('div').style('display','none')

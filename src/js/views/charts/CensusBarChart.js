@@ -49,7 +49,7 @@ function CensusBarChart(propertyData, propertyDataID, customTitle) {
     }
 
     function remove(skipReset) {
-        console.info("Removing census bar chart for", self.title);
+        console.debug("Removing census bar chart for", self.title);
         if(!skipReset){
             App.controllers.mapData.resetFilters(true);
         }

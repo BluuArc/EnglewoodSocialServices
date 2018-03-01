@@ -66,7 +66,7 @@ function CensusMultiStarPlot(id, title, options = {}) {
   }
 
   function remove(skipReset) {
-    console.info("Removing census kiviat chart for", self.title);
+    console.debug("Removing census kiviat chart for", self.title);
     if (!skipReset) {
       App.controllers.mapData.resetFilters(true);
     }
