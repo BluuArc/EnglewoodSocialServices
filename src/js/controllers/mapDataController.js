@@ -23,6 +23,8 @@ let MapDataController = function () {
     },
 
     customCharts: {
+      TENURE: {},
+      VACANCY_STATUS: {},
       RACE_OF_HOUSEHOLDER: { // only input data for sub types that have custom info
         "Householder who is White alone": {
           label: ["White Alone"]
@@ -46,32 +48,49 @@ let MapDataController = function () {
           label: ["Two or More Races"]
         },
       },
-      "SEX_BY_AGE_(OVERALL)": {},
-      "SEX_BY_AGE_(MALE)": {},
-      "SEX_BY_AGE_(FEMALE)": {},
-      HOUSEHOLD_SIZE: {
-        "1-person household": {
-          label: ["1-person"],
+      RACE: {
+        "White alone": {
+          label: ["White Alone"]
         },
-        "2-person household": {
-          label: ["2-person"],
+        "Black or African American alone": {
+          label: ["Black or African", "American Alone"]
         },
-        "3-person household": {
-          label: ["3-person"],
+        "American Indian and Alaska Native alone": {
+          label: ["American Indian or", "Alaska Native Alone"]
         },
-        "4-person household": {
-          label: ["4-person"],
+        "Asian alone": {
+          label: ["Asian Alone"]
         },
-        "5-person household": {
-          label: ["5-person"],
+        "Native Hawaiian and Other Pacific Islander alone": {
+          label: ["Native Hawaiian", "and Other Pacific", "Islander Alone"]
         },
-        "6-person household": {
-          label: ["6-person"],
+        "Some Other Race alone": {
+          label: ["Other Race Alone"]
         },
-        "7-or-more-person household": {
-          label: ["7-or-more-person"],
+        "Two or More Races": {
+          label: ["Two or More Races"]
         },
       },
+      RACE_TOTAL_TALLIED: {
+        "White alone or in combination with one or more other races": {
+          label: ["White", "(Alone or Mixed)"]
+        },
+        "Black or African American alone or in combination with one or more other races": {
+          label: ["Black or African", "American", "(Alone or Mixed)"]
+        },
+        "American Indian and Alaska Native alone or in combination with one or more other races": {
+          label: ["American Indian or", "Alaska Native", "(Alone or Mixed)"]
+        },
+        "Asian alone or in combination with one or more other races": {
+          label: ["Asian", "(Alone or Mixed)"]
+        },
+        "Native Hawaiian and Other Pacific Islander alone or in combination with one or more other races": {
+          label: ["Native Hawaiian", "and Other Pacific", "Islander", "(Alone or Mixed)"]
+        },
+        "Some Other Race alone or in combination with one or more other races": {
+          label: ["Other Race", "(Alone or Mixed)"]
+        }
+      }
     }
   };
 
