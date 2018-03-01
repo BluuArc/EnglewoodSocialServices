@@ -559,31 +559,36 @@ let MapView = function (div) {
             }
             return title;
           })(data.description);
-          let html = `<u><b>${title}</b></u><br><b>${data.blockName}</b><br>${data.data} ${data.data == 1 ? 'person' : 'people'} in this block`;
-
-          // let svgContainer = d3.select('body')
-          //   .append('div').style('display','none')
-          //   .append('div').classed('panel-body', true);
-          // const axisData = App.controllers.mapData.getAxisData(data.description.mainType);
-          // if(axisData && data.fullData) {
-          //   const censusStarPlot = new CensusStarPlot(
-          //     data.description.mainType, `<h4><b>${title}</b></h4>`,
-          //     {
-          //       axes: Object.keys(axisData)
-          //         .map(k => axisData[k]),
-          //     }
-          //   );
-
-          //   censusStarPlot.init(svgContainer);
-          //   censusStarPlot.update(svgContainer, {});
-
-          //   html += svgContainer.node().outerHTML;
-          //   svgContainer.remove();
-          //   console.debug(html,svgContainer);
-          // }
-
+          const svgData = App.controllers.mapData.getCensusSVG();
+          let html;
+          if (svgData) {
+            html = `
+            <div class="container-fluid">
+              <div class="row">
+                <u><b>${title}</b></u><br><b>${data.blockName}</b><br>
+                <br>${data.data} ${data.data == 1 ? 'person' : 'people'} in this block
+              </div>
+              <div class="row" style="height: ${svgData.attr('height')}; width: ${svgData.attr('width')}">
+                <svg height="${svgData.attr('height')}" width="${svgData.attr('width')}">${svgData.html()}</svg>
+              </div>
+            </div>
+            `;
+          } else {
+            html = `
+            <div class="container-fluid">
+              <div class="row">
+                <u><b>${title}</b></u><br><b>${data.blockName}</b><br>
+                <br>${data.data} ${data.data == 1 ? 'person' : 'people'} in this block
+              </div>
+            </div>
+            `;
+          }
           return html;
-        }, { autoPan: false }).addTo(self.choroplethLayer);
+        }, {
+          autoPan: false,
+          minWidth: 360,
+          minHeight: 400
+        }).addTo(self.choroplethLayer);
     }
 
   }

@@ -12,6 +12,7 @@ let MapDataController = function () {
     censusDropdownList: null,
     data: null,
     lastShownProperty: null,
+    censusSvg: null,
 
     filters: {}, // equivalent to subcategory states
 
@@ -531,6 +532,7 @@ let MapDataController = function () {
             return label;
           },
           update: (panel, data, updateOptions) => {
+            self.censusSvg = panel.select('.panel-body svg');
             if (updateOptions.plotLabels) {
               const footer = panel.select('.panel-footer');
 
@@ -615,6 +617,7 @@ let MapDataController = function () {
   }
 
   function removeChartFromList(propertyType) {
+    self.censusSvg = null;
     if (self.customCharts[propertyType.mainType]) {
       self.chartList.removeChart(propertyType.mainType, true);
     } else {
@@ -690,6 +693,10 @@ let MapDataController = function () {
     return self.customCharts[mainType];
   }
 
+  function getCensusSVG() {
+    return self.censusSvg;
+  }
+
   return {
     setupDataPanel,
     attachResetOverlayButton,
@@ -700,6 +707,7 @@ let MapDataController = function () {
     setChartList,
 
     initializeCustomCharts,
-    getAxisData
+    getAxisData,
+    getCensusSVG
   };
 }
