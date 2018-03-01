@@ -30,17 +30,20 @@ function InteractiveStarPlot(id, title, options = {}) {
     }
   }
 
-  function update(panel, data, options = { renderLabels: false, enableInteraction: false }) {
+  function update(panel, data, updateOptions = { renderLabels: false, enableInteraction: false }) {
     if (data) {
       panel.style("display", null);
-      console.debug(options.fillColor);
-      if (options.groupID === 'chart-outline' || options.renderLabels === true) { //render backgrounds only
-        self.starPlot.render(data, 'chart-outline', options.fillColor);
+      if (updateOptions.groupID === 'chart-outline' || updateOptions.renderLabels === true) { //render backgrounds only
+        self.starPlot.render(data, 'chart-outline', updateOptions.fillColor);
       } else {
-        self.starPlot.render(data, 'glyph', options.fillColor)
+        self.starPlot.render(data, 'glyph', updateOptions.fillColor, updateOptions)
       }
     } else {
       panel.style("display", "none"); // hide on no data
+    }
+
+    if (options.update) {
+      options.update(...arguments);
     }
   }
 

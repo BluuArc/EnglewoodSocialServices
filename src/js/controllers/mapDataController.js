@@ -399,12 +399,18 @@ let MapDataController = function () {
         return index++ === 0 ? d.toUpperCase() : d.toLowerCase()
       }).join('').replace(/_/g," "),
       {
-        clickHandler: (layer) => {
-          if(!d.graph) return;
+        hoverHandler: (layer) => {
+          if(!layer.feature.properties.fullData)
+            return;
 
-          console.debug(layer);
-          console.debug(App.models.censusData.getSubCategories(d.mainType));
-        } //update bars on click
+          //update kiviat on click
+          self.chartList.updateChart(d.mainType,layer.feature.properties.fullData,
+            {
+              fillColor: 'rgb(134, 95, 163)',
+              plotLabels: true,
+              blockName: layer.feature.properties.blockName
+            });
+        } 
       }
     );
   }
@@ -483,6 +489,16 @@ let MapDataController = function () {
     console.debug("custom chart data",customCharts);
   }
 
+  function generateEmptyChartData(mainType) {
+    const result = {};
+
+    for(const subType in self.customCharts[mainType]) {
+      result[subType] = 0;
+    }
+
+    return result;
+  }
+
   function chartButtonClick(d) {
     if(!self.chartList){
       console.error("No chart list specified");
@@ -505,21 +521,80 @@ let MapDataController = function () {
             .map(k => self.customCharts[d.mainType][k]),
           labels: function(labelElement, datum, property) { 
             // console.debug({ labelElement, datum, property}); 
-            let parentClass = d3.select(labelElement.node().parentNode.parentNode.parentNode).attr('class');
-            let isEnglewood = parentClass.indexOf("englewood") > -1 && parentClass.indexOf("west-englewood") === -1;
 
             let label = self.customCharts[d.mainType][property].label.slice();
-            let value = App.models.aggregateData[isEnglewood ? "englewood" : "westEnglewood"].data.census[d.mainType][property];
+            let value = datum[property];
 
             labelElement.style('font-weight', d.subType === property ? "bolder" : "unset");
             labelElement.style('font-size', d.subType === property ? "unset" : "smaller");
             return label.concat([`(value: ${value.toFixed(0)})`]);
+            return label;
+          },
+          update: (panel, data, updateOptions) => {
+            if (updateOptions.plotLabels) {
+              const footer = panel.select('.panel-footer');
+
+              footer.selectAll('p').remove();
+              if (updateOptions.blockName) {
+                footer.append('p').html(`<b>${updateOptions.blockName}</b>`)
+              } 
+
+              if (!footer.select('table').empty()) {
+                footer.selectAll('table').remove();
+              }
+
+              let table = footer.append('table').classed('container', true)
+                .classed('census-table', true)
+                .style('width', '100%').append('tbody');
+
+              let propertiesLines = Object.keys(data)
+                .filter(d => d.toLowerCase().indexOf('total') === -1)
+                .map(d => {
+                  let value = data[d];
+                  const axisData = self.customCharts[self.lastShownProperty.mainType][d];
+                  const maxValue = axisData.max;
+                  let percent = ((value / maxValue) * 100).toFixed(2);
+                  return {
+                    value,
+                    percent,
+                    label: axisData.label.join(' '),
+                    total: maxValue,
+                  };
+                });
+
+              let colorScale = d3.scaleLinear().domain([0, 1]);
+              table.selectAll('tr').data(propertiesLines)
+                .enter().append('tr')
+                // .style("background-color", d => colorScale.range(["#FFF", d.color])(0.75))
+                .each(function (d) {
+                  let row = d3.select(this);
+                  row.append('td').classed('align-middle', true)
+                    .style("width", "47.5%").style("text-align", "left")
+                    .style("padding-left", "5px")
+                    .html(`</span><b>${d.label}</b>`)
+                  row.append('td').classed('align-middle', true)
+                    .style("width", "52.5%")
+                    .text(`${d.value} of ${d.total} people/block`)
+                });
+            }
+
+            if (updateOptions.printInstructions) {
+              panel.select('.panel-footer').selectAll('p').remove();
+              panel.select('.panel-footer').selectAll('table').remove();
+              panel.select('.panel-footer')
+                .append('p').text("Hover over a census block to see information");
+            }
           }
         }
       );
       self.chartList.addChart(censusStarPlot);
       self.chartList.updateChart(d.mainType, {}, { renderLabels: true });
-      self.chartList.updateChart(d.mainType, App.models.censusData.getBlockLevelData()[0].properties.census[d.mainType], { fillColor: 'rgb(134, 95, 163)' });
+      self.chartList.updateChart(d.mainType, generateEmptyChartData(d.mainType),
+        {
+          fillColor: 'rgb(134, 95, 163)',
+          printInstructions: true,
+          plotLabels: true
+        });
       // self.chartList.updateChart(d.mainType, App.models.aggregateData.westEnglewood.data.census[d.mainType], { groupID: 'westEnglewood', fillColor: App.models.aggregateData.westEnglewood.color });
     }else{
       let title = d.title ? `<b>${d.subType}</b>` : undefined;

@@ -97,7 +97,7 @@ let StarPlotView = function(options){
             ...
         }
     */
-    function render(data, groupID, fillColor) {
+    function render(data, groupID, fillColor, options = {}) {
 
         groupID = groupID || "chart-outline"; // default to chart outline
 
@@ -117,7 +117,7 @@ let StarPlotView = function(options){
                 .call(
                     self.plotFn
                         .includeGuidelines(true)
-                        .includeLabels(true)
+                        .includeLabels(false)
                         .includeChart(false)
                 )
                     .style("transform", `translateX(${self.margin.left - self.margin.right}px) translateY(${self.margin.top - self.margin.bottom}px)`)
@@ -128,7 +128,7 @@ let StarPlotView = function(options){
             .call(
                 self.plotFn
                     .includeGuidelines(false)
-                    .includeLabels(false)
+                    .includeLabels(options.plotLabels !== undefined)
                     .includeChart(true)
             )
                     .style("transform", `translateX(${self.margin.left - self.margin.right}px) translateY(${self.margin.top - self.margin.bottom}px)`);

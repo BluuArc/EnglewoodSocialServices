@@ -114,7 +114,7 @@ let ChartListView = function(listID){
   }
 
   function updateChart(id, ...data) {
-    console.info("Updating chart:", id);
+    // console.info("Updating chart:", id);
     self.chartList[id].update(self.chartList[id].el, ...data);
   }
 

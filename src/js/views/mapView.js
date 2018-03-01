@@ -529,6 +529,10 @@ let MapView = function (div) {
         })
         .on("mouseover", function (geojson) {
           geojson.layer.bringToFront();
+
+          if (typeof options.hoverHandler === "function") {
+            options.hoverHandler(geojson.layer);
+          }
         })
         .on("click", function(geojson){
           console.debug(geojson);
