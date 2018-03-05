@@ -567,14 +567,14 @@ let MapView = function (div) {
               .style('width', 'fit-content');
             modifiedData.html(svgData.html());
             modifiedData.selectAll('g')
-              .style('transform', `translateX(0px)`);
+              .style('transform', `translateX(0px) translateY(5px)`);
             html = `
             <div class="container-fluid">
               <div class="row">
                 <u><b>${title}</b></u><br><b>${data.blockName}</b><br>
                 <br>${data.data} ${data.data == 1 ? 'person' : 'people'} in this block
               </div>
-              <div class="row" style="height: ${$(modifiedData.node()).height() * 2/3}px; width: ${$(modifiedData.node()).height() * 2/3}px">
+              <div class="row" style="margin: auto; height: ${$(modifiedData.node()).height() * 2/3}px; width: ${$(modifiedData.node()).height() * 2/3}px">
                 <svg height="${modifiedData.attr('height')}" width="${$(modifiedData.node()).height() * 2 / 3 + 5}">${modifiedData.html()}</svg>
               </div>
             </div>
