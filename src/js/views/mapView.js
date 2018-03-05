@@ -562,14 +562,21 @@ let MapView = function (div) {
           const svgData = App.controllers.mapData.getCensusSVG();
           let html;
           if (svgData) {
+            const modifiedData = d3.select(svgData.node().cloneNode())
+              .style('transform', 'scale(0.75)')
+              .style('width', 'fit-content');
+            modifiedData.html(svgData.html());
+            modifiedData.selectAll('.star-label').remove();
+            modifiedData.selectAll('g')
+              .style('transform', `translateX(0px)`);
             html = `
             <div class="container-fluid">
               <div class="row">
                 <u><b>${title}</b></u><br><b>${data.blockName}</b><br>
                 <br>${data.data} ${data.data == 1 ? 'person' : 'people'} in this block
               </div>
-              <div class="row" style="height: ${svgData.attr('height')}; width: ${svgData.attr('width')}">
-                <svg height="${svgData.attr('height')}" width="${svgData.attr('width')}">${svgData.html()}</svg>
+              <div class="row" style="height: ${$(modifiedData.node()).height() * 2/3}px; width: ${$(modifiedData.node()).height() * 2/3}px">
+                <svg height="${modifiedData.attr('height')}" width="${$(modifiedData.node()).height() * 2 / 3 + 5}">${modifiedData.html()}</svg>
               </div>
             </div>
             `;
@@ -586,8 +593,8 @@ let MapView = function (div) {
           return html;
         }, {
           autoPan: false,
-          minWidth: 360,
-          minHeight: 400
+          minWidth: 200,
+          minHeight: 200
         }).addTo(self.choroplethLayer);
     }
 
