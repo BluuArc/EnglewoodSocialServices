@@ -566,7 +566,6 @@ let MapView = function (div) {
               .style('transform', 'scale(0.75)')
               .style('width', 'fit-content');
             modifiedData.html(svgData.html());
-            modifiedData.selectAll('.star-label').remove();
             modifiedData.selectAll('g')
               .style('transform', `translateX(0px)`);
             html = `

@@ -119,6 +119,10 @@ html {
 
   .leaflet-popup {
     pointer-events: none;
+
+    svg .star-label {
+      display: none;
+    }
   }
 }
 
@@ -319,6 +323,10 @@ button.btn.btn-default.dropdown-toggle.navbar-btn.rounded {
         stroke: black;
         fill: transparent;
       }
+
+      text.data-point {
+        display: none;
+      }
     }
 
     table.census-table tr td {
@@ -327,20 +335,6 @@ button.btn.btn-default.dropdown-toggle.navbar-btn.rounded {
     
     table.census-table tr:last-child td {
       border-bottom: 0px;
-    }
-  }
-
-  &:hover {
-    .panel-heading {
-    }
-
-    // .panel-body {
-    //   svg {
-    //     height: 400px;
-    //   }
-    // }
-
-    .panel-footer {
     }
   }
 }
