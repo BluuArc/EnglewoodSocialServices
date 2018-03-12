@@ -22,7 +22,7 @@ let ServiceTaxonomyModel = function() {
         self.data = data;
 
         for (let code of Object.keys(self.data)) {
-          self.categoryCodeMap[self.data[code].description] = code;
+          self.categoryCodeMap[self.data[code].description.toLowerCase()] = code;
         }
 
         console.debug(self.data);
@@ -47,11 +47,15 @@ let ServiceTaxonomyModel = function() {
   }
 
   function getAllTier2Categories() {
-    return _.flatten(Object.keys(self.data).map(k => self.data[k].children));
+    return _.flatten(Object.keys(self.data).map(k => self.data[k].children)).map(c => c.trim());
   }
 
   function getTier2CategoriesOf(tier1Category) {
-    return self.data[self.categoryCodeMap[tier1Category]].children;
+    return self.data[self.categoryCodeMap[tier1Category.toLowerCase()]].children.map(c => c.trim());
+  }
+
+  function getCategoryCodeOf(tier1Category = "") {
+    return self.categoryCodeMap[tier1Category.toLowerCase()];
   }
 
   function getData() {
@@ -61,9 +65,9 @@ let ServiceTaxonomyModel = function() {
   return {
     loadData,
     getTier1Categories,
-    getTier1CategoriesOf,
     getAllTier2Categories,
     getTier2CategoriesOf,
+    getCategoryCodeOf,
     getData
   };
 };
