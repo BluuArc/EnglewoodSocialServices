@@ -289,7 +289,7 @@ let MapView = function (div) {
   function plotServices(englewoodLocations) {
     self.serviceGroup.clearLayers();
     let serviceMarkers = [];
-    console.debug("serviceData",englewoodLocations);
+    console.debug({ englewoodLocations });
 
     // iterate through the social services location file
     for (let loc of englewoodLocations) {
@@ -307,9 +307,9 @@ let MapView = function (div) {
       loc.visible = true;
 
       let locationKey = `${loc.Latitude},${loc.Longitude}`;
-      if (!self.serviceLocations[locationKey]){
+      if (!self.serviceLocations[locationKey]) {
         self.serviceLocations[locationKey] = [loc];
-      }else{
+      } else if (self.serviceLocations[locationKey].map(val => val["Organization Name"]).indexOf(loc["Organization Name"]) === -1){
         self.serviceLocations[locationKey].push(loc);
       }
 

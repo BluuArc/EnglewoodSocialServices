@@ -279,7 +279,7 @@ let FilterDropdownController = function() {
   function filtersUpdated() {
     let filtersToSend = getCurrentFilters();
 
-    let dataSubset = App.models.socialServices.getFilteredData(filtersToSend);
+    let dataSubset = App.models.serviceData.getFilteredData(filtersToSend);
 
     App.views.map.updateServicesWithFilter(dataSubset);
 

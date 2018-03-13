@@ -41,7 +41,7 @@ window.onresize = function() {
   App.controllers = {};
 
   // models
-  App.models.socialServices = new SocialServiceModel();
+  App.models.serviceData = new ServiceDataModel();
   App.models.serviceTaxonomy = new ServiceTaxonomyModel();
   App.models.schoolData = new SchoolDataModel();
 
@@ -81,23 +81,24 @@ window.onresize = function() {
     App.controllers.schoolMarkerView = new MarkerToggleController("#toggleSchoolView", "#schoolViewText", "School");
 
     App.views.loadingMessage.updateAndRaise("Loading location and service data");
-    let socialServiceP = App.models.socialServices.loadData("./admin-data/EnglewoodLocations.csv")
     let serviceTaxonomyP = App.models.serviceTaxonomy.loadData("./data/serviceTaxonomy.json");
     let schoolDataP = App.models.schoolData.loadData("./data/18-02-12 Rev Englewood Schools.csv");
 
     App.controllers.modal = new modalController();
 
-    Promise.all([socialServiceP, serviceTaxonomyP, schoolDataP])
-      .then(function(values) {
+    Promise.all([serviceTaxonomyP, schoolDataP])
+      .then(() => {
+        return App.models.serviceData.loadData("./admin-data/EnglewoodLocations.csv");
+      }).then(function(values) {
         // App.views.map.createMap();
 
         App.views.loadingMessage.updateAndRaise("Plotting services");
-        App.views.map.plotServices(App.models.socialServices.getData());
-        App.views.serviceList.populateList(App.models.socialServices.getData());
+        App.views.map.plotServices(App.models.serviceData.getData());
+        App.views.serviceList.populateList(App.models.serviceData.getData());
         App.views.map.plotSchools(App.models.schoolData.getData());
 
-        App.controllers.search.setCount(App.models.socialServices.getData().length);
-        App.controllers.modal.setCount(App.models.socialServices.getData().length);
+        App.controllers.search.setCount(App.models.serviceData.getData().length);
+        App.controllers.modal.setCount(App.models.serviceData.getData().length);
 
         let max_subdropdown_height = d3.select('body').node().clientHeight * 0.4;
         App.controllers.serviceFilterDropdown.populateDropdown(max_subdropdown_height);

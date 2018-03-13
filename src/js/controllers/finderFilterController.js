@@ -66,7 +66,8 @@ let FilterDropdownController = function() {
       .attr("class", "dropdown-submenu serviceType")
       .each(function(c1) {
         let listItem = d3.select(this);
-        let tier2Categories = App.models.serviceTaxonomy.getTier2CategoriesOf(c1);
+        let tier2Categories = App.models.serviceTaxonomy.getTier2CategoriesOf(c1)
+          .map(c2 => ({ mainType: c1, subType: c2 }));
 
         // create link within tab
         listItem.append("a")
@@ -84,7 +85,7 @@ let FilterDropdownController = function() {
 
         // create tab content div for this t1 category
         let secondaryDropdown = listItem.append("ul")
-          .attr("class", "dropdown-menu")
+          .attr("class", "dropdown-menu");
 
         secondaryDropdown.append("li")
           .attr("class", "serviceSubtype")
@@ -130,9 +131,14 @@ let FilterDropdownController = function() {
 
             listItem.select("ul").selectAll(".serviceSubtype")
               .each(function(d) {
-                self.filters[d] = selected;
+                let subType = d;
+                if (typeof d === 'object') {
+                  subType = d.subType;
+                }
+                // self.filters[d] = selected;
+                setFilter(c1, subType, selected);
 
-                updateSubCategoryIcon(d);
+                updateSubCategoryIcon(subType);
               });
 
             filtersUpdated();
@@ -145,12 +151,7 @@ let FilterDropdownController = function() {
           .enter().append("li")
           .attr("class", "secondaryCategory serviceSubtype")
           .append("a")
-          .datum(function(c2) {
-            return {
-              mainType: c1,
-              subType: c2
-            };
-          })
+          // .datum(c2)
           .attr("id", d => "sub_" + convertPropertyToID(d.subType))
           .html(function(d) {
             return "<span class='glyphicon glyphicon-unchecked'></span>" + d.subType;
@@ -169,24 +170,31 @@ let FilterDropdownController = function() {
               .attr("class", "glyphicon glyphicon-unchecked");
             listItem.select("ul").selectAll(".serviceSubtype")
               .each(function(subType) {
+                console.debug(subType);
+                if (typeof subType === 'object') {
+                  subType = subType.subType;
+                }
                 if (subType !== d.subType) {
-                  self.filters[subType] = false;
+                  // self.filters[subType] = false;
+                  setFilter(d.mainType, subType, false);
 
                   updateSubCategoryIcon(subType);
                 }
               });
-            let curSelection = self.filters[d.subType];
+            let curSelection = getFilter(d.mainType, d.subType);
             self.filters = {};
 
             //select current subcategory if previous filters indicate a main category selection
             if (isMainCategorySelection) {
-              self.filters[d.subType] = true;
+              // self.filters[d.subType] = true;
+              setFilter(d.mainType, d.subType, true);
             } else {
               // toggle whether or not it is selected
-              self.filters[d.subType] = !curSelection;
+              // self.filters[d.subType] = !curSelection;
+              setFilter(d.mainType, d.subType, !curSelection);
             }
 
-            if (self.filters[d.subType]) {
+            if (getFilter(d.mainType, d.subType)) {
               // self.allServicesButton.selectAll('#currentServiceSelection').text(`${_.truncate(d.subType,{length: 20})}`);
               self.filterDropdownButton.selectAll('#currentServiceSelection').text(`${_.truncate(d.subType,{length: 30})}`);
               self.filterDropdownButton.attr("class", "btn btn-success dropdown-toggle");
@@ -271,13 +279,18 @@ let FilterDropdownController = function() {
   function filtersUpdated() {
     let filtersToSend = {};
 
-    for (let subcategory of Object.keys(self.filters)) {
-      if (self.filters[subcategory]) {
-        filtersToSend[subcategory] = true;
-      }
-    }
+    // for (let subcategory of Object.keys(self.filters)) {
+    //   if (self.filters[subcategory]) {
+    //     filtersToSend[subcategory] = true;
+    //   }
+    // }
+    Object.keys(self.filters)
+      .filter(key => self.filters[key])
+      .forEach(filter => {
+        filtersToSend[filter] = self.filters[filter];
+      });
 
-    let filteredData = App.models.socialServices.getFilteredData(filtersToSend);
+    let filteredData = App.models.serviceData.getFilteredData(filtersToSend);
 
     App.views.map.updateServicesWithFilter(filteredData);
     App.views.serviceList.populateList(filteredData);
@@ -286,6 +299,18 @@ let FilterDropdownController = function() {
     App.controllers.modal.countChanged(filteredData);
 
     App.controllers.modal.changeButtonState();
+  }
+
+  function createFilterID(mainCategory, subCategory = "*") {
+    return `${App.models.serviceTaxonomy.getCategoryCodeOf(mainCategory)}||${subCategory.replace(/"/g, ' ').trim()}`;
+  }
+
+  function getFilter(main, sub) {
+    return self.filters[createFilterID(main, sub)];
+  }
+
+  function setFilter(main, sub, value) {
+    self.filters[createFilterID(main, sub)] = value;
   }
 
   return {

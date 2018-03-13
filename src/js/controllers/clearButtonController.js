@@ -18,7 +18,7 @@ $(document).ready(function(){
   $("#searchclear").click(function(){
     $("#modalSearchInput").val('').focus();
     $(this).hide();
-      App.controllers.modal.countChanged(App.models.socialServices.getData().length);
-      App.controllers.modal.setCount(App.models.socialServices.getData().length);
+      App.controllers.modal.countChanged(App.models.serviceData.getData().length);
+      App.controllers.modal.setCount(App.models.serviceData.getData().length);
   });
 });

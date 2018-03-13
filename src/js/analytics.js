@@ -32,7 +32,7 @@ Promise.all([documentPromise, windowPromise, less.pageLoadFinished])
   App.controllers = {};
 
   // models
-  App.models.socialServices = new SocialServiceModel();
+  App.models.serviceData = new ServiceDataModel();
   App.models.serviceTaxonomy = new ServiceTaxonomyModel();
   App.models.censusData = new CensusDataModel();
   App.models.boundaryData = new BoundaryDataModel();
@@ -85,11 +85,6 @@ Promise.all([documentPromise, windowPromise, less.pageLoadFinished])
 
     App.views.loadingMessage.updateAndRaise("Loading location, service, and census data");
     let numFinished = 0;
-    let socialServiceP = App.models.socialServices.loadData("./admin-data/EnglewoodLocations.csv")
-      .then((data) => {
-        console.info("Loaded Social Services", ++numFinished);
-        return data;
-      });
     let serviceTaxonomyP = App.models.serviceTaxonomy.loadData("./data/serviceTaxonomy.json")
       .then((data) => {
         console.info("Loaded Service Taxonomy", ++numFinished);
@@ -132,7 +127,14 @@ Promise.all([documentPromise, windowPromise, less.pageLoadFinished])
     let max_subdropdown_height = d3.select('body').node().clientHeight * 0.4;
 
     console.time("load data");
-    Promise.all([socialServiceP, serviceTaxonomyP, boundaryDataP, censusDataP, landInventoryP, schoolDataP])
+    Promise.all([serviceTaxonomyP, boundaryDataP, censusDataP, landInventoryP, schoolDataP])
+      .then(() => {
+        return App.models.serviceData.loadData("admin-data/EnglewoodLocations.csv")
+          .then((data) => {
+            console.info("Loaded Social Services", ++numFinished);
+            return data;
+          });
+      })
       .then(function(values) {
         // App.views.map.createMap();
         console.timeEnd("load data");
@@ -141,7 +143,7 @@ Promise.all([documentPromise, windowPromise, less.pageLoadFinished])
 
         console.time("plotting data");
         App.views.loadingMessage.updateAndRaise("Plotting services and lots");
-        App.views.map.plotServices(App.models.socialServices.getData());
+        App.views.map.plotServices(App.models.serviceData.getData());
         App.views.map.plotLandInventory(App.models.landInventory.getDataByFilter());
         App.views.map.plotSchools(App.models.schoolData.getData());
 
@@ -480,8 +482,18 @@ Promise.all([documentPromise, windowPromise, less.pageLoadFinished])
   }
 
   function checkServicesWithoutCategory() {
-    let serviceTypes = App.models.serviceTaxonomy.getAllTier2Categories();
-    let serviceData = App.models.socialServices.getData();
+    let serviceTypes = (() => {
+      let result = [];
+      const tier1Cat = App.models.serviceTaxonomy.getTier1Categories()
+      tier1Cat.forEach(category => {
+        const code = App.models.serviceTaxonomy.getCategoryCodeOf(category);
+        const tier2 = App.models.serviceTaxonomy.getTier2CategoriesOf(category)
+          .map(cat2 => `${code}||${cat2}`);
+        result = result.concat(tier2);
+      });
+      return result;
+    })();
+    let serviceData = App.models.serviceData.getData();
 
     let filteredData = serviceData.filter(s => {
       // let hasService = false;
@@ -498,5 +510,4 @@ Promise.all([documentPromise, windowPromise, less.pageLoadFinished])
       console.info("Services with no categories", filteredData);
     }
   }
-
 })();

@@ -34,7 +34,7 @@ let SearchController = function() {
   function onInput(d) {
     let searchTerm = self.input.node().value;
 
-    let searchData = App.models.socialServices.getSearchedData(searchTerm);
+    let searchData = App.models.serviceData.getSearchedData(searchTerm);
 
     countChanged(searchData);
 
@@ -67,7 +67,7 @@ let SearchController = function() {
 
       // update service list with search string
 
-      let searchData = App.models.socialServices.getSearchedData(searchTerm);
+      let searchData = App.models.serviceData.getSearchedData(searchTerm);
 
       App.views.map.updateServicesWithFilter(searchData);
       App.views.serviceList.populateList(searchData);

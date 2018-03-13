@@ -51,24 +51,16 @@ let ServiceFilterController = function() {
     return propertyName.replace(/\W+/g, '_')
   }
 
-  function createFilterID(mainCategory, subCategory){
-    return `${mainCategory}--${subCategory}`;
+  function createFilterID(mainCategory, subCategory = "*") {
+    return `${App.models.serviceTaxonomy.getCategoryCodeOf(mainCategory)}||${subCategory.replace(/"/g, ' ').trim()}`;
   }
 
   function getFilter(main, sub) {
-    if(!sub){
-      return self.filters[main];
-    }else{
-      return self.filters[createFilterID(main,sub)];
-    }
+    return self.filters[createFilterID(main,sub)];
   }
 
   function setFilter(main,sub,value) {
-    if (!sub) {
-      self.filters[main] = value;
-    } else {
-      self.filters[createFilterID(main, sub)] = value;
-    }
+    self.filters[createFilterID(main, sub)] = value;
   }
 
   function populateDropdown(max_height) {
@@ -85,7 +77,7 @@ let ServiceFilterController = function() {
       .each(function(c1) {
         let listItem = d3.select(this);
         let tier2Categories = App.models.serviceTaxonomy.getTier2CategoriesOf(c1)
-          .map(c2 => ({mainType: c1, subType: c2 }));
+          .map(c2 => ({ mainType: c1, subType: c2 }));
         let btnGroup = listItem.append("div").classed("btn-group row", true);
 
         let totalBtn = btnGroup.append("button").classed("btn btn-item col-md-10", true)
@@ -275,15 +267,12 @@ let ServiceFilterController = function() {
 
   function getCurrentFilters() {
     let filtersToSend = {};
-    for (let subcategory in self.filters) {
-      if (self.filters[subcategory]) {
-        if(subcategory.indexOf("--") > -1){
-          filtersToSend[subcategory.split("--")[1]] = true;
-        }else{
-          filtersToSend[subcategory] = true;
-        }
-      }
-    }
+    console.debug({filters: self.filters});
+    Object.keys(self.filters)
+      .filter(key => self.filters[key])
+      .forEach(filter => {
+        filtersToSend[filter] = self.filters[filter];
+      });
     return filtersToSend;
   }
 
@@ -303,7 +292,7 @@ let ServiceFilterController = function() {
         button.text(mainCategory[0]);
       }else{
         if(activeFilters.length === 1){
-          let filterName = activeFilters[0].indexOf("--") > -1 ? activeFilters[0].split("--")[1] : activeFilters[0];
+          let filterName = activeFilters[0].indexOf("||") > -1 ? activeFilters[0].split("||")[1] : activeFilters[0];
           button.text(_.truncate(filterName, { length: 30 }));
         }else{
           button.text("Various Services");
@@ -319,7 +308,7 @@ let ServiceFilterController = function() {
 
     let filtersToSend = getCurrentFilters();
 
-    let dataSubset = App.models.socialServices.getFilteredData(filtersToSend);
+    let dataSubset = App.models.serviceData.getFilteredData(filtersToSend);
 
     App.views.map.updateServicesWithFilter(dataSubset);
 

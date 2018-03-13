@@ -38,17 +38,14 @@ const ServiceDataModel = function() {
       const header = h.replace(/"/g, ' ').trim(); // remove extraneous characters
       const code = App.models.serviceTaxonomy.getCategoryCodeOf(header);
       if (code) {
-        result[code] = {
-          '*': data[i]
-        };
+        result[`${code}||*`] = data[i];
         lastKnownMainCategory = code;
       } else if (lastKnownMainCategory) {
-        result[lastKnownMainCategory][header] = data[i];
+        result[`${lastKnownMainCategory}||${header}`] = data[i];
       } else {
-        result[header] = removeExtraQuotes(data[i]);
+        result[header] = removeExtraQuotes(data[i] === undefined ? "" : data[i]);
       }
     });
-
     return result;
   }
 
@@ -114,6 +111,7 @@ const ServiceDataModel = function() {
 
     const headers = csv.shift();
     self.data = csv.map(d => createServiceObjectFromHeaders(headers, d));
+    return;
   }
 
   function getData() {
@@ -131,17 +129,8 @@ const ServiceDataModel = function() {
   }
 
   function getSearchAndFilterSubset() {
-    console.error('Fix implementation for new service data model');
-    const filteredData = Object.keys(self.filters).length == 0 ? self.data :
-      _.filter(self.data, function (el) {
-        for (let property of Object.keys(self.filters)) {
-          if (el[property] == 1) {
-            return true;
-          }
-        }
-
-        return false;
-      });
+    const filteredData = Object.keys(self.filters).length === 0 ? self.data :
+      _.filter(self.data, el => Object.keys(self.filters).filter(property => el[property] == 1).length > 0);
 
     const searchData = self.searchTerm.length === 0 ? self.data :
       _.filter(self.data, el => _.includes(_.lowerCase(el["Organization Name"]), self.searchTerm));

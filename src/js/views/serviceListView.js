@@ -95,7 +95,7 @@ let ServiceListView = function(listID) {
     }
 
     let knownNames = englewoodLocations.map((d) => { return d["Organization Name"]; });
-    console.debug(knownNames);
+    console.debug({knownNames});
 
     //remove previous entries
     // self.serviceList.selectAll(".serviceEntry").remove();
@@ -112,11 +112,15 @@ let ServiceListView = function(listID) {
           let inCategories = (() => {
             let categories = {};
             App.models.serviceTaxonomy.getTier1Categories().forEach(m => {
-              categories[m] = App.models.serviceTaxonomy.getTier2CategoriesOf(m).filter(s => d[s] == 1);
+              const code = App.models.serviceTaxonomy.getCategoryCodeOf(m);
+              categories[m] = App.models.serviceTaxonomy.getTier2CategoriesOf(m)
+                .filter(s => +d[`${code}||${s}`] === 1);
             });
             return categories;
           })();
-          let theseSubCategories = App.models.serviceTaxonomy.getAllTier2Categories().filter(c => d[c] == 1);
+          const numCategories = Object.keys(inCategories)
+            .map(key => inCategories[key].length)
+            .reduce((acc, val) => acc + val, 0);
 
           // create heading
           let panelHeading = panel.append("div")
@@ -173,9 +177,10 @@ let ServiceListView = function(listID) {
               return d["Description of Services"];
             });
 
+          console.debug({inCategories});
           panelBody.append("p")
             .classed("categories-title", true)
-            .text(`All Categories (${theseSubCategories.length})`)
+            .text(`All Categories (${numCategories})`)
             .on('click', function () {
               toggleDescription(d3.select(this), $(panelBody.node()).find(".categories"), "toggle");
             });

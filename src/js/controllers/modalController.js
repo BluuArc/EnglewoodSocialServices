@@ -73,7 +73,7 @@ let modalController = function () {
   function onInput(d) {
     let searchTerm = _.lowerCase(self.orgSearchInput.node().value);
 
-    let searchData = App.models.socialServices.getSearchedData(searchTerm);
+    let searchData = App.models.serviceData.getSearchedData(searchTerm);
 
     countChanged(searchData);
 
@@ -98,7 +98,7 @@ let modalController = function () {
 
     let searchTerm = _.lowerCase(orgSearchText);
 
-    let searchData = App.models.socialServices.getSearchedData(searchTerm);
+    let searchData = App.models.serviceData.getSearchedData(searchTerm);
 
     var address = self.addressInput.node().value;
 
@@ -116,7 +116,7 @@ let modalController = function () {
 
     let searchTerm = _.lowerCase(orgSearchText);
 
-    let searchData = App.models.socialServices.getSearchedData(searchTerm);
+    let searchData = App.models.serviceData.getSearchedData(searchTerm);
 
     var address = self.addressInput.node().value;
 
@@ -136,7 +136,7 @@ let modalController = function () {
         
       } else if (address.length == 0) {
 
-        // var data = App.models.socialServices.getData();
+        // var data = App.models.serviceData.getData();
 
         //to center on default location
         // App.views.map.clearLocation();
