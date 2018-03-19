@@ -167,6 +167,16 @@ Promise.all([documentPromise, windowPromise, less.pageLoadFinished])
           }
 
           button.style("display", showMarkers ? null : "none");
+
+          if (showMarkers) {
+            addLotPixelGlyphs();
+          } else {
+            try {
+              App.views.chartList.removeChart('pixel-englewood');
+              App.views.chartList.removeChart('pixel-west-englewood');
+            } catch (e) { }
+
+          }
         });
 
         // prevent closing of dropdown
@@ -211,7 +221,7 @@ Promise.all([documentPromise, windowPromise, less.pageLoadFinished])
         
         // addOverallLotKiviatChart();
         // addRelativeKiviatChart();
-        addLotPixelGlyphs();
+        // addLotPixelGlyphs();
 
         App.insertIcons();
 
