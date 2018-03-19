@@ -41,15 +41,14 @@ let MarkerToggleController = function (buttonID, buttonTextID, name) {
     let buttonGlyph = self.button.select('.glyphicon');
     let buttonText = self.button.select(buttonTextID);
     buttonGlyph
-      .classed('glyphicon-eye-close', self.visibleMarkers)
-      .classed('glyphicon-eye-open', !self.visibleMarkers);
+      .classed('glyphicon-check', self.visibleMarkers)
+      .classed('glyphicon-unchecked', !self.visibleMarkers);
 
     let toggleFunc;
+    buttonText.text(`${name} Markers`);
     if (self.visibleMarkers) {
-      buttonText.text(`Hide ${name} Markers`);
       toggleFunc = () => self.map.addLayer(self.markerGroup);
     } else {
-      buttonText.text(`Show ${name} Markers`);
       toggleFunc = () => self.map.removeLayer(self.markerGroup);
     }
 
