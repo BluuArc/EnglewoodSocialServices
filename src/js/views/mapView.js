@@ -425,64 +425,9 @@ let MapView = function (div) {
   }
 
   function drawLegend(censusOptions) {
-    if(!d3.select("#svgLegend").empty()){
-      d3.select("#svgLegend").remove();
+    if (App.views.mapLegend) {
+      App.views.mapLegend.drawSVG(censusOptions);
     }
-    let mapColorCodes = d3.scaleOrdinal()
-      .domain(["West Englewood", "Englewood"])
-      .range(["#1f77b4", "#ff7f0e"]);
-    let svg = d3.select("#legend").append("svg").attr("width", 175).attr("height", 150)
-      .style('background-color', "rgba(150,150,150,0.75)")
-      .attr('id', 'svgLegend');
-
-    let group = svg.append("g")
-      .attr("class", "legendOrdinal")
-      .attr("transform", "translate(25,20)");
-      
-      var legendOrdinal = d3.legendColor()
-      .shapeWidth(30)
-      .title("Legend")
-      .titleWidth(120)
-      .scale(mapColorCodes);
-      
-    svg.select(".legendOrdinal")
-      .call(legendOrdinal);
-
-    svg.select(".legendTitle")
-      .attr("text-anchor", "middle")
-      .attr("transform", "translate(62.5,5)");
-
-    let backgroundHeight = +group.node().getBBox().height * 1.4;
-
-    if(censusOptions){
-      let censusGroup = svg.append("g")
-        .attr("class", "legendLinear")
-        .attr("transform", `translate(25,${30 + +group.node().getBBox().height})`);
-
-      let legendLinear = d3.legendColor()
-        .shapeWidth(30)
-        .labelFormat(d3.format(".0f"))
-        .title(`${_.startCase(censusOptions.title)}\n(Block Level)`)
-        .titleWidth(120)
-        .scale(censusOptions.colorScale);
-
-      censusGroup.call(legendLinear);
-
-      censusGroup.select(".legendTitle")
-        .attr("text-anchor", "middle")
-        .attr("transform", "translate(62.5,5)");
-
-      censusGroup.selectAll('.legendCells text.label')
-        .each(function(){
-          let elem = d3.select(this);
-          elem.text(elem.text() + " people");
-        });
-
-      backgroundHeight += +censusGroup.node().getBBox().height;
-    }
-
-    //based off of https://stackoverflow.com/questions/7620509/how-does-one-get-the-height-width-of-an-svg-group-element
-    svg.attr("height", backgroundHeight);
   }
 
   function drawChoropleth(data, title, options = {}) {
@@ -683,6 +628,7 @@ let MapView = function (div) {
 
     centerAroundSelection,
 
+    drawLegend,
     drawChoropleth,
     drawEnglewoodOutline,
 

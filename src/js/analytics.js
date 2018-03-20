@@ -61,7 +61,11 @@ Promise.all([documentPromise, windowPromise, less.pageLoadFinished])
     App.views.loadingMessage.startLoading("Loading Map");
     App.views.map = new MapView("serviceMap");
     App.views.map.drawEnglewoodOutline();
-
+    App.views.mapLegend = new MapLegendView({
+      parent: d3.select('#legend')
+    });
+    App.views.map.drawLegend();
+    
     App.views.loadingMessage.updateAndRaise("Initializing buttons and interface elements");
     App.views.chartList = new ChartListView("#chartList");
     App.views.chartList.makeCollapsing("#toggleHideChartsButton", "#chartListWrapper");
