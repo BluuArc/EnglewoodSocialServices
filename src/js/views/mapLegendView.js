@@ -8,7 +8,7 @@ const MapLegendView = function (initOptions = {}) {
     id: null,
     parent: null,
     svg: null,
-    columnWidth: 175,
+    columnWidth: 190,
     leftMargin: 25,
     topMargin: 20,
     mapColorCodes: null,
@@ -16,7 +16,7 @@ const MapLegendView = function (initOptions = {}) {
 
   init();
   function init() {
-    self.id = initOptions.id || '#svgLegend';
+    self.id = initOptions.id || 'svgLegend';
     self.parent = initOptions.parent;
     self.mapColorCodes = d3.scaleOrdinal()
       .domain(["West Englewood", "Englewood"])
@@ -28,13 +28,12 @@ const MapLegendView = function (initOptions = {}) {
       self.svg.remove();
     }
 
-    if (!self.parent.select(self.id).empty()) {
-      self.parent.select(self.id).remove();
+    if (!self.parent.select(`#${self.id}`).empty()) {
+      self.parent.select(`#${self.id}`).remove();
     }
 
-    const svg = self.parent.append('svg')
+    const svg = self.parent.insert('svg', ':first-child')
       .attr('width', self.columnWidth * 3).attr('height', 150)
-      .style('background-color', 'rgba(150,150,150,0.75)')
       .attr('id', self.id);
 
     const [leftGroup, middleGroup, rightGroup] = [
@@ -158,11 +157,11 @@ const MapLegendView = function (initOptions = {}) {
       const icon = App.views.map.getSmallIcon(label.id);
       markerLegendGroup.append('svg')
         .html(d3.select($(icon.options.html).get(0)).html())
-        .attr('x', 7.5).attr('y', topMarkerOffset + markerHeight * index + labelOffset);
+        .attr('x', 10).attr('y', topMarkerOffset + markerHeight * index + labelOffset);
 
       const labelElement = markerLegendGroup.append('text')
         .classed('label', true)
-        .attr('transform', `translate(40, ${topLabelOffset + labelOffset + lineHeight*index})`);
+        .attr('transform', `translate(37.5, ${topLabelOffset + labelOffset + lineHeight*index})`);
       labels.forEach((d, i) => {
         labelElement.append('tspan')
           .attr('x', 0)

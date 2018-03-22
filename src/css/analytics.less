@@ -534,10 +534,28 @@ text.delete-button-symbol {
   z-index: 100;
   right: 10px;
   top: 75px;
+  background-color: rgba(150, 150, 150, 0.75);
 
-  text.legendTitle {
-    font-weight: bold;
+  #svgLegend {
+    text.legendTitle {
+      font-weight: bold;
+    }
+
+    .label {
+      font-size: 0.85em;
+    }
   }
+
+  #comparison-area {
+    display: block;
+    width: 100%;
+
+    foreignobject {
+      width: 100%;
+      height: 100%;
+    }
+  }
+
 }
 
 .glyphicon.glyphicon-map-marker {
@@ -802,14 +820,4 @@ text.delete-button-symbol {
 .svg-inserted svg.svg-icon-svg {
   width: 14px;
   height: 23px;
-}
-
-#svgLegend {
-  .legendTitle {
-    font-size: 1.25em;
-  }
-
-  .legendCells .label {
-    font-size: 0.85em;
-  }
 }
