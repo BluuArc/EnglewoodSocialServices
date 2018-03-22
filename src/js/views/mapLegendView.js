@@ -91,7 +91,7 @@ const MapLegendView = function (initOptions = {}) {
     ];
 
     markerLegendGroup.append('text')
-      .classed('.legendTitle', true)
+      .classed('legendTitle', true)
       .attr('text-anchor', 'middle')
       .attr('transform', 'translate(62.5,0)')
       .text('Markers');
@@ -116,10 +116,64 @@ const MapLegendView = function (initOptions = {}) {
   function drawRightColumn(svg) {
     const rightGroup = svg.append("g")
       .attr("id", "right-column")
-      .attr("transform", `translate(${2 * self.columnWidth},${self.topMargin})`);
+      .attr("transform", `translate(${2 * self.columnWidth - self.leftMargin},${self.topMargin})`);
 
-    rightGroup.append('text')
-      .text('lot marker legend here');
+    // rightGroup.append('text')
+    //   .text('lot marker legend here');
+
+    const markerLegendGroup = rightGroup.append('g')
+      .attr('transform', `translate(20,0)`);
+
+    const markerLabels = [{
+        id: 'Residential',
+        name: 'Residential'
+      },
+      {
+        id: 'BCM',
+        name: ['Business, Commercial,', 'and Manufacturing']
+      },
+      {
+        id: 'POS',
+        name: 'Parks and Open Space'
+      },
+      {
+        id: 'PD',
+        name: ['Planned Manufacturing', 'Districts and Development']
+      }
+    ];
+
+    markerLegendGroup.append('text')
+      .classed('legendTitle', true)
+      .attr('text-anchor', 'middle')
+      .attr('transform', 'translate(82.5,0)')
+      .text('Lot Marker Types');
+
+    const lineHeight = 30;
+    const markerHeight = 30;
+    const topMarkerOffset = markerHeight * 0.5;
+    const topLabelOffset = 20 * 1.35;
+    let labelOffset = 0;
+    markerLabels.map((label, index) => {
+      const labels = (Array.isArray(label.name) ? label.name : [label.name]);
+      const icon = App.views.map.getSmallIcon(label.id);
+      markerLegendGroup.append('svg')
+        .html(d3.select($(icon.options.html).get(0)).html())
+        .attr('x', 7.5).attr('y', topMarkerOffset + markerHeight * index + labelOffset);
+
+      const labelElement = markerLegendGroup.append('text')
+        .classed('label', true)
+        .attr('transform', `translate(40, ${topLabelOffset + labelOffset + lineHeight*index})`);
+      labels.forEach((d, i) => {
+        labelElement.append('tspan')
+          .attr('x', 0)
+          .attr('dy', i === 0 ? '0' : '1.2em')
+          .text(d);
+      });
+
+      if (labels.length > 1) {
+        labelOffset += lineHeight * 0.25 * (labels.length - 1);
+      }
+    });
 
     return rightGroup;
   }
@@ -129,7 +183,7 @@ const MapLegendView = function (initOptions = {}) {
     const censusGroup = svg.append("g")
       .attr("id", "middle-column")
       .attr("class", "legendLinear")
-      .attr("transform", `translate(${self.columnWidth},${self.topMargin})`);
+      .attr("transform", `translate(${self.columnWidth + self.leftMargin * 0.5},${self.topMargin})`);
     if (censusOptions) {
       // const censusGroup = svg.append("g")
       //   .attr("class", "legendLinear")
@@ -140,7 +194,7 @@ const MapLegendView = function (initOptions = {}) {
         .shapeWidth(30)
         .labelFormat(d3.format(".0f"))
         .title(`${_.startCase(censusOptions.title)}\n(Block Level)`)
-        .titleWidth(120)
+        .titleWidth(180)
         .scale(censusOptions.colorScale);
 
       censusGroup.call(legendLinear);
@@ -159,7 +213,8 @@ const MapLegendView = function (initOptions = {}) {
     } else {
       censusGroup.append('text')
         .text('Select a census category')
-        // .attr('transform', `translate(0, ${backgroundHeight * 0.25})`);
+        .classed('legendTitle', true)
+        .attr('transform', `translate(${-self.leftMargin * 0.5}, 0)`);
     }
 
     return censusGroup;
