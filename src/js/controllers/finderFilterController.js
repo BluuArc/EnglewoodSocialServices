@@ -1,7 +1,9 @@
-"use strict";
+/* global d3 L _ */
+'use strict';
 
 var App = App || {};
 
+// eslint-disable-next-line no-unused-vars
 let FilterDropdownController = function() {
   let self = {
     filterDropdownList: null,
@@ -12,9 +14,9 @@ let FilterDropdownController = function() {
 
     mainCategoryStates: {},
     mainStateToIcon: {
-      "none": "glyphicon-unchecked",
-      "some": "glyphicon-plus",
-      "all": "glyphicon-check"
+      'none': 'glyphicon-unchecked',
+      'some': 'glyphicon-plus',
+      'all': 'glyphicon-check'
     }
   };
 
@@ -24,23 +26,23 @@ let FilterDropdownController = function() {
 
   function attachAllServicesButton(id) {
     self.allServicesButton = d3.selectAll(id)
-      .on('click', resetFilters)
+      .on('click', resetFilters);
   }
 
   function resetFilters() {
-    console.debug("Reset Filters");
+    console.debug('Reset Filters');
 
     self.filters = {};
 
     for (let mainCategory of Object.keys(self.mainCategoryStates)) {
-      self.mainCategoryStates[mainCategory] = "none";
+      self.mainCategoryStates[mainCategory] = 'none';
     }
 
-    self.filterDropdownList.selectAll(".glyphicon")
-      .attr("class", "glyphicon glyphicon-unchecked");
+    self.filterDropdownList.selectAll('.glyphicon')
+      .attr('class', 'glyphicon glyphicon-unchecked');
 
-    self.filterDropdownButton.selectAll('#currentServiceSelection').text("Select Services...");
-    self.filterDropdownButton.attr("class", "btn btn-default dropdown-toggle");
+    self.filterDropdownButton.selectAll('#currentServiceSelection').text('Select Services...');
+    self.filterDropdownButton.attr('class', 'btn btn-default dropdown-toggle');
 
     // self.allServicesButton.selectAll('#currentServiceSelection').text("Clear Selection");
     // self.allServicesButton.attr('disabled',true);
@@ -57,70 +59,70 @@ let FilterDropdownController = function() {
     let tier1Categories = App.models.serviceTaxonomy.getTier1Categories();
 
     for (let category of tier1Categories) {
-      self.mainCategoryStates[category] = "none"; // "some", "all"
+      self.mainCategoryStates[category] = 'none'; // "some", "all"
     }
 
-    self.filterDropdownList.selectAll(".mainType")
+    self.filterDropdownList.selectAll('.mainType')
       .data(tier1Categories)
-      .enter().append("li")
-      .attr("class", "dropdown-submenu serviceType")
+      .enter().append('li')
+      .attr('class', 'dropdown-submenu serviceType')
       .each(function(c1) {
         let listItem = d3.select(this);
         let tier2Categories = App.models.serviceTaxonomy.getTier2CategoriesOf(c1)
           .map(c2 => ({ mainType: c1, subType: c2 }));
 
         // create link within tab
-        listItem.append("a")
-          .attr("tabindex", -1)
-          .attr("id", "main_" + convertPropertyToID(c1))
-          .html("<span class='glyphicon glyphicon-unchecked'></span>" + c1)
+        listItem.append('a')
+          .attr('tabindex', -1)
+          .attr('id', 'main_' + convertPropertyToID(c1))
+          .html('<span class=\'glyphicon glyphicon-unchecked\'></span>' + c1)
           // .html(c1)
-            .on((L.Browser.mobile ? "click" : "mouseover"), function(d) {
-              d3.event.stopPropagation();
+          .on((L.Browser.mobile ? 'click' : 'mouseover'), function() {
+            d3.event.stopPropagation();
 
-              self.filterDropdownList.selectAll(".serviceType").classed("open", false);
-              d3.select(this).node().parentNode.classList.toggle("open");
-            });
+            self.filterDropdownList.selectAll('.serviceType').classed('open', false);
+            d3.select(this).node().parentNode.classList.toggle('open');
+          });
 
 
         // create tab content div for this t1 category
-        let secondaryDropdown = listItem.append("ul")
-          .attr("class", "dropdown-menu");
+        let secondaryDropdown = listItem.append('ul')
+          .attr('class', 'dropdown-menu');
 
-        secondaryDropdown.append("li")
-          .attr("class", "serviceSubtype")
-          .append("a")
+        secondaryDropdown.append('li')
+          .attr('class', 'serviceSubtype')
+          .append('a')
           .datum(c1)
-          .attr("id", "main_" + convertPropertyToID(c1))
-          .html("<span class='glyphicon glyphicon-unchecked'></span>Select All")
-          .on("click", function(c1) {
+          .attr('id', 'main_' + convertPropertyToID(c1))
+          .html('<span class=\'glyphicon glyphicon-unchecked\'></span>Select All')
+          .on('click', function(c1) {
             // d3.event.stopPropagation(); // prevent menu close on link click
-            self.filterDropdownList.selectAll(".serviceType").classed("open", false);
+            self.filterDropdownList.selectAll('.serviceType').classed('open', false);
 
             //reset other filters to allow for only one main category selection at a time
             for (let mainCategory of Object.keys(self.mainCategoryStates)) {
               if (mainCategory !== c1) {
-                self.mainCategoryStates[mainCategory] = "none";
+                self.mainCategoryStates[mainCategory] = 'none';
               }
             }
-            self.filterDropdownList.selectAll(".glyphicon")
-              .attr("class", "glyphicon glyphicon-unchecked");
+            self.filterDropdownList.selectAll('.glyphicon')
+              .attr('class', 'glyphicon glyphicon-unchecked');
             self.filters = {};
 
 
             //update UI for main category selection
             let selected;
-            if (self.mainCategoryStates[c1] === "all") {
-              self.mainCategoryStates[c1] = "none";
+            if (self.mainCategoryStates[c1] === 'all') {
+              self.mainCategoryStates[c1] = 'none';
               selected = false;
             } else {
-              self.mainCategoryStates[c1] = "all";
+              self.mainCategoryStates[c1] = 'all';
               selected = true;
             }
 
             if (selected) {
               self.filterDropdownButton.selectAll('#currentServiceSelection').text(`${c1}`);
-              self.filterDropdownButton.attr("class", "btn btn-success dropdown-toggle");
+              self.filterDropdownButton.attr('class', 'btn btn-success dropdown-toggle');
 
               self.allServicesButton.attr('disabled', null);
             } else {
@@ -129,7 +131,7 @@ let FilterDropdownController = function() {
 
             updateMainCategoryIcon(c1);
 
-            listItem.select("ul").selectAll(".serviceSubtype")
+            listItem.select('ul').selectAll('.serviceSubtype')
               .each(function(d) {
                 let subType = d;
                 if (typeof d === 'object') {
@@ -144,31 +146,31 @@ let FilterDropdownController = function() {
             filtersUpdated();
           });
 
-        secondaryDropdown.append("li").attr("class", "divider");
+        secondaryDropdown.append('li').attr('class', 'divider');
 
-        secondaryDropdown.selectAll(".secondaryCategory")
+        secondaryDropdown.selectAll('.secondaryCategory')
           .data(tier2Categories)
-          .enter().append("li")
-          .attr("class", "secondaryCategory serviceSubtype")
-          .append("a")
+          .enter().append('li')
+          .attr('class', 'secondaryCategory serviceSubtype')
+          .append('a')
           // .datum(c2)
-          .attr("id", d => "sub_" + convertPropertyToID(d.subType))
+          .attr('id', d => 'sub_' + convertPropertyToID(d.subType))
           .html(function(d) {
-            return "<span class='glyphicon glyphicon-unchecked'></span>" + d.subType;
+            return '<span class=\'glyphicon glyphicon-unchecked\'></span>' + d.subType;
           })
-          .on("click", function(d) {
+          .on('click', function(d) {
             // d3.event.stopPropagation(); // prevent menu close on link click
 
             //reset other filters to allow for only one sub category selection at a time
             let isMainCategorySelection = Object.keys(self.filters).length > 1;
             for (let mainCategory of Object.keys(self.mainCategoryStates)) {
               if (mainCategory !== d.mainType) {
-                self.mainCategoryStates[mainCategory] = "none";
+                self.mainCategoryStates[mainCategory] = 'none';
               }
             }
-            self.filterDropdownList.selectAll(".glyphicon")
-              .attr("class", "glyphicon glyphicon-unchecked");
-            listItem.select("ul").selectAll(".serviceSubtype")
+            self.filterDropdownList.selectAll('.glyphicon')
+              .attr('class', 'glyphicon glyphicon-unchecked');
+            listItem.select('ul').selectAll('.serviceSubtype')
               .each(function(subType) {
                 console.debug(subType);
                 if (typeof subType === 'object') {
@@ -197,7 +199,7 @@ let FilterDropdownController = function() {
             if (getFilter(d.mainType, d.subType)) {
               // self.allServicesButton.selectAll('#currentServiceSelection').text(`${_.truncate(d.subType,{length: 20})}`);
               self.filterDropdownButton.selectAll('#currentServiceSelection').text(`${_.truncate(d.subType,{length: 30})}`);
-              self.filterDropdownButton.attr("class", "btn btn-success dropdown-toggle");
+              self.filterDropdownButton.attr('class', 'btn btn-success dropdown-toggle');
 
               self.allServicesButton.attr('disabled', null);
             } else {
@@ -220,7 +222,7 @@ let FilterDropdownController = function() {
   }
 
   function convertPropertyToID(propertyName) {
-    return propertyName.replace(/\W+/g, '_')
+    return propertyName.replace(/\W+/g, '_');
   }
 
   function updateMainCategoryOnSubUpdate(category) {
@@ -237,43 +239,43 @@ let FilterDropdownController = function() {
     }
 
     if (hasChecked && hasUnchecked) {
-      self.mainCategoryStates[category] = "some";
+      self.mainCategoryStates[category] = 'some';
     } else if (hasChecked) {
-      self.mainCategoryStates[category] = "all";
+      self.mainCategoryStates[category] = 'all';
     } else {
-      self.mainCategoryStates[category] = "none";
+      self.mainCategoryStates[category] = 'none';
     }
 
     updateMainCategoryIcon(category);
   }
 
   function updateMainCategoryIcon(category) {
-    let id = "#main_" + convertPropertyToID(category);
+    let id = '#main_' + convertPropertyToID(category);
 
-    let item = self.filterDropdownList.selectAll(".serviceType>" + id);
-    let selectAllButton = self.filterDropdownList.selectAll(".serviceSubtype>" + id);
+    let item = self.filterDropdownList.selectAll('.serviceType>' + id);
+    let selectAllButton = self.filterDropdownList.selectAll('.serviceSubtype>' + id);
     let state = self.mainCategoryStates[category];
 
-    item.select(".glyphicon")
-      .attr("class", "glyphicon " + self.mainStateToIcon[state]);
+    item.select('.glyphicon')
+      .attr('class', 'glyphicon ' + self.mainStateToIcon[state]);
 
-    if (state === "some") {
-      selectAllButton.select(".glyphicon")
-        .attr("class", "glyphicon glyphicon-unchecked");
+    if (state === 'some') {
+      selectAllButton.select('.glyphicon')
+        .attr('class', 'glyphicon glyphicon-unchecked');
     } else {
-      selectAllButton.select(".glyphicon")
-        .attr("class", "glyphicon " + self.mainStateToIcon[state]);
+      selectAllButton.select('.glyphicon')
+        .attr('class', 'glyphicon ' + self.mainStateToIcon[state]);
     }
   }
 
   function updateSubCategoryIcon(category) {
-    let id = "#sub_" + convertPropertyToID(category);
+    let id = '#sub_' + convertPropertyToID(category);
 
     let item = self.filterDropdownList.selectAll(id);
     let state = self.filters[category];
 
-    item.select(".glyphicon")
-      .attr("class", "glyphicon " + (state ? "glyphicon-check" : "glyphicon-unchecked"));
+    item.select('.glyphicon')
+      .attr('class', 'glyphicon ' + (state ? 'glyphicon-check' : 'glyphicon-unchecked'));
   }
 
   function filtersUpdated() {
@@ -301,7 +303,7 @@ let FilterDropdownController = function() {
     App.controllers.modal.changeButtonState();
   }
 
-  function createFilterID(mainCategory, subCategory = "*") {
+  function createFilterID(mainCategory, subCategory = '*') {
     return `${App.models.serviceTaxonomy.getCategoryCodeOf(mainCategory)}||${subCategory.replace(/"/g, ' ').trim()}`;
   }
 

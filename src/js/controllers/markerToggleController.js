@@ -1,7 +1,9 @@
-"use strict";
+/* global d3 */
+'use strict';
 
 var App = App || {};
 
+// eslint-disable-next-line no-unused-vars
 let MarkerToggleController = function (buttonID, buttonTextID, name) {
   let self = {
     button: null,
@@ -16,7 +18,7 @@ let MarkerToggleController = function (buttonID, buttonTextID, name) {
 
   function init() {
     self.button = d3.select(buttonID)
-      .on("click", handleButtonClick);
+      .on('click', handleButtonClick);
   }
 
   function attachMarkerGroup(group) {

@@ -1,7 +1,9 @@
-"use strict";
+/* global d3 $ */
+'use strict';
 
 var App = App || {};
 
+// eslint-disable-next-line no-unused-vars
 let LocationButtonController = function() {
   let self = {
     locationButton: null,
@@ -17,9 +19,9 @@ let LocationButtonController = function() {
 
   function attachSearchInput(){
     self.locationButton = d3.select('#addressInput')
-      .on("keyup", function() {
+      .on('keyup', function() {
         if (d3.event.keyCode == 13) {
-          console.debug("enter!");
+          console.debug('enter!');
           // hitting enter in the input is equivalent to pressing accept button
           var address = d3.select('#addressInput').node().value;
           getLatLngFromAddress(address);
@@ -69,8 +71,8 @@ let LocationButtonController = function() {
       updateCurrentLocation(pos);
     }
 
-    function highAccuracyErr(error) {
-      console.warn("Can't get your location (high accuracy attempt)");
+    function highAccuracyErr() {
+      console.warn('Can\'t get your location (high accuracy attempt)');
       navigator.geolocation.getCurrentPosition(
         successCallback,
         lowAccuracyErr, {
@@ -81,14 +83,14 @@ let LocationButtonController = function() {
     }
 
     function lowAccuracyErr(error) {
-      var msg = "Can't get your location (low accuracy attempt). Error = ";
+      var msg = 'Can\'t get your location (low accuracy attempt). Error = ';
       if (error.code == 1)
-        msg += "PERMISSION_DENIED";
+        msg += 'PERMISSION_DENIED';
       else if (error.code == 2)
-        msg += "POSITION_UNAVAILABLE";
+        msg += 'POSITION_UNAVAILABLE';
       else if (error.code == 3)
-        msg += "TIMEOUT";
-      msg += ", msg = " + error.message;
+        msg += 'TIMEOUT';
+      msg += ', msg = ' + error.message;
 
       alert(msg);
     }
@@ -106,15 +108,15 @@ let LocationButtonController = function() {
     var replaced = address.split(' ').join('+');
     console.debug(replaced);
 
-    var object = d3.json("https://maps.googleapis.com/maps/api/geocode/json?address=" + replaced + "&key=AIzaSyAUDFjBPoiSQprcBvEhc9w6SJeR3EK4IGI", function(err, d) {
+    d3.json('https://maps.googleapis.com/maps/api/geocode/json?address=' + replaced + '&key=AIzaSyAUDFjBPoiSQprcBvEhc9w6SJeR3EK4IGI', function(err, d) {
       
       if (d.results && d.results[0]) {
-      let pos = d.results[0].geometry.location;
+        let pos = d.results[0].geometry.location;
 
-      updateCurrentLocation(pos);
-      callback(pos);
+        updateCurrentLocation(pos);
+        callback(pos);
       } else {
-        alert("Address Not Found");
+        alert('Address Not Found');
       }
     });
 
