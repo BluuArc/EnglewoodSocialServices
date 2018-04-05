@@ -550,9 +550,20 @@ text.delete-button-symbol {
     display: block;
     width: 100%;
 
-    foreignobject {
-      width: 100%;
-      height: 100%;
+    .row {
+      margin-bottom: 15px;
+    }
+
+    .row, .row #selection-area, .row #graph-area {
+      height: 25rem;
+    }
+
+    .row #selection-area {
+      overflow-y: scroll;
+    }
+
+    .row #graph-area {
+      padding-left: 0;
     }
   }
 
