@@ -1,7 +1,9 @@
-"use strict";
+/* global d3 turf */
+'use strict';
 
 var App = App || {};
 
+// eslint-disable-next-line no-unused-vars
 let BoundaryDataModel = function () {
   let self = {
     westEnglewoodPoly: null,
@@ -12,20 +14,20 @@ let BoundaryDataModel = function () {
   function loadData() {
     return new Promise(function (fulfill, reject) {
       const validProperties = ['WEST ENGLEWOOD','ENGLEWOOD'];
-      d3.json("./data/EnglewoodCommunityAreaBoundaries.geojson", function (error, json) {
-          if(error) reject(error);
+      d3.json('./data/EnglewoodCommunityAreaBoundaries.geojson', function (error, json) {
+        if(error) reject(error);
 
-          // self.geoData = json;
-          for(let feature of json.features){
-            let index = validProperties.indexOf(feature.properties.community);
-            if(index === 0){
-              self.westEnglewoodPoly = turf.polygon(feature.geometry.coordinates[0]);
-            }else if(index === 1){
-              self.englewoodPoly = turf.polygon(feature.geometry.coordinates[0]);
-            }
+        // self.geoData = json;
+        for(let feature of json.features){
+          let index = validProperties.indexOf(feature.properties.community);
+          if(index === 0){
+            self.westEnglewoodPoly = turf.polygon(feature.geometry.coordinates[0]);
+          }else if(index === 1){
+            self.englewoodPoly = turf.polygon(feature.geometry.coordinates[0]);
           }
-          fulfill();
         }
+        fulfill();
+      }
       );
     });
   }

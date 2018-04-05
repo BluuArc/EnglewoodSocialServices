@@ -1,7 +1,9 @@
-"use strict";
+/* global d3 _ */
+'use strict';
 
 var App = App || {};
 
+// eslint-disable-next-line no-unused-vars
 let CrimeDataModel = function () {
   let self = {
     data: null
@@ -17,6 +19,7 @@ let CrimeDataModel = function () {
     });
   }
 
+  // eslint-disable-next-line no-unused-vars
   function loadJSON(path) {
     return new Promise(function (fulfill, reject) {
       d3.json(path, function (error, json) {
@@ -30,15 +33,15 @@ let CrimeDataModel = function () {
   function loadData() {
     let englewoodData, westEnglewoodData;
     // let ePromise = loadJSON("./data/Englewood_Crimes_-_2001_to_2016.json")
-    let ePromise = loadCSV("./data/Englewood_Crimes_-_2001_to_2016.csv")
+    let ePromise = loadCSV('./data/Englewood_Crimes_-_2001_to_2016.csv')
       .then((data) => {
-        englewoodData = data.map((c) => { c.Area = "Englewood"; return c; });
+        englewoodData = data.map((c) => { c.Area = 'Englewood'; return c; });
         return;
       });
     // let wePromise = loadJSON("./data/West_Englewood_Crimes_-_2001_to_2016.json")
-    let wePromise = loadCSV("./data/West_Englewood_Crimes_-_2001_to_2016.csv")
+    let wePromise = loadCSV('./data/West_Englewood_Crimes_-_2001_to_2016.csv')
       .then((data) => {
-        westEnglewoodData = data.map((c) => { c.Area = "West Englewood"; return c; });
+        westEnglewoodData = data.map((c) => { c.Area = 'West Englewood'; return c; });
 
         return;
       });
@@ -47,7 +50,7 @@ let CrimeDataModel = function () {
       .then(() => {
         //combine the data and sort in ascending order by date
         self.data = englewoodData.concat(westEnglewoodData).sort((a,b) => { return new Date(a.Date) - new Date(b.Date); });
-        console.debug("Done loading 2001-2016 crime data");
+        console.debug('Done loading 2001-2016 crime data');
         console.debug(self);
       });
   }

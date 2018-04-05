@@ -1,7 +1,9 @@
-"use strict";
+/* global d3 _ */
+'use strict';
 
 var App = App || {};
 
+// eslint-disable-next-line no-unused-vars
 let LandInventoryModel = function () {
   let self = {
     data: null,
@@ -21,6 +23,7 @@ let LandInventoryModel = function () {
     });
   }
 
+  // eslint-disable-next-line no-unused-vars
   function loadJSON(path) {
     return new Promise(function (fulfill, reject) {
       d3.json(path, function (error, json) {
@@ -35,13 +38,13 @@ let LandInventoryModel = function () {
   function loadData() {
     let englewoodData, westEnglewoodData;
     // let ePromise = loadJSON("./data/EnglewoodLandInventory.json")
-    let ePromise = loadCSV("./data/EnglewoodLandInventory.csv")
+    let ePromise = loadCSV('./data/EnglewoodLandInventory.csv')
       .then((data) => {
         englewoodData = data.map((c) => { 
-          c.Area = "Englewood"; 
+          c.Area = 'Englewood'; 
 
           //extract coordinates from location field
-          let coords = c.Location.slice(c.Location.lastIndexOf("(") + 1).replace(")", "").split(",");
+          let coords = c.Location.slice(c.Location.lastIndexOf('(') + 1).replace(')', '').split(',');
           c.Latitude = coords[0];
           c.Longitude = coords[1];
 
@@ -50,13 +53,13 @@ let LandInventoryModel = function () {
         return;
       });
     // let wePromise = loadJSON("./data/WestEnglewoodLandInventory.json")
-    let wePromise = loadCSV("./data/WestEnglewoodLandInventory.csv")
+    let wePromise = loadCSV('./data/WestEnglewoodLandInventory.csv')
       .then((data) => {
         westEnglewoodData = data.map((c) => { 
-          c.Area = "West Englewood";
+          c.Area = 'West Englewood';
         
           //extract coordinates from location field
-          let coords = c.Location.slice(c.Location.lastIndexOf("(") + 1).replace(")", "").split(",");
+          let coords = c.Location.slice(c.Location.lastIndexOf('(') + 1).replace(')', '').split(',');
           c.Latitude = coords[0];
           c.Longitude = coords[1];
 
@@ -70,7 +73,7 @@ let LandInventoryModel = function () {
         self.splitData.englewood = englewoodData;
         self.splitData.westEnglewood = westEnglewoodData;
         self.data = englewoodData.concat(westEnglewoodData);
-        console.debug("Done loading land inventory data");
+        console.debug('Done loading land inventory data');
         console.debug(self);
       });
   }
@@ -81,24 +84,24 @@ let LandInventoryModel = function () {
 
   function getDataByFilter(filterFn) {
     if(!filterFn) return self.data;
-    console.time("getDataByFilter");
+    console.time('getDataByFilter');
     let results = _.filter(self.data, filterFn);
-    console.timeEnd("getDataByFilter");
+    console.timeEnd('getDataByFilter');
     return results;
   }
 
   function getZoneClassification(lot, isFullName) {
-    let zone = lot["Zoning Classification"];
-    if (zone.indexOf("R") === 0) {
-      return "Residential";
-    } else if (zone.indexOf("PD") === 0 || zone.indexOf("PMD") === 0) {
-      return isFullName ? "Planned Manufacturing Districts and Development" : "PD";
-    } else if (zone.indexOf("POS") === 0) {
-      return isFullName ? "Parks and Open Space" : "POS";
-    } else if (zone.indexOf("B") === 0 || zone.indexOf("C") === 0 || zone.indexOf("M") === 0) {
-      return isFullName ? "Business, Commercial, and Manufacturing" : "BCM";
+    let zone = lot['Zoning Classification'];
+    if (zone.indexOf('R') === 0) {
+      return 'Residential';
+    } else if (zone.indexOf('PD') === 0 || zone.indexOf('PMD') === 0) {
+      return isFullName ? 'Planned Manufacturing Districts and Development' : 'PD';
+    } else if (zone.indexOf('POS') === 0) {
+      return isFullName ? 'Parks and Open Space' : 'POS';
+    } else if (zone.indexOf('B') === 0 || zone.indexOf('C') === 0 || zone.indexOf('M') === 0) {
+      return isFullName ? 'Business, Commercial, and Manufacturing' : 'BCM';
     } else {
-      return "Other";
+      return 'Other';
     }
   }
 

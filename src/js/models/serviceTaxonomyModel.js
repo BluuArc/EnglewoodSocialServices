@@ -1,7 +1,9 @@
-"use strict";
+/* global d3 _ */
+'use strict';
 
 var App = App || {};
 
+// eslint-disable-next-line no-unused-vars
 let ServiceTaxonomyModel = function() {
   let self = {
     data: null,
@@ -28,7 +30,7 @@ let ServiceTaxonomyModel = function() {
         console.debug(self.data);
 
         resolve();
-      })
+      });
     });
   }
 
@@ -54,7 +56,7 @@ let ServiceTaxonomyModel = function() {
     return self.data[self.categoryCodeMap[tier1Category.toLowerCase()]].children.map(c => c.trim());
   }
 
-  function getCategoryCodeOf(tier1Category = "") {
+  function getCategoryCodeOf(tier1Category = '') {
     return self.categoryCodeMap[tier1Category.toLowerCase()];
   }
 
@@ -65,6 +67,7 @@ let ServiceTaxonomyModel = function() {
   return {
     loadData,
     getTier1Categories,
+    getTier1CategoriesOf,
     getAllTier2Categories,
     getTier2CategoriesOf,
     getCategoryCodeOf,

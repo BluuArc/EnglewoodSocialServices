@@ -1,13 +1,15 @@
-"use strict";
+/* global d3 _ */
+'use strict';
 
 var App = App || {};
 
+// eslint-disable-next-line no-unused-vars
 let SocialServiceModel = function() {
   let self = {
     data: null,
 
     filters: {},
-    searchTerm: ""
+    searchTerm: ''
   };
 
   init();
@@ -25,7 +27,7 @@ let SocialServiceModel = function() {
         self.data = data.filter((d) => {
           let isNotEmpty = false;
           for(let property in d){
-            if(typeof d[property] === "string" && d[property].length > 0){
+            if(typeof d[property] === 'string' && d[property].length > 0){
               isNotEmpty = true;
             }
           }
@@ -33,7 +35,7 @@ let SocialServiceModel = function() {
           return isNotEmpty;
         });
         resolve();
-      })
+      });
     });
   }
 
@@ -83,7 +85,7 @@ let SocialServiceModel = function() {
       });
 
     let searchData = self.searchTerm.length === 0 ? self.data :
-      _.filter(self.data, el => _.includes(_.lowerCase(el["Organization Name"]), self.searchTerm));
+      _.filter(self.data, el => _.includes(_.lowerCase(el['Organization Name']), self.searchTerm));
 
     return _.intersection(filteredData, searchData);
 

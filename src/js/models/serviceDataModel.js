@@ -1,13 +1,15 @@
-"use strict";
+/* global d3 _ */
+'use strict';
 
 var App = App || {};
 
+// eslint-disable-next-line no-unused-vars
 const ServiceDataModel = function() {
   const self = {
     data: null,
 
     filters: {},
-    searchTerm: ""
+    searchTerm: ''
   };
 
   init();
@@ -43,7 +45,7 @@ const ServiceDataModel = function() {
       } else if (lastKnownMainCategory) {
         result[`${lastKnownMainCategory}||${header}`] = data[i];
       } else {
-        result[header] = removeExtraQuotes(data[i] === undefined ? "" : data[i]);
+        result[header] = removeExtraQuotes(data[i] === undefined ? '' : data[i]);
       }
     });
     return result;
@@ -123,7 +125,7 @@ const ServiceDataModel = function() {
     return getSearchAndFilterSubset();
   }
 
-  function getSearchedData(term = "") {
+  function getSearchedData(term = '') {
     self.searchTerm = term.toLowerCase();
     return getSearchAndFilterSubset();
   }
@@ -133,7 +135,7 @@ const ServiceDataModel = function() {
       _.filter(self.data, el => Object.keys(self.filters).filter(property => el[property] == 1).length > 0);
 
     const searchData = self.searchTerm.length === 0 ? self.data :
-      _.filter(self.data, el => _.includes(_.lowerCase(el["Organization Name"]), self.searchTerm));
+      _.filter(self.data, el => _.includes(_.lowerCase(el['Organization Name']), self.searchTerm));
 
     return _.intersection(filteredData, searchData);
 

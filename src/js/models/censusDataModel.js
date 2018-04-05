@@ -1,7 +1,9 @@
-"use strict";
+/* global turf rbush d3 _ */
+'use strict';
 
 var App = App || {};
 
+// eslint-disable-next-line no-unused-vars
 let CensusDataModel = function() {
   let self = {
     tree: null,
@@ -15,7 +17,7 @@ let CensusDataModel = function() {
   function loadData() {
     // load mapTypeNames.json as well as allDataBlocks.geojson
     let allDataBlocksdP = new Promise(function(resolve, reject) {
-      d3.json("./data/censusDataBlocks.geojson", function(err, json) {
+      d3.json('./data/censusDataBlocks.geojson', function(err, json) {
         if (err) reject(err);
 
         self.gridData = json;
@@ -26,28 +28,28 @@ let CensusDataModel = function() {
           let bbox = turf.bbox(self.gridData.features[featureInd]);
 
           let item = {
-              minX: bbox[0],
-              minY: bbox[1],
-              maxX: bbox[2],
-              maxY: bbox[3],
-              id: featureInd
+            minX: bbox[0],
+            minY: bbox[1],
+            maxX: bbox[2],
+            maxY: bbox[3],
+            id: featureInd
           };
 
           self.tree.insert(item);
         }
 
-        console.debug("Loaded grid data",json);
+        console.debug('Loaded grid data',json);
         resolve(json);
       });
     });
 
     let mapTypeNamesP = new Promise(function(resolve, reject) {
-      d3.json("./data/censusDataNames.json", function(err, json) {
+      d3.json('./data/censusDataNames.json', function(err, json) {
         if (err) reject(err);
 
         self.mapTypeNames = json;
 
-        console.debug("Loaded map type names", json);
+        console.debug('Loaded map type names', json);
         resolve(json);
       });
     });
@@ -59,10 +61,10 @@ let CensusDataModel = function() {
     // return (self.gridData);
 
     let subset = {
-      type: "FeatureCollection",
+      type: 'FeatureCollection',
       features: _.map(self.gridData.features, feature => {
         return {
-          type: "Feature",
+          type: 'Feature',
           geometry: feature.geometry,
           properties: {
             data: feature.properties.census[propertyTypes.mainType][propertyTypes.subType],
@@ -83,7 +85,7 @@ let CensusDataModel = function() {
   }
 
   function getDataWithinPolygon(boundsPolygon){
-    console.time("getDataWithinPolygon");
+    console.time('getDataWithinPolygon');
     
     let boundData = {};
     let bbox = turf.bbox(boundsPolygon);
@@ -118,7 +120,7 @@ let CensusDataModel = function() {
       }
     }
 
-    console.timeEnd("getDataWithinPolygon");
+    console.timeEnd('getDataWithinPolygon');
 
     return {
       area: turf.area(boundsPolygon),
