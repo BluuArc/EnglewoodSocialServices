@@ -1,7 +1,9 @@
-"use strict";
+/* global d3 L _ $ */
+'use strict';
 
 var App = App || {};
 
+// eslint-disable-next-line no-unused-vars
 let MapView = function (div) {
   let self = {
     map: null,
@@ -11,11 +13,11 @@ let MapView = function (div) {
     smallIcons: {},
 
     iconColors: {
-      serviceMarker: "#2e84cb",
-      serviceMarkerSelected: "#cc852a",
-      lotMarker: "#9c2bcb",
-      schoolMarker: "#b15928",
-      locationMarker: "#cb2d40"
+      serviceMarker: '#2e84cb',
+      serviceMarkerSelected: '#cc852a',
+      lotMarker: '#9c2bcb',
+      schoolMarker: '#b15928',
+      locationMarker: '#cb2d40'
     },
     lotColors: {
       Residential: '#999999',
@@ -42,13 +44,13 @@ let MapView = function (div) {
   }
 
   function createMap() {
-    console.debug(d3.select("#" + div).node().clientWidth);
+    console.debug(d3.select('#' + div).node().clientWidth);
 
     self.map = L.map(div);
     console.debug(self.map.getSize());
 
     if (self.map.getSize().y === 1) {
-      alert("Error loading map. Please reload your page");
+      alert('Error loading map. Please reload your page');
     }
 
     // use mapbox map
@@ -91,7 +93,7 @@ let MapView = function (div) {
 
   function drawEnglewoodOutline() {
     //add outline of Englewood
-    d3.json("./data/EnglewoodCommunityAreaBoundaries.geojson", function (error, d) {
+    d3.json('./data/EnglewoodCommunityAreaBoundaries.geojson', function (error, d) {
       console.debug(d);
       self.englewoodOutline = L.geoJSON(d, {
         style: function(feature){
@@ -99,8 +101,8 @@ let MapView = function (div) {
             weight: 3,
             opacity: 0.75,
             fillOpacity: 0.2,
-            className: "geoJSON-englewoodOutline fill stroke " + feature.properties.community.toLowerCase().replace(/ /g, '-'),
-          }
+            className: 'geoJSON-englewoodOutline fill stroke ' + feature.properties.community.toLowerCase().replace(/ /g, '-'),
+          };
         }
       }).addTo(self.map);
     });
@@ -160,15 +162,15 @@ let MapView = function (div) {
   function plotSchools(schoolData) {
     self.schoolGroup.clearLayers();
 
-    console.debug("schoolData",schoolData);
+    console.debug('schoolData',schoolData);
 
-    let schoolMarkers = schoolData.map(school => {
+    schoolData.map(school => {
       school.visible = true;
 
       let locationKey = `${school.Latitude},${school.Longitude}`, isService = false;
       if (self.serviceLocations[locationKey]) {
         isService = true;
-        console.debug("School/service overlap at", locationKey, self.serviceLocations[locationKey], school);
+        console.debug('School/service overlap at', locationKey, self.serviceLocations[locationKey], school);
       }
 
       // create a marker for each location
@@ -180,11 +182,11 @@ let MapView = function (div) {
         }
       ).bindPopup(() => {
         return `
-          <b>${school["Organization Name"]}</b><br>
+          <b>${school['Organization Name']}</b><br>
           ${school.Address}<br>
           ${school.City}, ${school.State}, ${school.Zip}
         `;
-      }, { autoPan: false }).addTo(self.schoolGroup).on("mouseover", function (e) {
+      }, { autoPan: false }).addTo(self.schoolGroup).on('mouseover', function () {
         if (self.schoolVisCheck()) {
           //open popup forcefully
           if (!this._popup._latlng) {
@@ -194,22 +196,22 @@ let MapView = function (div) {
           this._popup.openOn(self.map);
         }
       })
-      .on("mouseout", function (e) {
-        if (!this.options.data.expanded) {
-          self.map.closePopup();
-        }
-      }).on("click", function (e) {
-        if (self.schoolVisCheck()) {
-          console.debug(school);
-          //open popup forcefully
-          if (!this._popup._latlng) {
-            this._popup.setLatLng(new L.latLng(this.options.data.Latitude, this.options.data.Longitude));
+        .on('mouseout', function () {
+          if (!this.options.data.expanded) {
+            self.map.closePopup();
           }
+        }).on('click', function () {
+          if (self.schoolVisCheck()) {
+            console.debug(school);
+            //open popup forcefully
+            if (!this._popup._latlng) {
+              this._popup.setLatLng(new L.latLng(this.options.data.Latitude, this.options.data.Longitude));
+            }
 
-          this._popup.openOn(self.map);
-        }
-      });
-      curSchool._icon.classList.add("schoolMarker");
+            this._popup.openOn(self.map);
+          }
+        });
+      curSchool._icon.classList.add('schoolMarker');
 
       return curSchool;
     });
@@ -223,16 +225,16 @@ let MapView = function (div) {
     const zoneTypes = Object.keys(self.lotColors);
 
     let markerInit = (marker, lot) => {
-      return marker.bindPopup(function (layer) {
+      return marker.bindPopup(function () {
         return `
         <strong>${lot.Location}</strong><br>
-        <b>Size: </b> ${lot["Sq. Ft."]} sq. ft.<br>
+        <b>Size: </b> ${lot['Sq. Ft.']} sq. ft.<br>
         <b>Zone Classification: </b>${App.models.landInventory.getZoneClassification(lot, true)}`;
-      }, { autoPan: false }).on("mouseout", function (e) {
-          if (!this.options.data.expanded) {
-            self.map.closePopup();
-          }
-        });
+      }, { autoPan: false }).on('mouseout', function () {
+        if (!this.options.data.expanded) {
+          self.map.closePopup();
+        }
+      });
     };
 
     // iterate through land inventory data
@@ -248,34 +250,34 @@ let MapView = function (div) {
             L.latLng(+lot.Latitude, +lot.Longitude),
             {
               // icon: self.icons.lotMarker,
-              icon: self.icons[zoneType !== "Other" ? zoneType : "lotMarker"],
+              icon: self.icons[zoneType !== 'Other' ? zoneType : 'lotMarker'],
               riseOnHover: true,
               data: lot
             }
           ),
           lot
-        ).on("mouseover", function (e) {
-            if (self.lotTypeMarkerVisCheck()) {
-              //open popup forcefully
-              if (!this._popup._latlng) {
-                this._popup.setLatLng(new L.latLng(this.options.data.Latitude, this.options.data.Longitude));
-              }
-
-              this._popup.openOn(self.map);
+        ).on('mouseover', function () {
+          if (self.lotTypeMarkerVisCheck()) {
+            //open popup forcefully
+            if (!this._popup._latlng) {
+              this._popup.setLatLng(new L.latLng(this.options.data.Latitude, this.options.data.Longitude));
             }
-          }).on("click", function (e) {
-            if (self.lotTypeMarkerVisCheck()) {
-              //open popup forcefully
-              if (!this._popup._latlng) {
-                this._popup.setLatLng(new L.latLng(this.options.data.Latitude, this.options.data.Longitude));
-              }
 
-              this._popup.openOn(self.map);
+            this._popup.openOn(self.map);
+          }
+        }).on('click', function () {
+          if (self.lotTypeMarkerVisCheck()) {
+            //open popup forcefully
+            if (!this._popup._latlng) {
+              this._popup.setLatLng(new L.latLng(this.options.data.Latitude, this.options.data.Longitude));
             }
-          });
+
+            this._popup.openOn(self.map);
+          }
+        });
         lotMarker.addTo(self[`group${zoneType}`]);
       }else {
-        console.error("Ignoring marker",lot,"due to unknown type", zoneType)
+        console.error('Ignoring marker',lot,'due to unknown type', zoneType);
       }
     }
 
@@ -297,7 +299,7 @@ let MapView = function (div) {
       let lat = +loc.Latitude,
         lng = +loc.Longitude;
       if(isNaN(lat) || isNaN(lng)){
-        console.error("Coordinate error with ",loc);
+        console.error('Coordinate error with ',loc);
         // loc.Latitude = 0;
         // loc.Longitude = 0;
         lat = lng = 0;
@@ -309,45 +311,45 @@ let MapView = function (div) {
       let locationKey = `${loc.Latitude},${loc.Longitude}`;
       if (!self.serviceLocations[locationKey]) {
         self.serviceLocations[locationKey] = [loc];
-      } else if (self.serviceLocations[locationKey].map(val => val["Organization Name"]).indexOf(loc["Organization Name"]) === -1){
+      } else if (self.serviceLocations[locationKey].map(val => val['Organization Name']).indexOf(loc['Organization Name']) === -1){
         self.serviceLocations[locationKey].push(loc);
       }
 
 
       // create a marker for each social services location
       let curService = L.marker(
-          L.latLng(lat, lng), {
-            icon: self.icons.serviceMarker,
-            riseOnHover: true, // moves the marker to the front on mouseover
-            // bind data to marker inside options
-            data: loc
-          }
-        ).bindPopup(function (layer) { // allow for the popup on click with the name of the location
-          let addressLink;
-          if(loc["Address"] && loc["Address"].length > 0){
-            let address = `${loc["Address"]}, ${loc["City"]}, ${loc["State"]}, ${loc["Zip"]}`;
-            addressLink = "<strong>" + `<a href='http://maps.google.com/?q=${address} 'target='_blank'>` +
-              "<span class='glyphicon glyphicon-share-alt'></span> " + address + "</a></strong><br>";
-          }else{
-            addressLink = "";
-          }
+        L.latLng(lat, lng), {
+          icon: self.icons.serviceMarker,
+          riseOnHover: true, // moves the marker to the front on mouseover
+          // bind data to marker inside options
+          data: loc
+        }
+      ).bindPopup(function () { // allow for the popup on click with the name of the location
+        let addressLink;
+        if(loc['Address'] && loc['Address'].length > 0){
+          let address = `${loc['Address']}, ${loc['City']}, ${loc['State']}, ${loc['Zip']}`;
+          addressLink = '<strong>' + `<a href='http://maps.google.com/?q=${address} 'target='_blank'>` +
+              '<span class=\'glyphicon glyphicon-share-alt\'></span> ' + address + '</a></strong><br>';
+        }else{
+          addressLink = '';
+        }
 
-          return "<strong>" + loc["Organization Name"] + "</strong><br>" +
-            loc["Description of Services"] + "<br><br>" + addressLink +
-            (loc["Phone Number"].length ?
-            ("<span class='glyphicon glyphicon-earphone'></span> " + (loc["Phone Number"].join ? loc["Phone Number"].join(" or ") : loc["Phone Number"]) + "</a></strong><br>") : "") +
-            (loc["Website"] && loc["Website"].toLowerCase().trim() !== "no website" ?
-              ("<strong><a href='" + loc["Website"] + "'target='_blank'>" +
-                "<span class='glyphicon glyphicon-home'></span> " + loc["Website"] + "</a></strong><br>") : "");
-        }, { autoPan: false }).addTo(self.serviceGroup)
-        .on("click", function (e) {
+        return '<strong>' + loc['Organization Name'] + '</strong><br>' +
+            loc['Description of Services'] + '<br><br>' + addressLink +
+            (loc['Phone Number'].length ?
+              ('<span class=\'glyphicon glyphicon-earphone\'></span> ' + (loc['Phone Number'].join ? loc['Phone Number'].join(' or ') : loc['Phone Number']) + '</a></strong><br>') : '') +
+            (loc['Website'] && loc['Website'].toLowerCase().trim() !== 'no website' ?
+              ('<strong><a href=\'' + loc['Website'] + '\'target=\'_blank\'>' +
+                '<span class=\'glyphicon glyphicon-home\'></span> ' + loc['Website'] + '</a></strong><br>') : '');
+      }, { autoPan: false }).addTo(self.serviceGroup)
+        .on('click', function () {
           if (self.markerVisibilityCheck() && this.options.data.visible && App.controllers.listToMapLink) {
             App.controllers.listToMapLink.mapMarkerSelected(this.options.data);
           } else {
             self.map.closePopup();
           }
         })
-        .on("mouseover", function (e) {
+        .on('mouseover', function () {
           if(self.markerVisibilityCheck()){
             // open popup forcefully
             if (!this._popup._latlng) {
@@ -357,20 +359,20 @@ let MapView = function (div) {
             this._popup.openOn(self.map);
           }
         })
-        .on("mouseout", function (e) {
+        .on('mouseout', function () {
           if (!this.options.data.expanded) {
             self.map.closePopup();
           }
         });
 
-        curService._icon.classList.add("serviceMarker");
+      curService._icon.classList.add('serviceMarker');
       
-        serviceMarkers.push(curService);
+      serviceMarkers.push(curService);
     }
 
     for(let location in self.serviceLocations){
       if(self.serviceLocations[location].length > 1){
-        console.debug("Service overlap at", location, self.serviceLocations[location]);
+        console.debug('Service overlap at', location, self.serviceLocations[location]);
       }
     }
 
@@ -381,14 +383,14 @@ let MapView = function (div) {
     }
   }
 
-  function updateServicesWithFilter(filteredData, serviceFilters) {
+  function updateServicesWithFilter(filteredData) {
     plotServices(filteredData);
   }
 
   function setSelectedService(service) {
     console.debug(service);
     self.serviceGroup.eachLayer(function (layer) {
-      if (service && service["Organization Name"] === layer.options.data["Organization Name"]) {
+      if (service && service['Organization Name'] === layer.options.data['Organization Name']) {
         layer.setIcon(self.icons.serviceMarkerSelected);
 
         // open popup forcefully
@@ -399,14 +401,14 @@ let MapView = function (div) {
         layer._popup.openOn(self.map);
       } else {
         // layer.options.data.visible ? layer.setIcon(self.icons.serviceMarker) : layer.setIcon(self.icons["grey"]);
-        layer.setIcon(self.icons.serviceMarker)
+        layer.setIcon(self.icons.serviceMarker);
         // layer.setIcon(self.icons["blue"]);
       }
     });
 
     if (service) {
       let lat = Number(service.Latitude) + (L.Browser.mobile ? 0.003 : 0);
-      let lng = Number(service.Longitude) - ((window.innerWidth > 768) && +d3.select("#serviceListWrapper").style("opacity") ? 0.005 : 0);
+      let lng = Number(service.Longitude) - ((window.innerWidth > 768) && +d3.select('#serviceListWrapper').style('opacity') ? 0.005 : 0);
       self.map.setView([lat, lng], 16);
     }
   }
@@ -441,14 +443,14 @@ let MapView = function (div) {
 
     // if data specified, add new choropleth
     if (data) {
-      console.debug("drawChloropleth",data);
+      console.debug('drawChloropleth',data);
       self.englewoodOutline.setStyle({fillOpacity: 0});
       let description;
 
       // take ceiling when taking extent so as not to have values equal to 0
       let colorScale = d3.scaleLinear()
         .domain(d3.extent(data.features, f => {
-          description = description || (f.properties.description.mainType + ": " + f.properties.description.subType.replace(":",""))
+          description = description || (f.properties.description.mainType + ': ' + f.properties.description.subType.replace(':',''));
           return Math.ceil(f.properties.data*100)/100;
         })).range(['#9ebcda', '#6e016b']);
 
@@ -456,32 +458,32 @@ let MapView = function (div) {
 
       //create scale for 5 cells with unit ranges
       let simpleColorScale = d3.scaleLinear()
-        .domain([0,4]).range(colorScale.range())
+        .domain([0,4]).range(colorScale.range());
       let colorScaleQ = d3.scaleQuantize()
         .domain(colorScale.domain()).range(d3.range(5).map((i) => simpleColorScale(i)));
       
       drawLegend({ colorScale: colorScaleQ, title });
 
       self.choropleth = L.geoJSON(data, {
-          style: function (feature) {
-            return {
-              color: colorScale(feature.properties.data),
-              opacity: feature.properties.data === 0 ? 0 : 0.1,
-              fillOpacity: feature.properties.data === 0 ? 0 : 0.75,
-              className: "geoJSON-gridSpace"
-            }
-          }
-        })
-        .on("mouseover", function (geojson) {
+        style: function (feature) {
+          return {
+            color: colorScale(feature.properties.data),
+            opacity: feature.properties.data === 0 ? 0 : 0.1,
+            fillOpacity: feature.properties.data === 0 ? 0 : 0.75,
+            className: 'geoJSON-gridSpace'
+          };
+        }
+      })
+        .on('mouseover', function (geojson) {
           geojson.layer.bringToFront();
 
-          if (typeof options.hoverHandler === "function") {
+          if (typeof options.hoverHandler === 'function') {
             options.hoverHandler(geojson.layer);
           }
         })
-        .on("click", function(geojson){
+        .on('click', function(geojson){
           console.debug(geojson);
-          if(typeof options.clickHandler === "function"){
+          if(typeof options.clickHandler === 'function'){
             options.clickHandler(geojson.layer);
           }
         })
@@ -494,9 +496,9 @@ let MapView = function (div) {
           const data = layer.feature.properties;
           const title = ((property_data) => {
             let title = '';
-            if (property_data.subType.indexOf("Total") > -1) {
+            if (property_data.subType.indexOf('Total') > -1) {
               title = `${_.startCase(property_data.mainType.replace(/_/g,' ').toLowerCase())}: ${property_data.subType}`;
-            } else if (property_data.mainType.toLowerCase().replace(/_/g, ' ').indexOf("sex by age") > -1) {
+            } else if (property_data.mainType.toLowerCase().replace(/_/g, ' ').indexOf('sex by age') > -1) {
               const type = property_data.mainType.split('(')[1].split(')')[0].toLowerCase();
               title = `${_.startCase(type)}: ${property_data.subType}`;
             } else {
@@ -512,7 +514,7 @@ let MapView = function (div) {
               .style('width', 'fit-content');
             modifiedData.html(svgData.html());
             modifiedData.selectAll('g')
-              .style('transform', `translateX(0px) translateY(5px)`);
+              .style('transform', 'translateX(0px) translateY(5px)');
             html = `
             <div class="container-fluid">
               <div class="row">
@@ -565,7 +567,7 @@ let MapView = function (div) {
     // self.map.setView([position.lat, position.lng], 16);
 
     let lat = Number(position.lat) + (L.Browser.mobile ? 0.003 : 0);
-    let lng = Number(position.lng) - ((window.innerWidth > 768) && +d3.select("#serviceListWrapper").style("opacity") ? 0.005 : 0);
+    let lng = Number(position.lng) - ((window.innerWidth > 768) && +d3.select('#serviceListWrapper').style('opacity') ? 0.005 : 0);
     self.map.setView([lat, lng], 14);
   }
 
@@ -585,7 +587,7 @@ let MapView = function (div) {
       if (layer.options.data &&
         Number(layer.options.data.Latitude) &&
         Number(layer.options.data.Longitude) &&
-        _.includes(layer.options.data.State, "IL")) {
+        _.includes(layer.options.data.State, 'IL')) {
         markerArray.push(layer);
       }
     });

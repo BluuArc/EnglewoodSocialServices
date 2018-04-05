@@ -1,5 +1,7 @@
-"use strict";
+/* global $ d3 */
+'use strict';
 
+// eslint-disable-next-line no-unused-vars
 let ChartListView = function(listID){
   let self = {
     chartListDOM: null,
@@ -18,57 +20,57 @@ let ChartListView = function(listID){
   function makeCollapsing(buttonID, listWrapperID) {
     let mobile = window.innerWidth < 769;
 
-    let wrapperHeight = (window.innerHeight - $(d3.select(".navbar").node()).height()) + "px";
+    let wrapperHeight = (window.innerHeight - $(d3.select('.navbar').node()).height()) + 'px';
 
     self.wrapper = d3.select(listWrapperID)
-      .style("pointer-events", mobile ? "none" : "all")
-      .style("opacity", mobile ? 0 : 1)
-      .style("height", wrapperHeight);
+      .style('pointer-events', mobile ? 'none' : 'all')
+      .style('opacity', mobile ? 0 : 1)
+      .style('height', wrapperHeight);
 
-    self.chartListDOM.style("height", `calc(${wrapperHeight} - 3em - 10px)`);
+    self.chartListDOM.style('height', `calc(${wrapperHeight} - 3em - 10px)`);
 
-    self.toggleButton = d3.select(buttonID).classed("open", !mobile)
-      .on("click", function (d) {
-        let open = !d3.select(this).classed("open");
-        d3.select(this).classed("open", open);
+    self.toggleButton = d3.select(buttonID).classed('open', !mobile)
+      .on('click', function () {
+        let open = !d3.select(this).classed('open');
+        d3.select(this).classed('open', open);
 
-        d3.select(this).select(".glyphicon").attr("class", open ? "glyphicon glyphicon-eye-close" : "glyphicon glyphicon-eye-open");
+        d3.select(this).select('.glyphicon').attr('class', open ? 'glyphicon glyphicon-eye-close' : 'glyphicon glyphicon-eye-open');
         if (open) {
-          document.getElementById("chartListButtonText").innerHTML = "Hide Chart List";
+          document.getElementById('chartListButtonText').innerHTML = 'Hide Chart List';
         }
         else {
-          document.getElementById("chartListButtonText").innerHTML = "Show Chart List";
+          document.getElementById('chartListButtonText').innerHTML = 'Show Chart List';
         }
 
         self.wrapper
-          .style("pointer-events", open ? "all" : "none")
-          .style("opacity", open ? 1 : 0);
+          .style('pointer-events', open ? 'all' : 'none')
+          .style('opacity', open ? 1 : 0);
       });
   }
 
   function initializeDefaultChart(id, title, canDelete) {
-    let chartElement = self.chartListDOM.insert("div", ":first-child") //add to top of list
-        .attr("class", "panel panel-default chartEntry")
-        .attr("id",id);
+    let chartElement = self.chartListDOM.insert('div', ':first-child') //add to top of list
+      .attr('class', 'panel panel-default chartEntry')
+      .attr('id',id);
 
     // initialize header
-    let heading = chartElement.append("div").classed("panel-heading", true)
-        .append("div").classed("row", true);
+    let heading = chartElement.append('div').classed('panel-heading', true)
+      .append('div').classed('row', true);
 
-    heading.append("span").attr("class","text-left col-md-10")
-        .html(title);
+    heading.append('span').attr('class','text-left col-md-10')
+      .html(title);
 
     if(canDelete){
-        heading.append('h4').append('span')
-            .attr('class', 'col-md-2 glyphicon glyphicon-remove text-right')
-            .on('click', function (evt) {
-                removeChart(id, evt);
-            });
+      heading.append('h4').append('span')
+        .attr('class', 'col-md-2 glyphicon glyphicon-remove text-right')
+        .on('click', function (evt) {
+          removeChart(id, evt);
+        });
     }
 
     // create empty body and footer
-    chartElement.append("div").classed("panel-body", true);
-    chartElement.append("div").classed("panel-footer",true);
+    chartElement.append('div').classed('panel-body', true);
+    chartElement.append('div').classed('panel-footer',true);
 
     return chartElement;
   }
@@ -88,7 +90,7 @@ let ChartListView = function(listID){
     }
   */
   function addChart(options){
-    console.info("Adding chart:", options.id);
+    console.info('Adding chart:', options.id);
     let chartList = self.chartList;
 
     if(chartList[options.id]){
@@ -98,14 +100,14 @@ let ChartListView = function(listID){
     chartList[options.id] = {
       el: initializeDefaultChart(options.id, options.title, options.remove),
       update: options.update,
-      remove: options.remove || function(){ console.info("removing chart", options.id); }
+      remove: options.remove || function(){ console.info('removing chart', options.id); }
     };
 
     options.init(chartList[options.id].el);
   }
 
   function removeChart(id, ...data) {
-    console.info("Removing chart:", id);
+    console.info('Removing chart:', id);
     if(self.chartList[id].remove){
       self.chartList[id].remove(...data);
     }
@@ -123,5 +125,5 @@ let ChartListView = function(listID){
     addChart,
     updateChart,
     removeChart
-  }
-}
+  };
+};

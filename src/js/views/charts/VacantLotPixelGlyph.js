@@ -1,5 +1,9 @@
-"use strict";
+/* global d3 PixelGlyph */
+'use strict';
 
+var App = App || {};
+
+// eslint-disable-next-line no-unused-vars
 function VacantLotPixelGlyph(id, title, dataRanges, options = {}) {
   let self = {
     title: title,
@@ -12,23 +16,23 @@ function VacantLotPixelGlyph(id, title, dataRanges, options = {}) {
         maxValue: null,
       },
       topRight: {
-        name: "BCM",
-        label: "Business, Commercial, and Manufacturing",
-        graphLabel: ["Business,", "Commercial,", "and Manufacturing"],
+        name: 'BCM',
+        label: 'Business, Commercial, and Manufacturing',
+        graphLabel: ['Business,', 'Commercial,', 'and Manufacturing'],
         color: '#ff7f00',
         maxValue: null,
       },
       bottomLeft: {
         name: 'POS',
-        label: "Parks and Open Space",
-        graphLabel: ["Parks and", "Open Space"],
+        label: 'Parks and Open Space',
+        graphLabel: ['Parks and', 'Open Space'],
         color: '#4daf4a',
         maxValue: null,
       },
       bottomRight: {
-        name: "PD",
-        label: "Planned Manufacturing Districts and Development",
-        graphLabel: ["Planned", "Manufacturing", "Districts and", "Development"],
+        name: 'PD',
+        label: 'Planned Manufacturing Districts and Development',
+        graphLabel: ['Planned', 'Manufacturing', 'Districts and', 'Development'],
         color: '#e78ac3',
         maxValue: null,
       },
@@ -42,7 +46,7 @@ function VacantLotPixelGlyph(id, title, dataRanges, options = {}) {
       quadrants: self.quadrants
     });
 
-    self.pixelGlyph.init(chartPanel.select(".panel-footer"));
+    self.pixelGlyph.init(chartPanel.select('.panel-footer'));
 
     if(options.init){
       options.init(chartPanel);
@@ -58,7 +62,7 @@ function VacantLotPixelGlyph(id, title, dataRanges, options = {}) {
   }
 
   function update(panel, data) {
-    console.debug("pixel glyph data",data);
+    console.debug('pixel glyph data',data);
     self.pixelGlyph.update(panel, data);
     updateStatistics(panel, data);
   }
@@ -82,10 +86,10 @@ function VacantLotPixelGlyph(id, title, dataRanges, options = {}) {
         label: self.quadrants[d].label,
         total: self.quadrants[d].maxValue,
         color: self.quadrants[d].color,
-       };
+      };
     });
 
-    let colorScale = d3.scaleLinear().domain([0, 1]);
+    // let colorScale = d3.scaleLinear().domain([0, 1]);
     table.selectAll('tr').data(propertiesLines)
       .enter().append('tr')
       // .style("background-color", d => colorScale.range(["#FFF", d.color])(0.75))
@@ -93,16 +97,16 @@ function VacantLotPixelGlyph(id, title, dataRanges, options = {}) {
         let row = d3.select(this);
 
         row.append('td').classed('align-middle', true)
-          .style("width", "50px").style("text-align", "left")
-          .html(`<span id=${d.name} class="svg-insert">`)
+          .style('width', '50px').style('text-align', 'left')
+          .html(`<span id=${d.name} class="svg-insert">`);
 
         row.append('td').classed('align-middle', true)
-          .style("width", "47.5%").style("text-align", "left")
-          .style("padding-left", "5px")
-          .html(`</span><b>${d.label || d.name}</b>`)
+          .style('width', '47.5%').style('text-align', 'left')
+          .style('padding-left', '5px')
+          .html(`</span><b>${d.label || d.name}</b>`);
         row.append('td').classed('align-middle', true)
-          .style("width", "52.5%")
-          .text(`${d.value} (${d.percent}%) of ${d.total} lots`)
+          .style('width', '52.5%')
+          .text(`${d.value} (${d.percent}%) of ${d.total} lots`);
       });
 
     App.insertIcons();

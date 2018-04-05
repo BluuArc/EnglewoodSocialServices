@@ -1,7 +1,9 @@
-"use strict";
+/* global d3 $ */
+'use strict';
 
 var App = App || {};
 
+// eslint-disable-next-line no-unused-vars
 function BarChart() {
   let self = {
     chartMargins: {
@@ -19,17 +21,17 @@ function BarChart() {
   };
 
   function init(targetDiv) {
-    let svg = targetDiv.append("svg");
+    let svg = targetDiv.append('svg');
     self.graph = svg.append('g').classed('graph-group', true);
 
-    self.graph.background = self.graph.append("rect")
-      .attr("x", self.chartMargins.left)
-      .attr("y", self.chartMargins.top)
-      .attr("width", $(svg.node()).width() - self.chartMargins.left - self.chartMargins.right)
-      .attr("height", $(svg.node()).height() - self.chartMargins.top - self.chartMargins.bottom)
+    self.graph.background = self.graph.append('rect')
+      .attr('x', self.chartMargins.left)
+      .attr('y', self.chartMargins.top)
+      .attr('width', $(svg.node()).width() - self.chartMargins.left - self.chartMargins.right)
+      .attr('height', $(svg.node()).height() - self.chartMargins.top - self.chartMargins.bottom)
       .classed('graph-background', true).style('stroke', 'none');
 
-    self.graph.content = self.graph.append("g").classed("graph-content", true);
+    self.graph.content = self.graph.append('g').classed('graph-content', true);
 
     initializeViewData(self.graph);
   }
@@ -56,13 +58,13 @@ function BarChart() {
     let yMax = yScale.domain()[1];
     let barWidth = xScale.range()[1] / data.length;
 
-    self.graph.content.selectAll("*").remove();
+    self.graph.content.selectAll('*').remove();
 
     self.graph.content.selectAll('.bar').data(data)
       .enter().append('rect').each(function (data_entry, index) {
         let height = (data_entry.value !== 0) ? yScale(yMax - data_entry.value) : 0;
         let x = self.viewData.xOffset + xScale(index) + (barWidth - self.viewData.barThickness) / 2;
-        let y = self.viewData.yOffset + yScale(data_entry.value);
+        // let y = self.viewData.yOffset + yScale(data_entry.value);
 
         let bar = d3.select(this).classed('bar', true)
           .attr('x', x).attr('y', self.viewData.yOffset + yScale(data_entry.value))
@@ -90,7 +92,7 @@ function BarChart() {
     self.graph.content.append('g').classed('axis', true)
       .attr('transform', `translate(${self.viewData.xOffset},${self.viewData.yOffset})`).call(yAxis);
 
-    let xAxis = d3.axisBottom(xScale).tickFormat(() => { return ""; }).ticks(1);
+    let xAxis = d3.axisBottom(xScale).tickFormat(() => { return ''; }).ticks(1);
 
     self.graph.content.append('g').classed('axis', true)
       .attr('transform', `translate(${self.viewData.xOffset},${self.viewData.boundsY[0] + self.viewData.yOffset})`).call(xAxis);
@@ -99,5 +101,5 @@ function BarChart() {
   return {
     init,
     update
-  }
+  };
 }

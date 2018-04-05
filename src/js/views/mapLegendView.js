@@ -1,8 +1,9 @@
-"use strict";
+/* global d3 $ _ */
+'use strict';
 
 var App = App || {};
 
-/* global d3 $ */
+// eslint-disable-next-line no-unused-vars
 const MapLegendView = function (initOptions = {}) {
   const self = {
     id: null,
@@ -19,8 +20,8 @@ const MapLegendView = function (initOptions = {}) {
     self.id = initOptions.id || 'svgLegend';
     self.parent = initOptions.parent;
     self.mapColorCodes = d3.scaleOrdinal()
-      .domain(["West Englewood", "Englewood"])
-      .range(["#1f77b4", "#ff7f0e"]);
+      .domain(['West Englewood', 'Englewood'])
+      .range(['#1f77b4', '#ff7f0e']);
   }
 
   function drawSVG(options) {
@@ -113,32 +114,32 @@ const MapLegendView = function (initOptions = {}) {
   }
 
   function drawRightColumn(svg) {
-    const rightGroup = svg.append("g")
-      .attr("id", "right-column")
-      .attr("transform", `translate(${2 * self.columnWidth - self.leftMargin},${self.topMargin})`);
+    const rightGroup = svg.append('g')
+      .attr('id', 'right-column')
+      .attr('transform', `translate(${2 * self.columnWidth - self.leftMargin},${self.topMargin})`);
 
     // rightGroup.append('text')
     //   .text('lot marker legend here');
 
     const markerLegendGroup = rightGroup.append('g')
-      .attr('transform', `translate(20,0)`);
+      .attr('transform', 'translate(20,0)');
 
     const markerLabels = [{
-        id: 'Residential',
-        name: 'Residential'
-      },
-      {
-        id: 'BCM',
-        name: ['Business, Commercial,', 'and Manufacturing']
-      },
-      {
-        id: 'POS',
-        name: 'Parks and Open Space'
-      },
-      {
-        id: 'PD',
-        name: ['Planned Manufacturing', 'Districts and Development']
-      }
+      id: 'Residential',
+      name: 'Residential'
+    },
+    {
+      id: 'BCM',
+      name: ['Business, Commercial,', 'and Manufacturing']
+    },
+    {
+      id: 'POS',
+      name: 'Parks and Open Space'
+    },
+    {
+      id: 'PD',
+      name: ['Planned Manufacturing', 'Districts and Development']
+    }
     ];
 
     markerLegendGroup.append('text')
@@ -179,10 +180,10 @@ const MapLegendView = function (initOptions = {}) {
 
   function drawMiddleColumn(svg, censusOptions) {
     // let backgroundHeight = +leftGroup.node().getBBox().height * 1.4;
-    const censusGroup = svg.append("g")
-      .attr("id", "middle-column")
-      .attr("class", "legendLinear")
-      .attr("transform", `translate(${self.columnWidth + self.leftMargin * 0.5},${self.topMargin})`);
+    const censusGroup = svg.append('g')
+      .attr('id', 'middle-column')
+      .attr('class', 'legendLinear')
+      .attr('transform', `translate(${self.columnWidth + self.leftMargin * 0.5},${self.topMargin})`);
     if (censusOptions) {
       // const censusGroup = svg.append("g")
       //   .attr("class", "legendLinear")
@@ -191,21 +192,21 @@ const MapLegendView = function (initOptions = {}) {
 
       const legendLinear = d3.legendColor()
         .shapeWidth(30)
-        .labelFormat(d3.format(".0f"))
+        .labelFormat(d3.format('.0f'))
         .title(`${_.startCase(censusOptions.title)}\n(Block Level)`)
         .titleWidth(180)
         .scale(censusOptions.colorScale);
 
       censusGroup.call(legendLinear);
 
-      censusGroup.select(".legendTitle")
-        .attr("text-anchor", "middle")
-        .attr("transform", "translate(62.5,5)");
+      censusGroup.select('.legendTitle')
+        .attr('text-anchor', 'middle')
+        .attr('transform', 'translate(62.5,5)');
 
       censusGroup.selectAll('.legendCells text.label')
         .each(function () {
           const elem = d3.select(this);
-          elem.text(elem.text() + " people");
+          elem.text(elem.text() + ' people');
         });
 
       // backgroundHeight += +censusGroup.node().getBBox().height;

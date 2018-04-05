@@ -1,7 +1,9 @@
-"use strict";
+/* global d3 $ _ */
+'use strict';
 
 var App = App || {};
 
+// eslint-disable-next-line no-unused-vars
 let ServiceListView = function(listID) {
   let self = {
     serviceList: null,
@@ -14,57 +16,57 @@ let ServiceListView = function(listID) {
   init();
 
   function init() {
-    self.serviceList = d3.select(listID).select("#accordion");
+    self.serviceList = d3.select(listID).select('#accordion');
   }
 
   function makeCollapsing(buttonID, listWrapperID) {
-    let mobile = window.innerWidth < 769;
+    // let mobile = window.innerWidth < 769;
 
     // let startOpen = !mobile;
     let startOpen = true;
 
     self.wrapper = d3.select(listWrapperID)
-      .style("pointer-events", startOpen ? "all" : "none")
-      .style("opacity", startOpen ? 1 : 0)
-      .style("height", window.innerHeight - d3.select(".navbar").node().clientHeight + "px");
+      .style('pointer-events', startOpen ? 'all' : 'none')
+      .style('opacity', startOpen ? 1 : 0)
+      .style('height', window.innerHeight - d3.select('.navbar').node().clientHeight + 'px');
 
-    self.toggleButton = d3.select(buttonID).classed("open", startOpen)
-      .on("click", function(d) {
-        let open = !d3.select(this).classed("open");
-        d3.select(this).classed("open", open);
+    self.toggleButton = d3.select(buttonID).classed('open', startOpen)
+      .on('click', function() {
+        let open = !d3.select(this).classed('open');
+        d3.select(this).classed('open', open);
 
-        d3.select(this).select(".glyphicon").attr("class", open ? "glyphicon glyphicon-eye-close" : "glyphicon glyphicon-eye-open");
+        d3.select(this).select('.glyphicon').attr('class', open ? 'glyphicon glyphicon-eye-close' : 'glyphicon glyphicon-eye-open');
         if(open){
-          document.getElementById("serviceListButtonText").innerHTML="Hide Service List";
+          document.getElementById('serviceListButtonText').innerHTML='Hide Service List';
         }
         else{
-          document.getElementById("serviceListButtonText").innerHTML="Show Service List";
+          document.getElementById('serviceListButtonText').innerHTML='Show Service List';
         }
         
         self.wrapper
-          .style("pointer-events", open ? "all" : "none")
-          .style("opacity", open ? 1 : 0);
+          .style('pointer-events', open ? 'all' : 'none')
+          .style('opacity', open ? 1 : 0);
       });
   }
 
   function resize() {
-    let mobile = window.innerWidth < 769;
+    // let mobile = window.innerWidth < 769;
 
     self.wrapper
-      .style("height", window.innerHeight - d3.select(".navbar").node().clientHeight + "px");
+      .style('height', window.innerHeight - d3.select('.navbar').node().clientHeight + 'px');
   }
 
-  function toggleDescription(elem, target, mode = "toggle") {
+  function toggleDescription(elem, target, mode = 'toggle') {
     target.collapse(mode);
     
-    return new Promise((fulfill,reject) => {
+    return new Promise((fulfill) => {
       target.on('shown.bs.collapse', () => {
-        elem.classed("collapsed", false);
+        elem.classed('collapsed', false);
         target.off('shown.bs.collapse');
         fulfill();
       });
       target.on('hidden.bs.collapse', () => {
-        elem.classed("collapsed", true);
+        elem.classed('collapsed', true);
         target.off('hidden.bs.collapse');
         fulfill();
       });
@@ -75,9 +77,9 @@ let ServiceListView = function(listID) {
     console.debug(options);
 
     if(options) {
-      let html = "Services";
+      let html = 'Services';
 
-      if (options.service && !options.service.includes("Select Services...")) {
+      if (options.service && !options.service.includes('Select Services...')) {
         html += ` of type <span class='bread-crumb'>'${options.service}'</span>`;
       }
 
@@ -89,24 +91,24 @@ let ServiceListView = function(listID) {
         html += ` named <span class='bread-crumb'>'${options.search}'</span>`;
       }
 
-      html += ":";
+      html += ':';
 
-      self.wrapper.select(".title").html(html);
+      self.wrapper.select('.title').html(html);
     }
 
-    let knownNames = englewoodLocations.map((d) => { return d["Organization Name"]; });
+    let knownNames = englewoodLocations.map((d) => { return d['Organization Name']; });
     console.debug({knownNames});
 
     //remove previous entries
     // self.serviceList.selectAll(".serviceEntry").remove();
 
-    let selection = self.serviceList.selectAll(".serviceEntry");
+    let selection = self.serviceList.selectAll('.serviceEntry');
     if(selection.empty()){
       //add new entries
-      console.info("Populating service list");
+      console.info('Populating service list');
       selection.data(englewoodLocations)
         .enter()
-        .append("div").attr("class", "panel panel-info serviceEntry")
+        .append('div').attr('class', 'panel panel-info serviceEntry')
         .each(function (d, i) {
           let panel = d3.select(this);
           let inCategories = (() => {
@@ -123,70 +125,70 @@ let ServiceListView = function(listID) {
             .reduce((acc, val) => acc + val, 0);
 
           // create heading
-          let panelHeading = panel.append("div")
-            .attr("class", "panel-heading collapsed")
-            .attr("data-parent", "#accordion")
-            .attr("data-toggle", "collapse")
-            .attr("href", `#service${i}collapse`)
-            .on("click", function (d) {
-              let expanded = !panel.selectAll(".collapse").classed("in");
+          let panelHeading = panel.append('div')
+            .attr('class', 'panel-heading collapsed')
+            .attr('data-parent', '#accordion')
+            .attr('data-toggle', 'collapse')
+            .attr('href', `#service${i}collapse`)
+            .on('click', function (d) {
+              let expanded = !panel.selectAll('.collapse').classed('in');
 
-              self.serviceList.selectAll(".serviceEntry").classed("opened", false);
-              panel.classed("opened", expanded);
+              self.serviceList.selectAll('.serviceEntry').classed('opened', false);
+              panel.classed('opened', expanded);
 
               App.controllers.listToMapLink.listServiceSelected(expanded ? d : null);
             });
 
           // create body
-          let panelBody = panel.append("div")
-            .attr("class", "panel-collapse collapse")
-            .attr("id", `service${i}collapse`)
-            .append("div")
-            .attr("class", "panel-body");
+          let panelBody = panel.append('div')
+            .attr('class', 'panel-collapse collapse')
+            .attr('id', `service${i}collapse`)
+            .append('div')
+            .attr('class', 'panel-body');
 
           // create footer
-          let panelFooter = panel.append("div")
-            .attr("class", "panel-footer");
+          let panelFooter = panel.append('div')
+            .attr('class', 'panel-footer');
 
           // add organization name to heading
-          panelHeading.append("small")
-            .attr("class", "detailText")
-            .text("Details");
+          panelHeading.append('small')
+            .attr('class', 'detailText')
+            .text('Details');
             
-          panelHeading.append("h4")
-            .attr("class", "orgName")
+          panelHeading.append('h4')
+            .attr('class', 'orgName')
             .text(function (d) {
-              return d["Organization Name"];
+              return d['Organization Name'];
             })
-            .append("small")
-            .attr("class", "type")
+            .append('small')
+            .attr('class', 'type')
             .text(function (d) {
-              return _.startCase(d["Type of Organization"]);
+              return _.startCase(d['Type of Organization']);
             });
             
           // add description to body
-          panelBody.append("p")
-            .classed("description-title", true)
-            .text("Description")
+          panelBody.append('p')
+            .classed('description-title', true)
+            .text('Description')
             .on('click', function(){
-              toggleDescription(d3.select(this), $(panelBody.node()).find(".description"), "toggle");
+              toggleDescription(d3.select(this), $(panelBody.node()).find('.description'), 'toggle');
             });
-          panelBody.append("p")
-            .attr("class", "description")
+          panelBody.append('p')
+            .attr('class', 'description')
             .text(function (d) {
-              return d["Description of Services"];
+              return d['Description of Services'];
             });
 
           console.debug({inCategories});
-          panelBody.append("p")
-            .classed("categories-title", true)
+          panelBody.append('p')
+            .classed('categories-title', true)
             .text(`All Categories (${numCategories})`)
             .on('click', function () {
-              toggleDescription(d3.select(this), $(panelBody.node()).find(".categories"), "toggle");
+              toggleDescription(d3.select(this), $(panelBody.node()).find('.categories'), 'toggle');
             });
-          panelBody.append("ul")
-            .attr("class", "categories")
-            .html(function (d) {
+          panelBody.append('ul')
+            .attr('class', 'categories')
+            .html(function () {
               let lines = [];
               for(let mainCategory in inCategories){
                 for(let subCategory of inCategories[mainCategory]){
@@ -197,82 +199,82 @@ let ServiceListView = function(listID) {
             });
 
           // add link to address in footer
-          if(d["Address"] && d["Address"].length > 0 && d.Latitude.length > 0 && d.Longitude.length > 0){
+          if(d['Address'] && d['Address'].length > 0 && d.Latitude.length > 0 && d.Longitude.length > 0){
             let address = `${d.Address}, ${d.City}, ${d.State}, ${d.Zip}`;
-            panelFooter.append("a")
-              .attr("href", "http://maps.google.com/?q=" + address)
-              .attr("target", "_blank")
-              .html(function (d) {
-                return "<span class='glyphicon glyphicon-share-alt'></span> " +
+            panelFooter.append('a')
+              .attr('href', 'http://maps.google.com/?q=' + address)
+              .attr('target', '_blank')
+              .html(function () {
+                return '<span class=\'glyphicon glyphicon-share-alt\'></span> ' +
                   address;
               });
           }else{
-            panelFooter.append("p")
-              .html("<span class='glyphicon glyphicon-share-alt'></span> No physical location");
+            panelFooter.append('p')
+              .html('<span class=\'glyphicon glyphicon-share-alt\'></span> No physical location');
           }
 
           // phone number
-          if (d["Phone Number"]) {
+          if (d['Phone Number']) {
             let phoneRegex = /(\d{3})\D*(\d{3})\D*(\d{4})(x\d+)?/g;
-            let match = phoneRegex.exec(d["Phone Number"]);
+            let match = phoneRegex.exec(d['Phone Number']);
             let matches = [];
 
             while (match != null) {
               matches.push(match.slice(1, 5));
-              match = phoneRegex.exec(d["Phone Number"]);
+              match = phoneRegex.exec(d['Phone Number']);
             }
 
             if (matches.length) {
               let numbers = matches.map(connectPhoneNumber);
-              panelFooter.append("p")
-                .html(function (d) {
-                  return "<span class='glyphicon glyphicon-earphone'></span> " +
-                    numbers.join(" or ");
+              panelFooter.append('p')
+                .html(function () {
+                  return '<span class=\'glyphicon glyphicon-earphone\'></span> ' +
+                    numbers.join(' or ');
                 });
-              d["Phone Number"] = numbers;
+              d['Phone Number'] = numbers;
             }else{
-              console.debug(d["Phone Number"]);
+              console.debug(d['Phone Number']);
             }
           }
 
           // website
-          if (d["Website"] && d["Website"].toLowerCase().trim() !== "no website") {
-            panelFooter.append("a")
-              .attr("href", d["Website"])
-              .attr("target", "_blank")
+          if (d['Website'] && d['Website'].toLowerCase().trim() !== 'no website') {
+            panelFooter.append('a')
+              .attr('href', d['Website'])
+              .attr('target', '_blank')
               .html(function (d) {
-                return "<span class='glyphicon glyphicon-home'></span> <span>" +
-                  d["Website"] + "</span>";
+                return '<span class=\'glyphicon glyphicon-home\'></span> <span>' +
+                  d['Website'] + '</span>';
                 // _.truncate(d["Website"], 20);
               });
           }
 
-          panelFooter.append("small")
-            .attr("class", "serviceDistance");
+          panelFooter.append('small')
+            .attr('class', 'serviceDistance');
         });
 
       // initialize collapsibles
-      self.serviceList.selectAll(".serviceEntry .panel-body")
+      self.serviceList.selectAll('.serviceEntry .panel-body')
         .each(function(){
           let d3Elem = d3.select(this);
           let $elem = $(this);
-          toggleDescription(d3Elem.select(".descripton-title"), $elem.find(".description"), "show");
+          toggleDescription(d3Elem.select('.descripton-title'), $elem.find('.description'), 'show');
 
-          toggleDescription(d3Elem.select(".categories-title"), $elem.find(".categories"), "show")
+          toggleDescription(d3Elem.select('.categories-title'), $elem.find('.categories'), 'show');
           // initialize with categories list closed
-            // .then(() => toggleDescription(d3Elem.select(".categories-title"), $elem.find(".categories"), "toggle"));
+          // .then(() => toggleDescription(d3Elem.select(".categories-title"), $elem.find(".categories"), "toggle"));
         });
 
     }else{
-      console.info("Filtering services");
+      console.info('Filtering services');
       selection
-        .style('display',function(d,i) {
-          if(knownNames.indexOf(d["Organization Name"]) === -1){
+        .style('display',function(d) {
+          if(knownNames.indexOf(d['Organization Name']) === -1){
             return 'none';
           }else{
             return null;
           }
-        })
+        });
     }
 
     if (self.currentLocation) {
@@ -282,9 +284,9 @@ let ServiceListView = function(listID) {
   }
 
   function connectPhoneNumber(arr) {
-    let phone = arr.slice(0, 3).join("-");
+    let phone = arr.slice(0, 3).join('-');
     if (arr[3]) {
-      return [phone, arr[3]].join(" ");
+      return [phone, arr[3]].join(' ');
     }
 
     return phone;
@@ -294,12 +296,12 @@ let ServiceListView = function(listID) {
     self.currentLocation = currentLocation;
 
     if (!currentLocation) {
-      self.serviceList.selectAll(".serviceEntry")
-        .selectAll(".panel-footer")
-        .selectAll(".serviceDistance")
-        .text("");
+      self.serviceList.selectAll('.serviceEntry')
+        .selectAll('.panel-footer')
+        .selectAll('.serviceDistance')
+        .text('');
     } else {
-      self.serviceList.selectAll(".serviceEntry")
+      self.serviceList.selectAll('.serviceEntry')
         .sort(function(a, b) {
           let locA = {
             lat: +a.Latitude,
@@ -315,15 +317,15 @@ let ServiceListView = function(listID) {
 
           return distA - distB;
         })
-        .selectAll(".panel-footer")
-        .selectAll(".serviceDistance")
+        .selectAll('.panel-footer')
+        .selectAll('.serviceDistance')
         .html(function(d) {
           let loc = {
             lat: +d.Latitude,
             lng: +d.Longitude
           };
 
-          return "<br>" + calculateDistance(loc, currentLocation).toFixed(2) + " mi.";
+          return '<br>' + calculateDistance(loc, currentLocation).toFixed(2) + ' mi.';
         });
     }
 

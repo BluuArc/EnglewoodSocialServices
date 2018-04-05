@@ -1,6 +1,8 @@
-"use strict";
+/* global StarPlotView */
+'use strict';
 
 // shows distribution of given categories of a given selection
+// eslint-disable-next-line no-unused-vars
 function CensusStarPlot(id, title, options = {}) {
   let self = {
     title: title,
@@ -17,7 +19,7 @@ function CensusStarPlot(id, title, options = {}) {
 
   function init(chartPanel) {
     self.starPlot = new StarPlotView({
-      parent: chartPanel.select(".panel-body"),
+      parent: chartPanel.select('.panel-body'),
       name: id,
       width: '100%',
       height: '300px',
@@ -39,7 +41,7 @@ function CensusStarPlot(id, title, options = {}) {
 
   function update(panel, data, options = { renderLabels: false, enableInteraction: false}) {
     if (data) {
-      panel.style("display", null);
+      panel.style('display', null);
       console.debug(options.fillColor);
       self.starPlot.render(data, options.groupID, options.fillColor);
 
@@ -53,57 +55,58 @@ function CensusStarPlot(id, title, options = {}) {
         options.interactionFn ? options.interactionFn(panel, self.propertyMap) : addInteraction(panel, options);
       }
     } else {
-      panel.style("display", "none"); // hide on no data
+      panel.style('display', 'none'); // hide on no data
     }
   }
 
   // based off of http://bl.ocks.org/kevinschaul/8833989
+  // eslint-disable-next-line no-unused-vars
   function addInteraction(panel, interactionOptions) {
-    console.error("Need to implement interaction in CensusStarPlot");
+    console.error('Need to implement interaction in CensusStarPlot');
     return;
     
-    let svg = panel.select('.panel-body svg');
-    let footer = panel.select('.panel-footer');
+    // let svg = panel.select('.panel-body svg');
+    // let footer = panel.select('.panel-footer');
 
-    let defaultText = "Click on the chart to view data";
+    // let defaultText = 'Click on the chart to view data';
 
-    let dataText = footer.append("div").attr("class", "data-text")
-      .text(defaultText).classed("empty", true);
+    // let dataText = footer.append('div').attr('class', 'data-text')
+    //   .text(defaultText).classed('empty', true);
 
-    let interactionObjects = panel.selectAll(".interaction").style('display', 'none');
+    // let interactionObjects = panel.selectAll('.interaction').style('display', 'none');
 
-    let selectionKey = null,
-      selectionElem = null;
+    // let selectionKey = null,
+    //   selectionElem = null;
 
-    svg.selectAll(".star-interaction")
-      .classed('hoverable', true)
-      .on('mouseover', (d) => {
-        interactionObjects.style('display', 'block');
-      }).on('mouseout', (d) => {
-        interactionObjects.style('display', 'none');
-      }).on('click', function (d) {
-        let elem = d3.select(this);
+    // svg.selectAll('.star-interaction')
+    //   .classed('hoverable', true)
+    //   .on('mouseover', (d) => {
+    //     interactionObjects.style('display', 'block');
+    //   }).on('mouseout', (d) => {
+    //     interactionObjects.style('display', 'none');
+    //   }).on('click', function (d) {
+    //     let elem = d3.select(this);
 
-        if (selectionElem) {
-          selectionElem.style("stroke-width", null)
-            .style("fill-opacity", null);
-        }
+    //     if (selectionElem) {
+    //       selectionElem.style('stroke-width', null)
+    //         .style('fill-opacity', null);
+    //     }
 
-        if (selectionKey !== d.key) {
-          let percent = (d.datum[d.key] / dataRanges[d.key][1]) * 100;
+    //     if (selectionKey !== d.key) {
+    //       let percent = (d.datum[d.key] / dataRanges[d.key][1]) * 100;
 
-          let htmlText = interactionOptions.htmlFn ? interactionOptions.htmlFn(d, self.propertyMap) : `<b>${self.propertyMap[d.key]}:</b><br>${d.datum[d.key]} (${percent.toFixed(2)}%) of ${dataRanges[d.key][1]} total lots`;
-          dataText.html(htmlText)
-            .classed("empty", false);
+    //       let htmlText = interactionOptions.htmlFn ? interactionOptions.htmlFn(d, self.propertyMap) : `<b>${self.propertyMap[d.key]}:</b><br>${d.datum[d.key]} (${percent.toFixed(2)}%) of ${dataRanges[d.key][1]} total lots`;
+    //       dataText.html(htmlText)
+    //         .classed('empty', false);
 
-          selectionElem = elem.style("stroke-width", "2px").style("fill-opacity", "0.4");
-          selectionKey = d.key;
-        } else {
-          selectionKey = null;
-          selectionElem = null;
-          dataText.text(defaultText).classed("empty", true);
-        }
-      });
+    //       selectionElem = elem.style('stroke-width', '2px').style('fill-opacity', '0.4');
+    //       selectionKey = d.key;
+    //     } else {
+    //       selectionKey = null;
+    //       selectionElem = null;
+    //       dataText.text(defaultText).classed('empty', true);
+    //     }
+    //   });
   }
 
   return publicFunctions;

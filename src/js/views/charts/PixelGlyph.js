@@ -1,7 +1,9 @@
-"use strict";
+/* global $ d3 */
+'use strict';
 
 var App = App || {};
 
+// eslint-disable-next-line no-unused-vars
 function PixelGlyph(options) {
   let self = {
     chartMargins: {
@@ -11,7 +13,7 @@ function PixelGlyph(options) {
       right: 50
     },
     colors: {
-      outline: "black"
+      outline: 'black'
     },
     nameMapping: {
 
@@ -21,21 +23,21 @@ function PixelGlyph(options) {
   };
 
   function init(targetDiv) {
-    let svg = targetDiv.append("svg");
+    let svg = targetDiv.append('svg');
     self.graph = svg.append('g').classed('graph-group', true);
 
     // overall glyph size
     let size = $(svg.node()).width() - self.chartMargins.left - self.chartMargins.right;
-    svg.style("height", `${size + self.chartMargins.top + self.chartMargins.bottom}px`);
+    svg.style('height', `${size + self.chartMargins.top + self.chartMargins.bottom}px`);
 
-    self.graph.content = self.graph.append("g").classed("graph-content", true);
+    self.graph.content = self.graph.append('g').classed('graph-content', true);
 
-    self.graph.background = self.graph.append("rect")
-      .attr("x", self.chartMargins.left)
-      .attr("y", self.chartMargins.top)
-      .attr("width", size).attr("height", size)
+    self.graph.background = self.graph.append('rect')
+      .attr('x', self.chartMargins.left)
+      .attr('y', self.chartMargins.top)
+      .attr('width', size).attr('height', size)
       .classed('graph-background', true)
-      .attr('stroke', self.colors.outline).attr("stroke-width", "1px");
+      .attr('stroke', self.colors.outline).attr('stroke-width', '1px');
 
     self.graph.layout = self.graph.append('g').classed('graph-layout', true);
 
@@ -63,10 +65,10 @@ function PixelGlyph(options) {
         .attr('stroke', 'none');
 
       self.graph.content.append('rect')
-        .attr('width', +self.quadrants[q].rectangle.attr("width") - padding)
-        .attr('height', +self.quadrants[q].rectangle.attr("height") - padding)
-        .attr('x', +self.quadrants[q].rectangle.attr("x") + padding/2)
-        .attr('y', +self.quadrants[q].rectangle.attr("y") + padding/2)
+        .attr('width', +self.quadrants[q].rectangle.attr('width') - padding)
+        .attr('height', +self.quadrants[q].rectangle.attr('height') - padding)
+        .attr('x', +self.quadrants[q].rectangle.attr('x') + padding/2)
+        .attr('y', +self.quadrants[q].rectangle.attr('y') + padding/2)
         .style('fill', 'none').style('stroke', self.quadrants[q].color)
         .style('stroke-width', padding);
 
@@ -75,6 +77,7 @@ function PixelGlyph(options) {
     
   }
 
+  // eslint-disable-next-line no-unused-vars
   function getQuadrant(name) {
     return self.nameMapping[name];
   }
@@ -96,10 +99,10 @@ function PixelGlyph(options) {
       [self.chartMargins.left, self.chartMargins.top + self.size / 2],
       [self.chartMargins.left + self.size, self.chartMargins.top + self.size / 2],
     ];
-    self.graph.layout.append('path').datum(verticalAxis).attr("d", line)
-      .attr('stroke', self.colors.outline).attr("stroke-width", "3px");
-    self.graph.layout.append('path').datum(horizontalAxis).attr("d", line)
-      .attr('stroke', self.colors.outline).attr("stroke-width", "3px");
+    self.graph.layout.append('path').datum(verticalAxis).attr('d', line)
+      .attr('stroke', self.colors.outline).attr('stroke-width', '3px');
+    self.graph.layout.append('path').datum(horizontalAxis).attr('d', line)
+      .attr('stroke', self.colors.outline).attr('stroke-width', '3px');
 
     drawLabels(false);
   }
@@ -121,13 +124,13 @@ function PixelGlyph(options) {
   }
 
   function drawLabels(doAddBorder) {
-    let labelGroup = self.graph.layout.append('g').attr("id", "label-group");
+    let labelGroup = self.graph.layout.append('g').attr('id', 'label-group');
     Object.keys(self.quadrants).forEach((q,i) => {
       let quadrant = self.quadrants[q];
       let topLeftCoords = [
         self.chartMargins.left + ((i % 2 == 0) ? 0 : (self.size / 2)),
         self.chartMargins.top + ((i < 2) ? 0 : (self.size / 2))
-      ]
+      ];
 
       let label = labelGroup.append('text')
         .attr('x', topLeftCoords[0] + self.size / 4)
@@ -137,7 +140,7 @@ function PixelGlyph(options) {
       
       if(quadrant.graphLabel){
         quadrant.graphLabel.forEach((d,i) => {
-          label.append("tspan")
+          label.append('tspan')
             .attr('x', label.attr('x')).attr('dy', i == 0 ? `-${quadrant.graphLabel.length/2}em` : '1.2em')
             .text(d);
         });

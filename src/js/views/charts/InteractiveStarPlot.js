@@ -1,6 +1,10 @@
-"use strict";
+/* global StarPlotView */
+'use strict';
+
+var App = App || {};
 
 // shows distribution of given categories of a given selection
+// eslint-disable-next-line no-unused-vars
 function InteractiveStarPlot(id, title, options = {}) {
   let self = {
     title: title,
@@ -11,7 +15,7 @@ function InteractiveStarPlot(id, title, options = {}) {
 
   function init(chartPanel) {
     self.starPlot = new StarPlotView({
-      parent: chartPanel.select(".panel-body"),
+      parent: chartPanel.select('.panel-body'),
       name: id,
       width: '100%',
       height: '300px',
@@ -32,14 +36,14 @@ function InteractiveStarPlot(id, title, options = {}) {
 
   function update(panel, data, updateOptions = { renderLabels: false, enableInteraction: false }) {
     if (data) {
-      panel.style("display", null);
+      panel.style('display', null);
       if (updateOptions.groupID === 'chart-outline' || updateOptions.renderLabels === true) { //render backgrounds only
         self.starPlot.render(data, 'chart-outline', updateOptions.fillColor);
       } else {
-        self.starPlot.render(data, 'glyph', updateOptions.fillColor, updateOptions)
+        self.starPlot.render(data, 'glyph', updateOptions.fillColor, updateOptions);
       }
     } else {
-      panel.style("display", "none"); // hide on no data
+      panel.style('display', 'none'); // hide on no data
     }
 
     if (options.update) {
@@ -48,7 +52,7 @@ function InteractiveStarPlot(id, title, options = {}) {
   }
 
   function remove(skipReset) {
-    console.debug("Removing census kiviat chart for", self.title);
+    console.debug('Removing census kiviat chart for', self.title);
     if (!skipReset) {
       App.controllers.mapData.resetFilters(true);
     }
