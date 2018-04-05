@@ -1,17 +1,18 @@
-"use strict";
+/* global $ d3 less */
+'use strict';
 
 var App = App || {};
 
-let documentPromise = new Promise(function(resolve, reject) {
+let documentPromise = new Promise(function(resolve) {
   $(document).ready(function() {
-    console.debug("$(document).ready done");
+    console.debug('$(document).ready done');
     resolve();
   });
 });
 
-let windowPromise = new Promise(function(resolve, reject) {
-  $(window).on("load", function() {
-    console.debug("$(window).on('load') done");
+let windowPromise = new Promise(function(resolve) {
+  $(window).on('load', function() {
+    console.debug('$(window).on(\'load\') done');
     resolve();
   });
 });
@@ -40,6 +41,7 @@ window.onresize = function() {
   App.views = {};
   App.controllers = {};
 
+  /* eslint-disable no-undef */
   // models
   App.models.serviceData = new ServiceDataModel();
   App.models.serviceTaxonomy = new ServiceTaxonomyModel();
@@ -53,46 +55,49 @@ window.onresize = function() {
   App.controllers.listToMapLink = new ListToMapLinkingController();
   App.controllers.locationButton = new LocationButtonController();
   App.controllers.search = new SearchController();
+  /* eslint-enable no-undef */
 
   App.init = function() {
     $('[data-toggle="popover"]').popover(); //needed for tooltip on landing page
-    App.views.loadingMessage = new LoadingMessageView("#loading-indicator");
+    /* eslint-disable no-undef */
+    App.views.loadingMessage = new LoadingMessageView('#loading-indicator');
 
-    App.views.browserMessage = new BrowserMessageView("#browserModal");
+    App.views.browserMessage = new BrowserMessageView('#browserModal');
     App.models.browser = new BrowserModel();
     App.controllers.browserMessage = new BrowserMessageController();
 
-    console.info("Loading Finder");
-    App.views.loadingMessage.startLoading("Loading Map");
-    App.views.map = new MapView("serviceMap");
-    App.views.serviceList = new ServiceListView("#serviceList");
-    App.views.serviceList.makeCollapsing("#toggleHideServicesButton", "#serviceListWrapper");
+    console.info('Loading Finder');
+    App.views.loadingMessage.startLoading('Loading Map');
+    App.views.map = new MapView('serviceMap');
+    App.views.serviceList = new ServiceListView('#serviceList');
+    App.views.serviceList.makeCollapsing('#toggleHideServicesButton', '#serviceListWrapper');
 
-    App.views.loadingMessage.updateAndRaise("Initializing buttons and interface elements");
-    App.controllers.serviceFilterDropdown.setFilterDropdown("#filterDropdownList", "#filterDropdownButton");
-    App.controllers.serviceFilterDropdown.attachAllServicesButton("#allServicesButton");
+    App.views.loadingMessage.updateAndRaise('Initializing buttons and interface elements');
+    App.controllers.serviceFilterDropdown.setFilterDropdown('#filterDropdownList', '#filterDropdownButton');
+    App.controllers.serviceFilterDropdown.attachAllServicesButton('#allServicesButton');
 
-    App.controllers.locationButton.attachLocationButton("#locationButton");
-    App.controllers.locationButton.attachAddressLookupButton("#findAddressButton");
+    App.controllers.locationButton.attachLocationButton('#locationButton');
+    App.controllers.locationButton.attachAddressLookupButton('#findAddressButton');
     App.controllers.locationButton.attachSearchInput();
 
-    App.controllers.search.attachDOMElements("#searchInput", "#searchCount", "#searchButton");
+    App.controllers.search.attachDOMElements('#searchInput', '#searchCount', '#searchButton');
 
-    App.controllers.schoolMarkerView = new MarkerToggleController("#toggleSchoolView", "#schoolViewText", "School");
+    App.controllers.schoolMarkerView = new MarkerToggleController('#toggleSchoolView', '#schoolViewText', 'School');
 
-    App.views.loadingMessage.updateAndRaise("Loading location and service data");
-    let serviceTaxonomyP = App.models.serviceTaxonomy.loadData("./data/serviceTaxonomy.json");
-    let schoolDataP = App.models.schoolData.loadData("./data/18-02-12 Rev Englewood Schools.csv");
+    App.views.loadingMessage.updateAndRaise('Loading location and service data');
+    let serviceTaxonomyP = App.models.serviceTaxonomy.loadData('./data/serviceTaxonomy.json');
+    let schoolDataP = App.models.schoolData.loadData('./data/18-02-12 Rev Englewood Schools.csv');
 
     App.controllers.modal = new modalController();
+    /* eslint-enable no-undef */
 
     Promise.all([serviceTaxonomyP, schoolDataP])
       .then(() => {
-        return App.models.serviceData.loadData("./admin-data/EnglewoodLocations.csv");
-      }).then(function(values) {
+        return App.models.serviceData.loadData('./admin-data/EnglewoodLocations.csv');
+      }).then(function() {
         // App.views.map.createMap();
 
-        App.views.loadingMessage.updateAndRaise("Plotting services");
+        App.views.loadingMessage.updateAndRaise('Plotting services');
         App.views.map.plotServices(App.models.serviceData.getData());
         App.views.serviceList.populateList(App.models.serviceData.getData());
         App.views.map.plotSchools(App.models.schoolData.getData());
