@@ -91,6 +91,16 @@ const ComparisonAreaController = function(selectionAreaViewId, graphAreaViewId) 
     return self.graphAreaView;
   }
 
+  function resetGraphArea() {
+    const graphArea = self.graphAreaView;
+    graphArea.selectAll('*').remove();
+    graphArea.append('div')
+      .append('svg').attr('height', 300).attr('width', 400)
+      .attr('id', 'default-graph-area-text')
+      .append('text')
+      .text('Choose a subcategory on the left to see a graph');
+  }
+
   function setActiveSubId(mainId = '', subId = '') {
     if (hasMainEntry(self.active.main) && hasSubEntry(self.active.main, self.active.sub)) {
       const prevActiveMain = getMainEntry(self.active.main);
@@ -121,5 +131,6 @@ const ComparisonAreaController = function(selectionAreaViewId, graphAreaViewId) 
     setActiveSubId,
 
     getGraphArea,
+    resetGraphArea
   };
 };

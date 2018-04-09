@@ -555,7 +555,7 @@ text.delete-button-symbol {
     }
 
     .row, .row #selection-area, .row #graph-area {
-      height: 50rem;
+      max-height: 50rem;
     }
 
     .row #selection-area {
@@ -563,6 +563,10 @@ text.delete-button-symbol {
       overflow-x: hidden;
       .selection-area--main-category {
         margin-right: -15px;
+
+        &#clear-graph-btn {
+          margin-bottom: -2rem;
+        }
       }
       .selection-area--sub-category {
         margin-left: 1rem;
@@ -585,8 +589,20 @@ text.delete-button-symbol {
       padding-left: 0;
 
       .panel-footer {
-        height: 100%;
+        min-height: 100%;
         text-align: center;
+      }
+
+      #default-graph-area-text {
+        background-color: white;
+        height: 100%;
+        margin: auto;
+        text-align: center;
+
+        text {
+          transform: translate(50%, 50%);
+          text-anchor: middle;
+        }
       }
     }
   }

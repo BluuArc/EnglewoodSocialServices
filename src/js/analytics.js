@@ -230,6 +230,12 @@ Promise.all([documentPromise, windowPromise, less.pageLoadFinished])
 
         const legendWidth = d3.select('#legend #svgLegend').attr('width');
         d3.select('#legend #comparison-area').style('max-width', `${legendWidth}px`);
+        const clearButton = App.controllers.comparisonArea.addMainEntry('<b>Clear Graph</b>', 'clear-graph-btn', (graphArea) => {
+          console.debug('clicked clear graph button');
+          App.controllers.comparisonArea.resetGraphArea();
+        });
+        clearButton.selectionArea.select('button#main-header').classed('btn-default', true);
+        App.controllers.comparisonArea.resetGraphArea();
         addLotPixelGlyphsToComparisonArea();
         // App.views.chartList.addChart(new VacantLotBarChart(App.models.aggregateData.englewood,App.models.aggregateData.westEnglewood));
         // App.views.chartList.updateChart("vacant-lots-total");
@@ -367,12 +373,27 @@ Promise.all([documentPromise, windowPromise, less.pageLoadFinished])
       width: 350
     };
 
-    const vacantLotsCategory = '#ca--vacant-lots';
-    const vacantLotsButton = App.controllers.comparisonArea.addMainEntry('<b>Vacant Lots</b>', vacantLotsCategory, (graphArea) => {
-      console.debug('clicked overall vacant lots button');
-      // graphArea.selectAll('*').remove();
-    });
-    const westEnglewoodButton = App.controllers.comparisonArea.addSubEntry(vacantLotsCategory, 'West Englewood', `${vacantLotsCategory}--we`, (graphArea) => {
+    const vacantLotsCategory = 'ca--vacant-lots';
+    const vacantLotsSelectionItem = App.controllers.comparisonArea.addMainEntry(
+      '<span class="glyphicon glyphicon-chevron-down"></span> <b>Vacant Lots</b>',
+      vacantLotsCategory,
+      () => {
+        console.debug('clicked overall vacant lots button');
+        const button = vacantLotsSelectionItem.selectionArea.select('button#main-header');
+        const buttonGroup = vacantLotsSelectionItem.selectionArea.select('#subcategory-list');
+        App.controllers.comparisonArea.resetGraphArea();
+        App.controllers.comparisonArea.setActiveSubId();
+        if (buttonGroup.classed('hidden')) {
+          // show button group
+          buttonGroup.classed('hidden', false);
+          button.select('.glyphicon').style('transform', null);
+        } else {
+          // hide button group
+          buttonGroup.classed('hidden', true);
+          button.select('.glyphicon').style('transform', 'rotate(-90deg)');
+        }
+      });
+    const westEnglewoodSelectionItem = App.controllers.comparisonArea.addSubEntry(vacantLotsCategory, 'West Englewood', `${vacantLotsCategory}--we`, (graphArea) => {
       console.debug('clicked west englewood button');
       App.controllers.comparisonArea.setActiveSubId(vacantLotsCategory, `${vacantLotsCategory}--we`);
       graphArea.selectAll('*').remove();
@@ -383,7 +404,7 @@ Promise.all([documentPromise, windowPromise, less.pageLoadFinished])
       graph.init(graphArea);
       graph.update(graphArea, westEnglewoodKiviatData);
     });
-    const englewoodButton = App.controllers.comparisonArea.addSubEntry(vacantLotsCategory, 'Englewood', `${vacantLotsCategory}--e`, (graphArea) => {
+    const englewoodSelectionItem = App.controllers.comparisonArea.addSubEntry(vacantLotsCategory, 'Englewood', `${vacantLotsCategory}--e`, (graphArea) => {
       console.debug('clicked englewood button');
       App.controllers.comparisonArea.setActiveSubId(vacantLotsCategory, `${vacantLotsCategory}--e`);
       graphArea.selectAll('*').remove();
@@ -396,9 +417,9 @@ Promise.all([documentPromise, windowPromise, less.pageLoadFinished])
       // graphArea.append('h1').text('Englewood Vacant Lot data goes here');
     });
 
-    vacantLotsButton.selectionArea.select('button#main-header').classed('btn-default', true);
-    westEnglewoodButton.selectionArea.classed('west-englewood btn btn-block', true);
-    englewoodButton.selectionArea.classed('englewood btn btn-block', true);
+    vacantLotsSelectionItem.selectionArea.select('button#main-header').classed('btn-default', true);
+    westEnglewoodSelectionItem.selectionArea.classed('west-englewood btn btn-block', true);
+    englewoodSelectionItem.selectionArea.classed('englewood btn btn-block', true);
   }
 
   // eslint-disable-next-line no-unused-vars
