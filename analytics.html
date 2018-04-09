@@ -261,12 +261,27 @@
         </div>
         
         <div id="legend">
-          <div id="comparison-area" class="container-fluid">
+          <div class="container-fluid">
             <div class="row">
+              <div class="col-md-12">
+                <div class="btn-group btn-group-justified">
+                  <a class="btn btn-info" id="legend-collapse-btn">Collapse Legend</a>
+                  <a class="btn btn-info" id="comparison-collapse-btn">Collapse Comparison Area</a>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div id="comparison-area" class="container-fluid">
+            <div class="row" id="comparison-area-content">
               <div id="selection-area" class="col-md-3">
               </div>
               <div id="graph-area" class="col-md-9">
                 <p id="default-graph-area-text">Choose a subcategory on the left to see a graph</p>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-12">
+                <button class="btn btn-block" id="collapse-btn">Collapse</button>
               </div>
             </div>
           </div>

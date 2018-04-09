@@ -230,7 +230,8 @@ Promise.all([documentPromise, windowPromise, less.pageLoadFinished])
 
         const legendWidth = d3.select('#legend #svgLegend').attr('width');
         d3.select('#legend #comparison-area').style('max-width', `${legendWidth}px`);
-        const clearButton = App.controllers.comparisonArea.addMainEntry('<b>Clear Graph</b>', 'clear-graph-btn', (graphArea) => {
+        d3.select('#legend').style('max-width', `${legendWidth}px`);
+        const clearButton = App.controllers.comparisonArea.addMainEntry('<b>Clear Graph</b>', 'clear-graph-btn', () => {
           console.debug('clicked clear graph button');
           App.controllers.comparisonArea.resetGraphArea();
         });

@@ -550,15 +550,17 @@ text.delete-button-symbol {
     display: block;
     width: 100%;
 
-    .row {
+    .row#comparison-area-content {
       margin-bottom: 15px;
     }
 
-    .row, .row #selection-area, .row #graph-area {
+    .row#comparison-area-content,
+    .row#comparison-area-content #selection-area,
+    .row#comparison-area-content #graph-area {
       max-height: 50rem;
     }
 
-    .row #selection-area {
+    .row#comparison-area-content #selection-area {
       overflow-y: scroll;
       overflow-x: hidden;
       .selection-area--main-category {
@@ -570,7 +572,7 @@ text.delete-button-symbol {
       }
       .selection-area--sub-category {
         margin-left: 1rem;
-        width: calc(100% - 1rem);
+        width: calc(100% - 2rem);
         white-space: inherit;
       }
 
@@ -585,7 +587,7 @@ text.delete-button-symbol {
       }
     }
 
-    .row #graph-area {
+    .row#comparison-area-content #graph-area {
       padding-left: 0;
 
       .panel-footer {
