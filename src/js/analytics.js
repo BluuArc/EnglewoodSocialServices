@@ -370,19 +370,24 @@ Promise.all([documentPromise, windowPromise, less.pageLoadFinished])
     const vacantLotsCategory = '#ca--vacant-lots';
     const vacantLotsButton = App.controllers.comparisonArea.addMainEntry('<b>Vacant Lots</b>', vacantLotsCategory, (graphArea) => {
       console.debug('clicked overall vacant lots button');
-      graphArea.selectAll('*').remove();
+      // graphArea.selectAll('*').remove();
     });
     const westEnglewoodButton = App.controllers.comparisonArea.addSubEntry(vacantLotsCategory, 'West Englewood', `${vacantLotsCategory}--we`, (graphArea) => {
       console.debug('clicked west englewood button');
+      App.controllers.comparisonArea.setActiveSubId(vacantLotsCategory, `${vacantLotsCategory}--we`);
       graphArea.selectAll('*').remove();
-      
-      graphArea.append('h1').text('West Englewood Vacant Lot data goes here');
+      graphArea.append('div').classed('panel-footer', true)
+        .append('div').classed('panel-body', true);
+      // eslint-disable-next-line no-undef
+      const graph = new VacantLotPixelGlyph('pixel-west-englewood', '<h4><b>Vacant Lots: <span class=\'text west-englewood\'>West Englewood</span></b></h4>', lotData, plotOptions);
+      graph.init(graphArea);
+      graph.update(graphArea, westEnglewoodKiviatData);
     });
     const englewoodButton = App.controllers.comparisonArea.addSubEntry(vacantLotsCategory, 'Englewood', `${vacantLotsCategory}--e`, (graphArea) => {
       console.debug('clicked englewood button');
+      App.controllers.comparisonArea.setActiveSubId(vacantLotsCategory, `${vacantLotsCategory}--e`);
       graphArea.selectAll('*').remove();
       graphArea.append('div').classed('panel-footer', true)
-        .style('height', '100%').style('text-align', 'center')
         .append('div').classed('panel-body', true);
       // eslint-disable-next-line no-undef
       const graph = new VacantLotPixelGlyph('pixel-englewood', '<h4><b>Vacant Lots: <span class=\'text englewood\'>Englewood</span></b></h4>', lotData, plotOptions);

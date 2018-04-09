@@ -569,10 +569,25 @@ text.delete-button-symbol {
         width: calc(100% - 1rem);
         white-space: inherit;
       }
+
+      button:hover:not(.active-sub-category) {
+        border: 1px white solid;
+      }
+
+      .active-sub-category {
+        text-decoration: underline;
+        font-weight: bolder;
+        border: 2.5px white solid;
+      }
     }
 
     .row #graph-area {
       padding-left: 0;
+
+      .panel-footer {
+        height: 100%;
+        text-align: center;
+      }
     }
   }
 

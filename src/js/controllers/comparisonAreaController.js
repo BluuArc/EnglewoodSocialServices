@@ -7,6 +7,10 @@ const ComparisonAreaController = function(selectionAreaViewId, graphAreaViewId) 
     mainEntries: {},
     graphAreaView: null,
     selectionAreaView: null,
+    active: {
+      main: '',
+      sub: ''
+    }
   };
 
   init();
@@ -87,6 +91,23 @@ const ComparisonAreaController = function(selectionAreaViewId, graphAreaViewId) 
     return self.graphAreaView;
   }
 
+  function setActiveSubId(mainId = '', subId = '') {
+    if (hasMainEntry(self.active.main) && hasSubEntry(self.active.main, self.active.sub)) {
+      const prevActiveMain = getMainEntry(self.active.main);
+      const prevActiveSub = getSubEntry(self.active.main, self.active.sub);
+      prevActiveMain.selectionArea.classed('active-category', false);
+      prevActiveSub.selectionArea.classed('active-sub-category', false);
+    }
+    self.active.main = mainId;
+    self.active.sub = subId;
+    if (hasMainEntry(self.active.main) && hasSubEntry(self.active.main, self.active.sub)) {
+      const currActiveMain = getMainEntry(self.active.main);
+      const currActiveSub = getSubEntry(self.active.main, self.active.sub);
+      currActiveMain.selectionArea.classed('active-category', true);
+      currActiveSub.selectionArea.classed('active-sub-category', true);
+    }
+  }
+
   return {
     addMainEntry,
     deleteMainEntry,
@@ -97,6 +118,7 @@ const ComparisonAreaController = function(selectionAreaViewId, graphAreaViewId) 
     deleteSubEntry,
     hasSubEntry,
     getSubEntry,
+    setActiveSubId,
 
     getGraphArea,
   };
