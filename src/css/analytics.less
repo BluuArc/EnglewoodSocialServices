@@ -560,6 +560,15 @@ text.delete-button-symbol {
 
     .row #selection-area {
       overflow-y: scroll;
+      overflow-x: hidden;
+      .selection-area--main-category {
+        margin-right: -15px;
+      }
+      .selection-area--sub-category {
+        margin-left: 1rem;
+        width: calc(100% - 1rem);
+        white-space: inherit;
+      }
     }
 
     .row #graph-area {
@@ -775,6 +784,7 @@ text.delete-button-symbol {
   }
 
   &.btn {
+    color: white;
     .btn-gradient(to top, @englewood-color-shade, @englewood-color, @englewood-color-shade);
   }
 }
@@ -801,6 +811,7 @@ text.delete-button-symbol {
   }
 
   &.btn {
+    color: white;
     .btn-gradient(to top, @west-englewood-color-shade, @west-englewood-color, @west-englewood-color-shade);
   }
 }

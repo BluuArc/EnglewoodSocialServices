@@ -84,6 +84,10 @@ Promise.all([documentPromise, windowPromise, less.pageLoadFinished])
     App.controllers.lotViewBCM = new MarkerToggleController('#toggleBCM', '#textBCM', 'Business/Commercial/Manufacturing');
     App.controllers.lotViewPOS = new MarkerToggleController('#togglePOS', '#textPOS', 'Parks and Open Space');
     App.controllers.lotViewPD = new MarkerToggleController('#togglePD', '#textPD', 'Planned Manufacturing Districts and Development');
+
+    App.views.selectionArea = new SelectionAreaView('#legend #comparison-area #selection-area');
+
+    App.controllers.comparisonArea = new ComparisonAreaController(App.views.selectionArea);
     /* eslint-enable no-undef */
 
     App.controllers.mapData.setupDataPanel('#mapPanelToggle', '#mapSettingsPanel');
@@ -226,6 +230,7 @@ Promise.all([documentPromise, windowPromise, less.pageLoadFinished])
 
         App.views.loadingMessage.updateAndRaise('Adding charts');
 
+        addLotPixelGlyphsToComparisonArea();
         // App.views.chartList.addChart(new VacantLotBarChart(App.models.aggregateData.englewood,App.models.aggregateData.westEnglewood));
         // App.views.chartList.updateChart("vacant-lots-total");
         
@@ -339,6 +344,24 @@ Promise.all([documentPromise, windowPromise, less.pageLoadFinished])
     // eslint-disable-next-line no-undef
     App.views.chartList.addChart(new VacantLotPixelGlyph('pixel-west-englewood', '<h4><b>Vacant Lots: <span class=\'text west-englewood\'>West Englewood</span></b></h4>', lotData, plotOptions));
     App.views.chartList.updateChart('pixel-west-englewood', westEnglewoodKiviatData);
+  }
+
+  function addLotPixelGlyphsToComparisonArea() {
+
+    const vacantLotsCategory = '#ca--vacant-lots';
+    const vacantLotsButton = App.controllers.comparisonArea.addMainEntry('<b>Vacant Lots</b>', vacantLotsCategory, () => {
+      console.debug('clicked overall vacant lots button');
+    });
+    const westEnglewoodButton = App.controllers.comparisonArea.addSubEntry(vacantLotsCategory, 'West Englewood', `${vacantLotsCategory}--we`, () => {
+      console.debug('clicked west englewood button');
+    });
+    const englewoodButton = App.controllers.comparisonArea.addSubEntry(vacantLotsCategory, 'Englewood', `${vacantLotsCategory}--e`, () => {
+      console.debug('clicked englewood button');
+    });
+
+    vacantLotsButton.selectionArea.select('button#main-header').classed('btn-default', true);
+    westEnglewoodButton.selectionArea.classed('west-englewood btn btn-block', true);
+    englewoodButton.selectionArea.classed('englewood btn btn-block', true);
   }
 
   // eslint-disable-next-line no-unused-vars
