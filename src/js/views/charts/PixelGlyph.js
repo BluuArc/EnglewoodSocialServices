@@ -26,9 +26,15 @@ function PixelGlyph(options) {
     let svg = targetDiv.append('svg');
     self.graph = svg.append('g').classed('graph-group', true);
 
+    self.chartMargins = options.chartMargins || self.chartMargins;
+
     // overall glyph size
     let size = $(svg.node()).width() - self.chartMargins.left - self.chartMargins.right;
     svg.style('height', `${size + self.chartMargins.top + self.chartMargins.bottom}px`);
+
+    if (options.width) {
+      svg.style('width', options.width);
+    }
 
     self.graph.content = self.graph.append('g').classed('graph-content', true);
 
@@ -37,6 +43,7 @@ function PixelGlyph(options) {
       .attr('y', self.chartMargins.top)
       .attr('width', size).attr('height', size)
       .classed('graph-background', true)
+      .attr('fill', 'none')
       .attr('stroke', self.colors.outline).attr('stroke-width', '1px');
 
     self.graph.layout = self.graph.append('g').classed('graph-layout', true);

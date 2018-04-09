@@ -1,20 +1,28 @@
+/* global d3 SelectionAreaView */
 'use strict';
 
 // eslint-disable-next-line no-unused-vars
-const ComparisonAreaController = function(selectionAreaView/*, graphAreaView*/) {
+const ComparisonAreaController = function(selectionAreaViewId, graphAreaViewId) {
   const self = {
-    mainEntries: {}
+    mainEntries: {},
+    graphAreaView: null,
+    selectionAreaView: null,
   };
 
   init();
-  function init() {}
+  function init() {
+    self.graphAreaView = d3.select(graphAreaViewId);
+    self.selectionAreaView = new SelectionAreaView(selectionAreaViewId);
+  }
 
-  function addMainEntry(name = '', id = '', onClick) {
+  function noop() {}
+
+  function addMainEntry(name = '', id = '', onClick = noop) {
     if (hasMainEntry(id)) {
       throw Error(`Main Entry ${id} already exists`);
     }
     const mainEntry = {
-      selectionArea: selectionAreaView.addMainCategory(name, id, onClick),
+      selectionArea: self.selectionAreaView.addMainCategory(name, id, () => onClick(self.graphAreaView)),
       name,
       subEntries: {},
     };
@@ -23,12 +31,12 @@ const ComparisonAreaController = function(selectionAreaView/*, graphAreaView*/) 
     return mainEntry;
   }
 
-  function addSubEntry(mainId = '', name = '', id = '', onClick) {
+  function addSubEntry(mainId = '', name = '', id = '', onClick = noop) {
     if (hasSubEntry(mainId, id)) {
       throw Error(`${mainId}/${id} already exists`);
     }
     const subEntry = {
-      selectionArea: selectionAreaView.addSubCategory(mainId, name, id, onClick),
+      selectionArea: self.selectionAreaView.addSubCategory(mainId, name, id, () => onClick(self.graphAreaView)),
       name
     };
 
@@ -52,7 +60,7 @@ const ComparisonAreaController = function(selectionAreaView/*, graphAreaView*/) 
       throw Error(`${mainId}/${subId} does not exist`);
     }
     // const subEntry = getSubEntry(mainId, subId);
-    selectionAreaView.deleteSubEntry(mainId, subId);
+    self.selectionAreaView.deleteSubEntry(mainId, subId);
     delete getMainEntry(mainId).subEntries[subId];
   }
 
@@ -75,6 +83,10 @@ const ComparisonAreaController = function(selectionAreaView/*, graphAreaView*/) 
     return getMainEntry(mainId).subEntries[subId];
   }
 
+  function getGraphArea() {
+    return self.graphAreaView;
+  }
+
   return {
     addMainEntry,
     deleteMainEntry,
@@ -84,6 +96,8 @@ const ComparisonAreaController = function(selectionAreaView/*, graphAreaView*/) 
     addSubEntry,
     deleteSubEntry,
     hasSubEntry,
-    getSubEntry
+    getSubEntry,
+
+    getGraphArea,
   };
 };

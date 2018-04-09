@@ -85,9 +85,7 @@ Promise.all([documentPromise, windowPromise, less.pageLoadFinished])
     App.controllers.lotViewPOS = new MarkerToggleController('#togglePOS', '#textPOS', 'Parks and Open Space');
     App.controllers.lotViewPD = new MarkerToggleController('#togglePD', '#textPD', 'Planned Manufacturing Districts and Development');
 
-    App.views.selectionArea = new SelectionAreaView('#legend #comparison-area #selection-area');
-
-    App.controllers.comparisonArea = new ComparisonAreaController(App.views.selectionArea);
+    App.controllers.comparisonArea = new ComparisonAreaController('#legend #comparison-area #selection-area','#legend #comparison-area #graph-area');
     /* eslint-enable no-undef */
 
     App.controllers.mapData.setupDataPanel('#mapPanelToggle', '#mapSettingsPanel');
@@ -230,6 +228,8 @@ Promise.all([documentPromise, windowPromise, less.pageLoadFinished])
 
         App.views.loadingMessage.updateAndRaise('Adding charts');
 
+        const legendWidth = d3.select('#legend #svgLegend').attr('width');
+        d3.select('#legend #comparison-area').style('max-width', `${legendWidth}px`);
         addLotPixelGlyphsToComparisonArea();
         // App.views.chartList.addChart(new VacantLotBarChart(App.models.aggregateData.englewood,App.models.aggregateData.westEnglewood));
         // App.views.chartList.updateChart("vacant-lots-total");
@@ -347,16 +347,48 @@ Promise.all([documentPromise, windowPromise, less.pageLoadFinished])
   }
 
   function addLotPixelGlyphsToComparisonArea() {
+    let [lotData, lotRanges] = generateLotKiviatData(App.models.landInventory.getDataByFilter(), true);
+
+    for (let type in lotRanges) {
+      lotRanges[type] = lotRanges[type][1];
+    }
+
+    let englewoodKiviatData = generateLotKiviatData(App.models.aggregateData.englewood.data.lot, false);
+    let westEnglewoodKiviatData = generateLotKiviatData(App.models.aggregateData.westEnglewood.data.lot, false);
+
+    const plotOptions = {
+      chartMargins: {
+        top: 5,
+        bottom: 5,
+        left: 50,
+        right: 0
+      },
+      // width: 225
+      width: 350
+    };
 
     const vacantLotsCategory = '#ca--vacant-lots';
-    const vacantLotsButton = App.controllers.comparisonArea.addMainEntry('<b>Vacant Lots</b>', vacantLotsCategory, () => {
+    const vacantLotsButton = App.controllers.comparisonArea.addMainEntry('<b>Vacant Lots</b>', vacantLotsCategory, (graphArea) => {
       console.debug('clicked overall vacant lots button');
+      graphArea.selectAll('*').remove();
     });
-    const westEnglewoodButton = App.controllers.comparisonArea.addSubEntry(vacantLotsCategory, 'West Englewood', `${vacantLotsCategory}--we`, () => {
+    const westEnglewoodButton = App.controllers.comparisonArea.addSubEntry(vacantLotsCategory, 'West Englewood', `${vacantLotsCategory}--we`, (graphArea) => {
       console.debug('clicked west englewood button');
+      graphArea.selectAll('*').remove();
+      
+      graphArea.append('h1').text('West Englewood Vacant Lot data goes here');
     });
-    const englewoodButton = App.controllers.comparisonArea.addSubEntry(vacantLotsCategory, 'Englewood', `${vacantLotsCategory}--e`, () => {
+    const englewoodButton = App.controllers.comparisonArea.addSubEntry(vacantLotsCategory, 'Englewood', `${vacantLotsCategory}--e`, (graphArea) => {
       console.debug('clicked englewood button');
+      graphArea.selectAll('*').remove();
+      graphArea.append('div').classed('panel-footer', true)
+        .style('height', '100%').style('text-align', 'center')
+        .append('div').classed('panel-body', true);
+      // eslint-disable-next-line no-undef
+      const graph = new VacantLotPixelGlyph('pixel-englewood', '<h4><b>Vacant Lots: <span class=\'text englewood\'>Englewood</span></b></h4>', lotData, plotOptions);
+      graph.init(graphArea);
+      graph.update(graphArea, englewoodKiviatData);
+      // graphArea.append('h1').text('Englewood Vacant Lot data goes here');
     });
 
     vacantLotsButton.selectionArea.select('button#main-header').classed('btn-default', true);

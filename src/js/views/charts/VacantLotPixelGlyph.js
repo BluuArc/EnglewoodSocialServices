@@ -43,6 +43,7 @@ function VacantLotPixelGlyph(id, title, dataRanges, options = {}) {
     initQuadrants();
     console.debug(self.quadrants);
     self.pixelGlyph = new PixelGlyph({
+      ...options,
       quadrants: self.quadrants
     });
 
