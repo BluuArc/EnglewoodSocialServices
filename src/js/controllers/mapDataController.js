@@ -27,6 +27,11 @@ let MapDataController = function () {
       'all': 'glyphicon-check'
     },
 
+    chartList: null,
+    comparisonController: null,
+    mainCategoryName: 'census', // used with comparison controller
+    subTypeHandlers: {},
+
     customCharts: {
       TENURE: {},
       VACANCY_STATUS: {},
@@ -101,6 +106,10 @@ let MapDataController = function () {
 
   function setChartList(chartList) {
     self.chartList = chartList;
+  }
+
+  function setComparisonController(controller) {
+    self.comparisonController = controller;
   }
 
   // eslint-disable-next-line no-unused-vars
@@ -511,6 +520,16 @@ let MapDataController = function () {
       return;
     }
 
+    if(!self.comparisonController) {
+      console.error('No comparison controller specified');
+      return;
+    } else {
+      if (!self.comparisonController.hasMainEntry(self.mainCategoryName)) {
+        const mainCensusButton = self.comparisonController.addMainEntry('<i class="glyphicon glyphicon-chevron-down"></i> <b>Census</b>', self.mainCategoryName);
+        mainCensusButton.selectionArea.select('button#main-header').classed('btn-default', true);
+      }
+    }
+
     if(self.lastShownProperty){
       removeChartFromList(self.lastShownProperty);
     }
@@ -519,13 +538,13 @@ let MapDataController = function () {
     console.debug('Create chart for', d);
     if(self.customCharts[d.mainType]){
       console.debug('Create custom chart for',d);
-      const title = d.mainType.split('_').map(d => `${d[0].toUpperCase()}${d.slice(1).toLowerCase()}`).join(' ');
+      const title = d.mainType.split('_').map(d => `${_.capitalize(d)}`).join(' ');
       let censusStarPlot = new InteractiveStarPlot(
         d.mainType, `<h4><b>${title}</b></h4>`,
         {
           axes: Object.keys(self.customCharts[d.mainType])
             .map(k => self.customCharts[d.mainType][k]),
-          labels: function(labelElement, datum, property) { 
+          labels: function(labelElement, datum, property) {
             // console.debug({ labelElement, datum, property}); 
 
             let label = self.customCharts[d.mainType][property].label.slice();
@@ -603,10 +622,37 @@ let MapDataController = function () {
           plotLabels: true
         });
       // self.chartList.updateChart(d.mainType, App.models.aggregateData.westEnglewood.data.census[d.mainType], { groupID: 'westEnglewood', fillColor: App.models.aggregateData.westEnglewood.color });
+
+      // const plotOptions = {
+      //   chartMargins: {
+      //     top: 5,
+      //     bottom: 5,
+      //     left: 50,
+      //     right: 0
+      //   },
+      //   // width: 225
+      //   width: 350
+      // };
+      // self.comparisonController.addSubEntry(self.mainCategoryName, title, d.mainType, (id) => {
+      //   console.debug('pressed button for', d.mainType);
+      // });
     }else{
       let title = d.title ? `<b>${d.subType}</b>` : undefined;
-      self.chartList.addChart(new CensusBarChart(d, createPropertyID(d), title));
+      const barChart = new CensusBarChart(d, createPropertyID(d), title);
+      self.chartList.addChart(barChart);
       self.chartList.updateChart(createPropertyID(d));
+
+      title = `${(d.mainType.split('_').map(_.capitalize).join(' '))}: ${d.subType}`;
+
+      self.comparisonController.addSubEntry(self.mainCategoryName, title, createPropertyID(d), (mainId, subId, graphArea) => {
+        console.debug('pressed button for', d.mainType, graphArea);
+        self.comparisonController.setActiveSubId(mainId, subId);
+        graphArea.selectAll('*').remove();
+        graphArea.append('div').classed('panel-footer', true)
+          .append('div').classed('panel-body', true);
+        barChart.init(graphArea);
+        barChart.update();
+      });
     }
 
   }
@@ -625,8 +671,18 @@ let MapDataController = function () {
     self.censusSvg = null;
     if (self.customCharts[propertyType.mainType]) {
       self.chartList.removeChart(propertyType.mainType, true);
+      try {
+        self.comparisonController.deleteSubEntry(self.mainCategoryName, propertyType.mainType);
+      } catch (err) {
+        console.error(err);
+      }
     } else {
       self.chartList.removeChart(createPropertyID(propertyType), true);
+      try {
+        self.comparisonController.deleteSubEntry(self.mainCategoryName, createPropertyID(propertyType));
+      } catch (err) {
+        console.error(err);
+      }
     }
   }
 
@@ -710,6 +766,7 @@ let MapDataController = function () {
     removeChartFromList,
     setCensusClearButton,
     setChartList,
+    setComparisonController,
 
     initializeCustomCharts,
     getAxisData,
