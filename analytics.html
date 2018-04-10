@@ -79,6 +79,7 @@
   <script src="./src/js/controllers/serviceFilterController.js"></script>
   <script src="./src/js/controllers/markerToggleController.js"></script>
   <script src="./src/js/controllers/comparisonAreaController.js"></script>
+  <script src="./src/js/controllers/legendAreaViewController.js"></script>
 
   <!-- Main Script -->
   <script src="./src/js/analytics.js"></script>
@@ -262,7 +263,7 @@
         
         <div id="legend">
           <div class="container-fluid">
-            <div class="row">
+            <div class="row" id="toggle-btn-area">
               <div class="col-md-12">
                 <div class="btn-group btn-group-justified">
                   <a class="btn btn-info" id="legend-collapse-btn">Collapse Legend</a>
@@ -277,11 +278,6 @@
               </div>
               <div id="graph-area" class="col-md-9">
                 <p id="default-graph-area-text">Choose a subcategory on the left to see a graph</p>
-              </div>
-            </div>
-            <div class="row">
-              <div class="col-md-12">
-                <button class="btn btn-block" id="collapse-btn">Collapse</button>
               </div>
             </div>
           </div>

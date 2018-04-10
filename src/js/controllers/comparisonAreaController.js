@@ -95,7 +95,7 @@ const ComparisonAreaController = function(selectionAreaViewId, graphAreaViewId) 
     const graphArea = self.graphAreaView;
     graphArea.selectAll('*').remove();
     graphArea.append('div')
-      .append('svg').attr('height', 300).attr('width', 400)
+      .append('svg').attr('height', 50).attr('width', 400)
       .attr('id', 'default-graph-area-text')
       .append('text')
       .text('Choose a subcategory on the left to see a graph');

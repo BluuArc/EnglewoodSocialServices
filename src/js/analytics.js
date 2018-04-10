@@ -86,6 +86,7 @@ Promise.all([documentPromise, windowPromise, less.pageLoadFinished])
     App.controllers.lotViewPD = new MarkerToggleController('#togglePD', '#textPD', 'Planned Manufacturing Districts and Development');
 
     App.controllers.comparisonArea = new ComparisonAreaController('#legend #comparison-area #selection-area','#legend #comparison-area #graph-area');
+    App.controllers.legendAreaView = new LegendAreaViewController();
     /* eslint-enable no-undef */
 
     App.controllers.mapData.setupDataPanel('#mapPanelToggle', '#mapSettingsPanel');
@@ -228,9 +229,16 @@ Promise.all([documentPromise, windowPromise, less.pageLoadFinished])
 
         App.views.loadingMessage.updateAndRaise('Adding charts');
 
+        App.controllers.legendAreaView.attachLegend('#legend #svgLegend', '#legend #legend-collapse-btn');
+        App.controllers.legendAreaView.attachComparisonArea('#legend #comparison-area', '#legend #comparison-collapse-btn');
+
+        // move button group to top of legend element
+        $('#legend #toggle-btn-area').detach().insertBefore('#legend>svg:first');
+
         const legendWidth = d3.select('#legend #svgLegend').attr('width');
         d3.select('#legend #comparison-area').style('max-width', `${legendWidth}px`);
         d3.select('#legend').style('max-width', `${legendWidth}px`);
+
         const clearButton = App.controllers.comparisonArea.addMainEntry('<b>Clear Graph</b>', 'clear-graph-btn', () => {
           console.debug('clicked clear graph button');
           App.controllers.comparisonArea.resetGraphArea();
