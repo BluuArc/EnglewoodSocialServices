@@ -21,13 +21,15 @@ const ComparisonAreaController = function(selectionAreaViewId, graphAreaViewId) 
 
   function noop() {}
 
-  function collapseSubCategories(mainEntryId) {
+  // value = true -> show categories
+  function toggleSubCategoryView(mainEntryId, value) {
     const mainEntry = getMainEntry(mainEntryId);
     const button = mainEntry.selectionArea.select('button#main-header');
     const buttonGroup = mainEntry.selectionArea.select('#subcategory-list');
     resetGraphArea();
     setActiveSubId();
-    if (buttonGroup.classed('hidden')) {
+    const doShow = (value === 'boolean') ? value : buttonGroup.classed('hidden');
+    if (doShow) {
       // show button group
       buttonGroup.classed('hidden', false);
       button.select('.glyphicon').style('transform', null);
@@ -38,7 +40,7 @@ const ComparisonAreaController = function(selectionAreaViewId, graphAreaViewId) 
     }
   }
 
-  function addMainEntry(name = '', id = '', onClick = collapseSubCategories) {
+  function addMainEntry(name = '', id = '', onClick = toggleSubCategoryView) {
     if (hasMainEntry(id)) {
       throw Error(`Main Entry ${id} already exists`);
     }
@@ -49,6 +51,7 @@ const ComparisonAreaController = function(selectionAreaViewId, graphAreaViewId) 
     };
 
     self.mainEntries[id] = mainEntry;
+    toggleSubCategoryView(id, false);
     return mainEntry;
   }
 
@@ -63,6 +66,7 @@ const ComparisonAreaController = function(selectionAreaViewId, graphAreaViewId) 
 
     const mainEntry = getMainEntry(mainId);
     mainEntry.subEntries[id] = subEntry;
+    toggleSubCategoryView(mainId, true);
     return subEntry;
   }
 
@@ -81,7 +85,7 @@ const ComparisonAreaController = function(selectionAreaViewId, graphAreaViewId) 
       throw Error(`${mainId}/${subId} does not exist`);
     }
     // const subEntry = getSubEntry(mainId, subId);
-    self.selectionAreaView.deleteSubEntry(mainId, subId);
+    self.selectionAreaView.deleteSubCategory(mainId, subId);
     delete getMainEntry(mainId).subEntries[subId];
   }
 

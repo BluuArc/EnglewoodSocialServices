@@ -45,7 +45,7 @@ const SelectionAreaView = function(selectionAreaId = '') {
     const mainSelection = mainCategoryEntry.selection;
     const subCategorySelection = mainSelection.select('#subcategory-list')
       .append('button').attr('id', id)
-      .classed('selection-area--sub-category', true)
+      .classed('btn selection-area--sub-category', true)
       .html(name).on('click', onClick);
 
     mainCategoryEntry.subCategories[id] = {

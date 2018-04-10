@@ -92,6 +92,7 @@ Promise.all([documentPromise, windowPromise, less.pageLoadFinished])
     App.controllers.mapData.setupDataPanel('#mapPanelToggle', '#mapSettingsPanel');
     App.controllers.mapData.attachResetOverlayButton('#resetMaps');
     App.controllers.mapData.setChartList(App.views.chartList);
+    App.controllers.mapData.setComparisonController(App.controllers.comparisonArea);
 
     App.controllers.search.attachDOMElements('#searchInput', '#searchButton');
 
@@ -238,6 +239,7 @@ Promise.all([documentPromise, windowPromise, less.pageLoadFinished])
 
         const clearButton = App.controllers.comparisonArea.addMainEntry('<b>Clear Graph</b>', 'clear-graph-btn', () => {
           console.debug('clicked clear graph button');
+          App.controllers.comparisonArea.setActiveSubId();
           App.controllers.comparisonArea.resetGraphArea();
         });
         clearButton.selectionArea.select('button#main-header').classed('btn-default', true);
