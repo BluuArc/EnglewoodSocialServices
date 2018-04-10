@@ -232,9 +232,6 @@ Promise.all([documentPromise, windowPromise, less.pageLoadFinished])
         App.controllers.legendAreaView.attachLegend('#legend #svgLegend', '#legend #legend-collapse-btn');
         App.controllers.legendAreaView.attachComparisonArea('#legend #comparison-area', '#legend #comparison-collapse-btn');
 
-        // move button group to top of legend element
-        $('#legend #toggle-btn-area').detach().insertBefore('#legend>svg:first');
-
         const legendWidth = d3.select('#legend #svgLegend').attr('width');
         d3.select('#legend #comparison-area').style('max-width', `${legendWidth}px`);
         d3.select('#legend').style('max-width', `${legendWidth}px`);
@@ -254,6 +251,8 @@ Promise.all([documentPromise, windowPromise, less.pageLoadFinished])
         // addLotPixelGlyphs();
 
         App.insertIcons();
+
+        App.views.chartList.toggleChartListView(false);
 
         App.views.loadingMessage.finishLoading();
 
@@ -385,24 +384,8 @@ Promise.all([documentPromise, windowPromise, less.pageLoadFinished])
     const vacantLotsCategory = 'ca--vacant-lots';
     const vacantLotsSelectionItem = App.controllers.comparisonArea.addMainEntry(
       '<span class="glyphicon glyphicon-chevron-down"></span> <b>Vacant Lots</b>',
-      vacantLotsCategory,
-      () => {
-        console.debug('clicked overall vacant lots button');
-        const button = vacantLotsSelectionItem.selectionArea.select('button#main-header');
-        const buttonGroup = vacantLotsSelectionItem.selectionArea.select('#subcategory-list');
-        App.controllers.comparisonArea.resetGraphArea();
-        App.controllers.comparisonArea.setActiveSubId();
-        if (buttonGroup.classed('hidden')) {
-          // show button group
-          buttonGroup.classed('hidden', false);
-          button.select('.glyphicon').style('transform', null);
-        } else {
-          // hide button group
-          buttonGroup.classed('hidden', true);
-          button.select('.glyphicon').style('transform', 'rotate(-90deg)');
-        }
-      });
-    const westEnglewoodSelectionItem = App.controllers.comparisonArea.addSubEntry(vacantLotsCategory, 'West Englewood', `${vacantLotsCategory}--we`, (graphArea) => {
+      vacantLotsCategory);
+    const westEnglewoodSelectionItem = App.controllers.comparisonArea.addSubEntry(vacantLotsCategory, 'West Englewood', `${vacantLotsCategory}--we`, (mainId, id, graphArea) => {
       console.debug('clicked west englewood button');
       App.controllers.comparisonArea.setActiveSubId(vacantLotsCategory, `${vacantLotsCategory}--we`);
       graphArea.selectAll('*').remove();
@@ -413,7 +396,7 @@ Promise.all([documentPromise, windowPromise, less.pageLoadFinished])
       graph.init(graphArea);
       graph.update(graphArea, westEnglewoodKiviatData);
     });
-    const englewoodSelectionItem = App.controllers.comparisonArea.addSubEntry(vacantLotsCategory, 'Englewood', `${vacantLotsCategory}--e`, (graphArea) => {
+    const englewoodSelectionItem = App.controllers.comparisonArea.addSubEntry(vacantLotsCategory, 'Englewood', `${vacantLotsCategory}--e`, (mainId, id, graphArea) => {
       console.debug('clicked englewood button');
       App.controllers.comparisonArea.setActiveSubId(vacantLotsCategory, `${vacantLotsCategory}--e`);
       graphArea.selectAll('*').remove();

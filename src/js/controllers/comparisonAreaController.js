@@ -21,12 +21,29 @@ const ComparisonAreaController = function(selectionAreaViewId, graphAreaViewId) 
 
   function noop() {}
 
-  function addMainEntry(name = '', id = '', onClick = noop) {
+  function collapseSubCategories(mainEntryId) {
+    const mainEntry = getMainEntry(mainEntryId);
+    const button = mainEntry.selectionArea.select('button#main-header');
+    const buttonGroup = mainEntry.selectionArea.select('#subcategory-list');
+    resetGraphArea();
+    setActiveSubId();
+    if (buttonGroup.classed('hidden')) {
+      // show button group
+      buttonGroup.classed('hidden', false);
+      button.select('.glyphicon').style('transform', null);
+    } else {
+      // hide button group
+      buttonGroup.classed('hidden', true);
+      button.select('.glyphicon').style('transform', 'rotate(-90deg)');
+    }
+  }
+
+  function addMainEntry(name = '', id = '', onClick = collapseSubCategories) {
     if (hasMainEntry(id)) {
       throw Error(`Main Entry ${id} already exists`);
     }
     const mainEntry = {
-      selectionArea: self.selectionAreaView.addMainCategory(name, id, () => onClick(self.graphAreaView)),
+      selectionArea: self.selectionAreaView.addMainCategory(name, id, () => onClick(id, self.graphAreaView)),
       name,
       subEntries: {},
     };
@@ -40,7 +57,7 @@ const ComparisonAreaController = function(selectionAreaViewId, graphAreaViewId) 
       throw Error(`${mainId}/${id} already exists`);
     }
     const subEntry = {
-      selectionArea: self.selectionAreaView.addSubCategory(mainId, name, id, () => onClick(self.graphAreaView)),
+      selectionArea: self.selectionAreaView.addSubCategory(mainId, name, id, () => onClick(mainId, id, self.graphAreaView)),
       name
     };
 

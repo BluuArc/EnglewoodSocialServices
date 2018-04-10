@@ -29,6 +29,7 @@ const LegendAreaViewController = function () {
     self.legend.view = d3.select(viewId);
     self.legend.button = d3.select(buttonId)
       .on('click', () => {
+        self.legend.view = d3.select(viewId);
         if (isHidden(self.legend.view)) {
           self.legend.view.classed('hidden', false);
           self.legend.button.text('Collapse Legend');
