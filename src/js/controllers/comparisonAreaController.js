@@ -26,8 +26,8 @@ const ComparisonAreaController = function(selectionAreaViewId, graphAreaViewId) 
     const mainEntry = getMainEntry(mainEntryId);
     const button = mainEntry.selectionArea.select('button#main-header');
     const buttonGroup = mainEntry.selectionArea.select('#subcategory-list');
-    resetGraphArea();
-    setActiveSubId();
+    // resetGraphArea();
+    // setActiveSubId();
     const doShow = (value === 'boolean') ? value : buttonGroup.classed('hidden');
     if (doShow) {
       // show button group
