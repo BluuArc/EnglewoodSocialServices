@@ -370,7 +370,7 @@ let MapDataController = function () {
               var button = d3.select('#censusDropdownButton');
 
               console.debug(datum, arguments);
-              button.selectAll('#currentServiceSelection').text(`${_.truncate(datum.title || datum.subType, { length: 30 })}`);
+              button.selectAll('#currentServiceSelection').text(`f${_.truncate(datum.title || datum.subType, { length: 30 })}`);
               button.attr('class', 'btn btn-success navbar-btn dropdown-toggle');
 
               document.getElementById('allCensusButton').style.display = '';
@@ -420,13 +420,16 @@ let MapDataController = function () {
             return;
 
           if (self.activeComparisonChart) {
-            const { chart, panel } = self.activeComparisonChart;
-            chart.update(panel, layer.feature.properties.fullData,
-              {
-                fillColor: 'rgb(134, 95, 163)',
-                plotLabels: true,
+            const { chart, panel, select } = self.activeComparisonChart;
+            const currentValue = select.property('value');
+            if (currentValue === 'cursor') {
+              self.activeComparisonChart.data[currentValue] = layer.feature.properties.fullData;
+              self.activeComparisonChart.options[currentValue] = {
+                ...(self.activeComparisonChart.options.default || {}),
                 blockName: layer.feature.properties.blockName
-              });
+              };
+              chart.update(panel, self.activeComparisonChart.data[currentValue], self.activeComparisonChart.options[currentValue]);
+            }
           }
 
           //update kiviat on click
@@ -653,19 +656,49 @@ let MapDataController = function () {
         self.comparisonController.setActiveSubId(mainId, subId);
         graphArea.selectAll('*').remove();
         const panel = graphArea.append('div').classed('panel starplot-panel', true);
+        const header = panel.append('div').classed('panel-header', true)
         panel.append('div').classed('panel-body', true);
         panel.append('div').classed('panel-footer', true);
+
+        const formGroup = header.append('div').classed('form-group', true);
+        formGroup.append('label').text('Show data for:');
+
+        const select = formGroup.append('select').classed('form-control', true);
+        select.on('change', () => {
+          const newValue = select.property('value');
+          console.debug('changed dropdown to', newValue, self.activeComparisonChart);
+          self.activeComparisonChart.chart.update(
+            panel,
+            self.activeComparisonChart.data[newValue] || self.activeComparisonChart.data.default,
+            self.activeComparisonChart.options[newValue] || self.activeComparisonChart.options.default);
+        });
+        select.append('option').attr('value', 'cursor').text('Census Block on Cursor');
+        select.append('option').attr('value', 'test2').text('test2');
+
         comparisonStarPlot.init(panel);
         comparisonStarPlot.update(panel, {}, { renderLabels: true });
-        comparisonStarPlot.update(panel, generateEmptyChartData(d.mainType),
+        const defaultData = generateEmptyChartData(d.mainType);
+        comparisonStarPlot.update(panel, defaultData,
           {
             fillColor: 'rgb(134, 95, 163)',
             printInstructions: true,
-            plotLabels: true
+            plotLabels: true,
+            blockName: 'No block selected'
           });
         self.activeComparisonChart = {
           chart: comparisonStarPlot,
-          panel
+          panel,
+          select,
+          data: {
+            default: defaultData
+          },
+          options: {
+            default: {
+              fillColor: 'rgb(134, 95, 163)',
+              plotLabels: true,
+              blockName: 'No block selected'
+            }
+          }
         };
       });
     }else{
