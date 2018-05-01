@@ -33,7 +33,7 @@ let MapView = function (div) {
     choroplethLayer: null,
     choropleth: null,
 
-    serviceLocations: {}
+    serviceLocations: {},
   };
 
   init();
@@ -435,6 +435,7 @@ let MapView = function (div) {
   function drawChoropleth(data, title, options = {}) {
     // remove old choropleth
     if (self.choropleth) {
+      $('div').off('click', '.btn.popup-btn');
       self.choroplethLayer.removeLayer(self.choropleth);
 
       self.englewoodOutline.setStyle({ fillOpacity: 0.35 });
@@ -509,6 +510,15 @@ let MapView = function (div) {
           const svgData = App.controllers.mapData.getCensusSVG();
           let html;
           if (svgData) {
+            if (typeof options.popupButtonClickHandler === 'function') {
+              console.debug('initializing click handler');
+              $('div').off('click', '.btn.popup-btn')
+                .on('click', '.btn.popup-btn', _.debounce((e) => {
+                  e.preventDefault();
+                  console.debug('clicked popup button');
+                  options.popupButtonClickHandler(layer);
+                }, 25));
+            }
             const modifiedData = d3.select(svgData.node().cloneNode())
               .style('transform', 'scale(0.75)')
               .style('width', 'fit-content');
@@ -523,6 +533,9 @@ let MapView = function (div) {
               </div>
               <div class="row" style="margin: auto; height: ${$(modifiedData.node()).height() * 2/3}px; width: ${$(modifiedData.node()).height() * 2/3}px">
                 <svg height="${modifiedData.attr('height')}" width="${$(modifiedData.node()).height() * 2 / 3 + 5}">${modifiedData.html()}</svg>
+              </div>
+              <div class="row">
+                <button class="btn btn-primary btn-block popup-btn">Add to comparison</button>
               </div>
             </div>
             `;

@@ -432,14 +432,17 @@ let MapDataController = function () {
             }
           }
 
-          //update kiviat on click
+          //update kiviat on hover
           self.chartList.updateChart(d.mainType,layer.feature.properties.fullData,
             {
               fillColor: 'rgb(134, 95, 163)',
               plotLabels: true,
               blockName: layer.feature.properties.blockName
             });
-        } 
+        },
+        popupButtonClickHandler: (layer) => {
+          console.trace({ layer });
+        }
       }
     );
   }
