@@ -652,7 +652,7 @@ let MapDataController = function () {
         console.debug('pressed button for', d.mainType);
         self.comparisonController.setActiveSubId(mainId, subId);
         graphArea.selectAll('*').remove();
-        const panel = graphArea.append('div').classed('panel', true);
+        const panel = graphArea.append('div').classed('panel starplot-panel', true);
         panel.append('div').classed('panel-body', true);
         panel.append('div').classed('panel-footer', true);
         comparisonStarPlot.init(panel);

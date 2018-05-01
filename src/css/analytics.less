@@ -565,6 +565,10 @@ text.delete-button-symbol {
       overflow-x: hidden;
       .selection-area--main-category {
         margin-right: -15px;
+
+        #subcategory-list {
+          width: 100%;
+        }
       }
       .selection-area--sub-category {
         margin-left: 1rem;
@@ -585,6 +589,11 @@ text.delete-button-symbol {
 
     .row#comparison-area-content #graph-area {
       padding-left: 0;
+
+      .starplot-panel .panel-footer {
+        max-height: 15rem;
+        overflow-y: auto;
+      }
 
       .panel-footer {
         min-height: 100%;
