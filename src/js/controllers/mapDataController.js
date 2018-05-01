@@ -101,7 +101,8 @@ let MapDataController = function () {
           label: ['Other Race', '(Alone or Mixed)']
         }
       }
-    }
+    },
+    activeComparisonChart: null,
   };
 
   function setChartList(chartList) {
@@ -418,6 +419,16 @@ let MapDataController = function () {
           if(!layer.feature.properties.fullData)
             return;
 
+          if (self.activeComparisonChart) {
+            const { chart, panel } = self.activeComparisonChart;
+            chart.update(panel, layer.feature.properties.fullData,
+              {
+                fillColor: 'rgb(134, 95, 163)',
+                plotLabels: true,
+                blockName: layer.feature.properties.blockName
+              });
+          }
+
           //update kiviat on click
           self.chartList.updateChart(d.mainType,layer.feature.properties.fullData,
             {
@@ -539,79 +550,79 @@ let MapDataController = function () {
     if(self.customCharts[d.mainType]){
       console.debug('Create custom chart for',d);
       const title = d.mainType.split('_').map(d => `${_.capitalize(d)}`).join(' ');
-      let censusStarPlot = new InteractiveStarPlot(
-        d.mainType, `<h4><b>${title}</b></h4>`,
-        {
-          axes: Object.keys(self.customCharts[d.mainType])
-            .map(k => self.customCharts[d.mainType][k]),
-          labels: function(labelElement, datum, property) {
-            // console.debug({ labelElement, datum, property}); 
+      const starPlotOptions = {
+        axes: Object.keys(self.customCharts[d.mainType])
+          .map(k => self.customCharts[d.mainType][k]),
+        labels: function (labelElement, datum, property) {
+          // console.debug({ labelElement, datum, property}); 
 
-            let label = self.customCharts[d.mainType][property].label.slice();
-            let value = datum[property];
+          let label = self.customCharts[d.mainType][property].label.slice();
+          let value = datum[property];
 
-            labelElement.style('font-weight', d.subType === property ? 'bolder' : 'unset');
-            labelElement.style('font-size', d.subType === property ? 'unset' : 'smaller');
-            return label.concat([`(value: ${value.toFixed(0)})`]);
-            // return label;
-          },
-          update: (panel, data, updateOptions) => {
-            self.censusSvg = panel.select('.panel-body svg');
-            if (updateOptions.plotLabels) {
-              const footer = panel.select('.panel-footer');
+          labelElement.style('font-weight', d.subType === property ? 'bolder' : 'unset');
+          labelElement.style('font-size', d.subType === property ? 'unset' : 'smaller');
+          return label.concat([`(value: ${value.toFixed(0)})`]);
+          // return label;
+        },
+        update: (panel, data, updateOptions = {}) => {
+          self.censusSvg = panel.select('.panel-body svg');
+          if (updateOptions.plotLabels) {
+            const footer = panel.select('.panel-footer');
 
-              footer.selectAll('p').remove();
-              if (updateOptions.blockName) {
-                footer.append('p').html(`<b>${updateOptions.blockName}</b>`);
-              } 
-
-              if (!footer.select('table').empty()) {
-                footer.selectAll('table').remove();
-              }
-
-              let table = footer.append('table').classed('container', true)
-                .classed('census-table', true)
-                .style('width', '100%').append('tbody');
-
-              let propertiesLines = Object.keys(data)
-                .filter(d => d.toLowerCase().indexOf('total') === -1)
-                .map(d => {
-                  let value = data[d];
-                  const axisData = self.customCharts[self.lastShownProperty.mainType][d];
-                  const maxValue = axisData.max;
-                  let percent = ((value / maxValue) * 100).toFixed(2);
-                  return {
-                    value,
-                    percent,
-                    label: axisData.label.join(' '),
-                    total: maxValue,
-                  };
-                });
-
-              // let colorScale = d3.scaleLinear().domain([0, 1]);
-              table.selectAll('tr').data(propertiesLines)
-                .enter().append('tr')
-                // .style("background-color", d => colorScale.range(["#FFF", d.color])(0.75))
-                .each(function (d) {
-                  let row = d3.select(this);
-                  row.append('td').classed('align-middle', true)
-                    .style('width', '47.5%').style('text-align', 'left')
-                    .style('padding-left', '5px')
-                    .html(`</span><b>${d.label}</b>`);
-                  row.append('td').classed('align-middle', true)
-                    .style('width', '52.5%')
-                    .text(`${d.value} of ${d.total} people/block`);
-                });
+            footer.selectAll('p').remove();
+            if (updateOptions.blockName) {
+              footer.append('p').html(`<b>${updateOptions.blockName}</b>`);
             }
 
-            if (updateOptions.printInstructions) {
-              panel.select('.panel-footer').selectAll('p').remove();
-              panel.select('.panel-footer').selectAll('table').remove();
-              panel.select('.panel-footer')
-                .append('p').text('Hover over a census block to see information');
+            if (!footer.select('table').empty()) {
+              footer.selectAll('table').remove();
             }
+
+            let table = footer.append('table').classed('container', true)
+              .classed('census-table', true)
+              .style('width', '100%').append('tbody');
+
+            let propertiesLines = Object.keys(data)
+              .filter(d => d.toLowerCase().indexOf('total') === -1)
+              .map(d => {
+                let value = data[d];
+                const axisData = self.customCharts[self.lastShownProperty.mainType][d];
+                const maxValue = axisData.max;
+                let percent = ((value / maxValue) * 100).toFixed(2);
+                return {
+                  value,
+                  percent,
+                  label: axisData.label.join(' '),
+                  total: maxValue,
+                };
+              });
+
+            // let colorScale = d3.scaleLinear().domain([0, 1]);
+            table.selectAll('tr').data(propertiesLines)
+              .enter().append('tr')
+              // .style("background-color", d => colorScale.range(["#FFF", d.color])(0.75))
+              .each(function (d) {
+                let row = d3.select(this);
+                row.append('td').classed('align-middle', true)
+                  .style('width', '47.5%').style('text-align', 'left')
+                  .style('padding-left', '5px')
+                  .html(`</span><b>${d.label}</b>`);
+                row.append('td').classed('align-middle', true)
+                  .style('width', '52.5%')
+                  .text(`${d.value} of ${d.total} people/block`);
+              });
+          }
+
+          if (updateOptions.printInstructions) {
+            panel.select('.panel-footer').selectAll('p').remove();
+            panel.select('.panel-footer').selectAll('table').remove();
+            panel.select('.panel-footer')
+              .append('p').text('Hover over a census block to see information');
           }
         }
+      };
+      let censusStarPlot = new InteractiveStarPlot(
+        d.mainType, `<h4><b>${title}</b></h4>`,starPlotOptions
       );
       self.chartList.addChart(censusStarPlot);
       self.chartList.updateChart(d.mainType, {}, { renderLabels: true });
@@ -633,9 +644,30 @@ let MapDataController = function () {
       //   // width: 225
       //   width: 350
       // };
-      // self.comparisonController.addSubEntry(self.mainCategoryName, title, d.mainType, (id) => {
-      //   console.debug('pressed button for', d.mainType);
-      // });
+
+      const comparisonStarPlot = new InteractiveStarPlot(
+        d.mainType, `<h4><b>${title}</b></h4>`, starPlotOptions
+      );
+      self.comparisonController.addSubEntry(self.mainCategoryName, title, d.mainType, (mainId, subId, graphArea) => {
+        console.debug('pressed button for', d.mainType);
+        self.comparisonController.setActiveSubId(mainId, subId);
+        graphArea.selectAll('*').remove();
+        const panel = graphArea.append('div').classed('panel', true);
+        panel.append('div').classed('panel-body', true);
+        panel.append('div').classed('panel-footer', true);
+        comparisonStarPlot.init(panel);
+        comparisonStarPlot.update(panel, {}, { renderLabels: true });
+        comparisonStarPlot.update(panel, generateEmptyChartData(d.mainType),
+          {
+            fillColor: 'rgb(134, 95, 163)',
+            printInstructions: true,
+            plotLabels: true
+          });
+        self.activeComparisonChart = {
+          chart: comparisonStarPlot,
+          panel
+        };
+      });
     }else{
       let title = d.title ? `<b>${d.subType}</b>` : undefined;
       const barChart = new CensusBarChart(d, createPropertyID(d), title);
@@ -673,6 +705,7 @@ let MapDataController = function () {
       self.chartList.removeChart(propertyType.mainType, true);
       try {
         self.comparisonController.deleteSubEntry(self.mainCategoryName, propertyType.mainType);
+        self.activeComparisonChart = null;
       } catch (err) {
         console.error(err);
       }
