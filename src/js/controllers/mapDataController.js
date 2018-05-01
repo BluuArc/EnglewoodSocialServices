@@ -684,6 +684,15 @@ let MapDataController = function () {
         console.error(err);
       }
     }
+
+    console.debug(self.comparisonController.getActiveIds());
+    const { main } = self.comparisonController.getActiveIds();
+
+    // clear out current census chart if one is active
+    if (main === 'census') {
+      self.comparisonController.setActiveSubId();
+      self.comparisonController.resetGraphArea();
+    }
   }
 
   function updateMainCategoryOnSubUpdate(category) {

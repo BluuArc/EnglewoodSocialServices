@@ -123,12 +123,10 @@ const ComparisonAreaController = function(selectionAreaViewId, graphAreaViewId) 
   }
 
   function setActiveSubId(mainId = '', subId = '') {
-    if (hasMainEntry(self.active.main) && hasSubEntry(self.active.main, self.active.sub)) {
-      const prevActiveMain = getMainEntry(self.active.main);
-      const prevActiveSub = getSubEntry(self.active.main, self.active.sub);
-      prevActiveMain.selectionArea.classed('active-category', false);
-      prevActiveSub.selectionArea.classed('active-sub-category', false);
-    }
+    console.debug('setting active from', self.active,'to', { mainId, subId });
+    const parent = d3.select('#comparison-area #selection-area');
+    parent.selectAll('.active-category').classed('active-category', false);
+    parent.selectAll('.active-sub-category').classed('active-sub-category', false);
     self.active.main = mainId;
     self.active.sub = subId;
     if (hasMainEntry(self.active.main) && hasSubEntry(self.active.main, self.active.sub)) {
@@ -137,6 +135,13 @@ const ComparisonAreaController = function(selectionAreaViewId, graphAreaViewId) 
       currActiveMain.selectionArea.classed('active-category', true);
       currActiveSub.selectionArea.classed('active-sub-category', true);
     }
+  }
+
+  function getActiveIds() {
+    return {
+      main: self.active.main,
+      sub: self.active.sub
+    };
   }
 
   return {
@@ -152,6 +157,8 @@ const ComparisonAreaController = function(selectionAreaViewId, graphAreaViewId) 
     setActiveSubId,
 
     getGraphArea,
-    resetGraphArea
+    resetGraphArea,
+
+    getActiveIds
   };
 };
