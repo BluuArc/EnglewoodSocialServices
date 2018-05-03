@@ -449,11 +449,49 @@ let MapDataController = function () {
             delete self.selectedBlocks[geoId];
           } else {
             self.selectedBlocks[geoId] = App.models.censusData.getDataByGeoId(geoId).properties;
+            self.activeComparisonChart.data[geoId] = data.fullData;
+            self.activeComparisonChart.options[geoId] = {
+              ...(self.activeComparisonChart.options.default || {}),
+              blockName: data.blockName
+            };
           }
-          console.debug(self.selectedBlocks);
+          console.debug(self.selectedBlocks, self.activeComparisonChart);
+          updateChartDropdown();
         }
       }
     );
+  }
+
+  function updateChartDropdown() {
+    const selectElem = self.activeComparisonChart.select;
+    const oldValue = selectElem.property('value');
+    let oldValueExists = false;
+    const blockOptions = Object.keys(self.selectedBlocks)
+      .map(b => ({ value: b, text: self.selectedBlocks[b].name10}));
+    const options = [
+      {
+        value: 'cursor',
+        text: 'Census Block on Cursor'
+      },
+      ...blockOptions
+    ];
+
+    console.debug(options);
+    selectElem.selectAll('option').remove();
+    selectElem.selectAll('option')
+      .data(options)
+      .enter().append('option')
+      .each(function(o) {
+        if (o.value === oldValue) {
+          oldValueExists = true;
+        }
+        const elem = d3.select(this);
+        elem.attr('value', o.value).text(o.text);
+      });
+    if (oldValueExists) {
+      selectElem.property('value', oldValue);
+    }
+    // select.append('option').attr('value', 'cursor').text('Census Block on Cursor');
   }
 
   function removeMap() {
@@ -679,13 +717,14 @@ let MapDataController = function () {
         select.on('change', () => {
           const newValue = select.property('value');
           console.debug('changed dropdown to', newValue, self.activeComparisonChart);
+          updateChartDropdown();
+          // updateBlockData();
           self.activeComparisonChart.chart.update(
             panel,
             self.activeComparisonChart.data[newValue] || self.activeComparisonChart.data.default,
             self.activeComparisonChart.options[newValue] || self.activeComparisonChart.options.default);
         });
         select.append('option').attr('value', 'cursor').text('Census Block on Cursor');
-        select.append('option').attr('value', 'test2').text('test2');
 
         comparisonStarPlot.init(panel);
         comparisonStarPlot.update(panel, {}, { renderLabels: true });
@@ -708,10 +747,12 @@ let MapDataController = function () {
             default: {
               fillColor: 'rgb(134, 95, 163)',
               plotLabels: true,
-              blockName: 'No block selected'
+              blockName: 'No block selected',
+              type: d,
             }
           }
         };
+        updateChartDropdown();
       });
     }else{
       let title = d.title ? `<b>${d.subType}</b>` : undefined;
