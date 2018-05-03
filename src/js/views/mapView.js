@@ -471,7 +471,7 @@ let MapView = function (div) {
             color: colorScale(feature.properties.data),
             opacity: feature.properties.data === 0 ? 0 : 0.1,
             fillOpacity: feature.properties.data === 0 ? 0 : 0.75,
-            className: 'geoJSON-gridSpace'
+            className: `geoJSON-gridSpace geoJSON-gridSpace--${feature.properties.geoId}`
           };
         }
       })

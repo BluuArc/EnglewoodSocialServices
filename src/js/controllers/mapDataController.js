@@ -103,6 +103,7 @@ let MapDataController = function () {
       }
     },
     activeComparisonChart: null,
+    selectedBlocks: {}
   };
 
   function setChartList(chartList) {
@@ -428,6 +429,7 @@ let MapDataController = function () {
                 ...(self.activeComparisonChart.options.default || {}),
                 blockName: layer.feature.properties.blockName
               };
+              console.debug(self.activeComparisonChart);
               chart.update(panel, self.activeComparisonChart.data[currentValue], self.activeComparisonChart.options[currentValue]);
             }
           }
@@ -441,7 +443,14 @@ let MapDataController = function () {
             });
         },
         popupButtonClickHandler: (layer) => {
-          console.trace({ layer });
+          const data = layer.feature.properties;
+          const { geoId } = data;
+          if (self.selectedBlocks[geoId]) {
+            delete self.selectedBlocks[geoId];
+          } else {
+            self.selectedBlocks[geoId] = App.models.censusData.getDataByGeoId(geoId).properties;
+          }
+          console.debug(self.selectedBlocks);
         }
       }
     );
