@@ -708,7 +708,7 @@ let MapDataController = function () {
         self.comparisonController.setActiveSubId(mainId, subId);
         graphArea.selectAll('*').remove();
         const panel = graphArea.append('div').classed('panel starplot-panel', true);
-        const header = panel.append('div').classed('panel-header', true)
+        const header = panel.append('div').classed('panel-header', true);
         panel.append('div').classed('panel-body', true);
         panel.append('div').classed('panel-footer', true);
 
