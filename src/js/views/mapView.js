@@ -513,10 +513,22 @@ let MapView = function (div) {
             if (typeof options.popupButtonClickHandler === 'function') {
               console.debug('initializing click handler');
               $('div').off('click', '.btn.popup-btn')
-                .on('click', '.btn.popup-btn', _.debounce((e) => {
+                .on('click', '.btn.popup-btn', _.debounce(function(e) {
                   e.preventDefault();
-                  console.debug('clicked popup button');
+                  console.debug('clicked popup button', this);
                   options.popupButtonClickHandler(layer);
+
+                  const geoId = layer.feature.properties.geoId;
+                  const button = $(this);
+                  if (!App.controllers.mapData.hasSelectedBlock(geoId)) {
+                    button.removeClass('btn-danger');
+                    button.addClass('btn-primary');
+                    button.text('Add to comparison');
+                  } else {
+                    button.removeClass('btn-primary');
+                    button.addClass('btn-danger');
+                    button.text('Remove from comparison');
+                  }
                 }, 25));
             }
             const modifiedData = d3.select(svgData.node().cloneNode())
@@ -525,6 +537,7 @@ let MapView = function (div) {
             modifiedData.html(svgData.html());
             modifiedData.selectAll('g')
               .style('transform', 'translateX(0px) translateY(5px)');
+            const geoIdSelected = App.controllers.mapData.hasSelectedBlock(layer.feature.properties.geoId);
             html = `
             <div class="container-fluid">
               <div class="row">
@@ -535,7 +548,7 @@ let MapView = function (div) {
                 <svg height="${modifiedData.attr('height')}" width="${$(modifiedData.node()).height() * 2 / 3 + 5}">${modifiedData.html()}</svg>
               </div>
               <div class="row">
-                <button class="btn btn-primary btn-block popup-btn">Add to comparison</button>
+                <button class="btn ${geoIdSelected ? 'btn-danger' : 'btn-primary'} btn-block popup-btn">${geoIdSelected ? 'Remove from' : 'Add to'} comparison</button>
               </div>
             </div>
             `;

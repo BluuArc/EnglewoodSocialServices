@@ -490,6 +490,8 @@ let MapDataController = function () {
       });
     if (oldValueExists) {
       selectElem.property('value', oldValue);
+    } else {
+      d3.selectAll('.geoJSON-gridSpace.active-selection').classed('active-selection', false);
     }
     // select.append('option').attr('value', 'cursor').text('Census Block on Cursor');
   }
@@ -717,6 +719,8 @@ let MapDataController = function () {
         select.on('change', () => {
           const newValue = select.property('value');
           console.debug('changed dropdown to', newValue, self.activeComparisonChart);
+          d3.selectAll('.geoJSON-gridSpace.active-selection').classed('active-selection', false);
+          d3.selectAll(`.geoJSON-gridSpace--${newValue}`).classed('active-selection', true);
           updateChartDropdown();
           // updateBlockData();
           self.activeComparisonChart.chart.update(
@@ -886,6 +890,10 @@ let MapDataController = function () {
     return self.censusSvg;
   }
 
+  function hasSelectedBlock(geoId) {
+    return !!self.selectedBlocks[geoId];
+  }
+
   return {
     setupDataPanel,
     attachResetOverlayButton,
@@ -898,6 +906,7 @@ let MapDataController = function () {
 
     initializeCustomCharts,
     getAxisData,
-    getCensusSVG
+    getCensusSVG,
+    hasSelectedBlock
   };
 };
