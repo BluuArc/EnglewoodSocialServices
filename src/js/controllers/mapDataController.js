@@ -493,7 +493,11 @@ let MapDataController = function () {
     } else {
       d3.selectAll('.geoJSON-gridSpace.active-selection').classed('active-selection', false);
     }
-    // select.append('option').attr('value', 'cursor').text('Census Block on Cursor');
+    
+    // update panel count
+    const panel = self.activeComparisonChart.panel;
+    const dropdownLabel = panel.select('.panel-header .form-group label');
+    dropdownLabel.text(`Show data for: (${Object.keys(self.selectedBlocks).length} block(s) selected)`);
   }
 
   function removeMap() {
@@ -713,7 +717,7 @@ let MapDataController = function () {
         panel.append('div').classed('panel-footer', true);
 
         const formGroup = header.append('div').classed('form-group', true);
-        formGroup.append('label').text('Show data for:');
+        formGroup.append('label').text(`Show data for: (${Object.keys(self.selectedBlocks).length} block(s) selected)`);
 
         const select = formGroup.append('select').classed('form-control', true);
         select.on('change', () => {
