@@ -371,7 +371,7 @@ let MapDataController = function () {
               var button = d3.select('#censusDropdownButton');
 
               console.debug(datum, arguments);
-              button.selectAll('#currentServiceSelection').text(`f${_.truncate(datum.title || datum.subType, { length: 30 })}`);
+              button.selectAll('#currentServiceSelection').text(`${_.truncate(datum.title || datum.subType, { length: 30 })}`);
               button.attr('class', 'btn btn-success navbar-btn dropdown-toggle');
 
               document.getElementById('allCensusButton').style.display = '';
