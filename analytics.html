@@ -66,6 +66,7 @@
   <script src="./src/js/views/charts/InteractiveStarPlot.js"></script>
   <script src="./src/js/views/charts/PixelGlyph.js"></script>
   <script src="./src/js/views/charts/VacantLotPixelGlyph.js"></script>
+  <script src="./src/js/views/selectionAreaView.js"></script>
 
   <!-- Controllers -->
   <!-- <script src="./src/js/controllers/analyticsFilterController.js"></script> -->
@@ -77,6 +78,8 @@
   <script src="./src/js/controllers/browserMessageController.js"></script>
   <script src="./src/js/controllers/serviceFilterController.js"></script>
   <script src="./src/js/controllers/markerToggleController.js"></script>
+  <script src="./src/js/controllers/comparisonAreaController.js"></script>
+  <script src="./src/js/controllers/legendAreaViewController.js"></script>
 
   <!-- Main Script -->
   <script src="./src/js/analytics.js"></script>
@@ -259,13 +262,28 @@
         </div>
         
         <div id="legend">
+          <div class="container-fluid">
+            <div class="row" id="toggle-btn-area">
+              <div class="col-md-12">
+                <a class="btn btn-info btn-block" id="legend-collapse-btn">
+                  <b>Collapse Legend</b>
+                </a>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-12">
+              <a class="btn btn-info btn-block" id="comparison-collapse-btn">
+                <b>Collapse Comparison Area</b>
+              </a>
+            </div>
+          </div>
           <div id="comparison-area" class="container-fluid">
-            <div class="row">
+            <div class="row" id="comparison-area-content">
               <div id="selection-area" class="col-md-3">
-                <p>Selection Area</p>
               </div>
               <div id="graph-area" class="col-md-9">
-                <p>Graph Area</p>
+                <p id="default-graph-area-text">Choose a subcategory on the left to see a graph</p>
               </div>
             </div>
           </div>

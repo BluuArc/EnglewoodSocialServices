@@ -9,7 +9,8 @@ let CensusDataModel = function() {
     tree: null,
 
     gridData: null,
-    mapTypeNames: null
+    mapTypeNames: null,
+    dataByGeoId: {}
   };
 
   self.tree = rbush();
@@ -38,7 +39,14 @@ let CensusDataModel = function() {
           self.tree.insert(item);
         }
 
-        console.debug('Loaded grid data',json);
+        console.debug('Loaded grid data', json);
+
+        self.gridData.features.forEach(feature => {
+          const geoId = feature.properties.geoid10.toString();
+          self.dataByGeoId[geoId] = feature;
+        });
+        console.debug('geoid-keyed data', self.dataByGeoId);
+
         resolve(json);
       });
     });
@@ -70,6 +78,7 @@ let CensusDataModel = function() {
             data: feature.properties.census[propertyTypes.mainType][propertyTypes.subType],
             fullData: (type === 'full') ? feature.properties.census : ((type === 'main') ? feature.properties.census[propertyTypes.mainType] : undefined),
             blockName: feature.properties.name10,
+            geoId: feature.properties.geoid10,
             description: propertyTypes
           }
         };
@@ -145,6 +154,10 @@ let CensusDataModel = function() {
     return self.gridData.features;
   }
 
+  function getDataByGeoId(geoId) {
+    return self.dataByGeoId[geoId.toString()];
+  }
+
   function getSubCategories(mainType) {
     return self.mapTypeNames[mainType];
   }
@@ -155,6 +168,7 @@ let CensusDataModel = function() {
     getDataWithinBounds,
     getDataWithinPolygon,
     getSubCategories,
-    getBlockLevelData
+    getBlockLevelData,
+    getDataByGeoId
   };
 };

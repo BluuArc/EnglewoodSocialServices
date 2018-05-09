@@ -33,7 +33,7 @@ let MapView = function (div) {
     choroplethLayer: null,
     choropleth: null,
 
-    serviceLocations: {}
+    serviceLocations: {},
   };
 
   init();
@@ -435,6 +435,7 @@ let MapView = function (div) {
   function drawChoropleth(data, title, options = {}) {
     // remove old choropleth
     if (self.choropleth) {
+      $('div').off('click', '.btn.popup-btn');
       self.choroplethLayer.removeLayer(self.choropleth);
 
       self.englewoodOutline.setStyle({ fillOpacity: 0.35 });
@@ -470,7 +471,7 @@ let MapView = function (div) {
             color: colorScale(feature.properties.data),
             opacity: feature.properties.data === 0 ? 0 : 0.1,
             fillOpacity: feature.properties.data === 0 ? 0 : 0.75,
-            className: 'geoJSON-gridSpace'
+            className: `geoJSON-gridSpace geoJSON-gridSpace--${feature.properties.geoId}`
           };
         }
       })
@@ -509,12 +510,34 @@ let MapView = function (div) {
           const svgData = App.controllers.mapData.getCensusSVG();
           let html;
           if (svgData) {
+            if (typeof options.popupButtonClickHandler === 'function') {
+              console.debug('initializing click handler');
+              $('div').off('click', '.btn.popup-btn')
+                .on('click', '.btn.popup-btn', _.debounce(function(e) {
+                  e.preventDefault();
+                  console.debug('clicked popup button', this);
+                  options.popupButtonClickHandler(layer);
+
+                  const geoId = layer.feature.properties.geoId;
+                  const button = $(this);
+                  if (!App.controllers.mapData.hasSelectedBlock(geoId)) {
+                    button.removeClass('btn-danger');
+                    button.addClass('btn-primary');
+                    button.text('Add to comparison');
+                  } else {
+                    button.removeClass('btn-primary');
+                    button.addClass('btn-danger');
+                    button.text('Remove from comparison');
+                  }
+                }, 25));
+            }
             const modifiedData = d3.select(svgData.node().cloneNode())
               .style('transform', 'scale(0.75)')
               .style('width', 'fit-content');
             modifiedData.html(svgData.html());
             modifiedData.selectAll('g')
               .style('transform', 'translateX(0px) translateY(5px)');
+            const geoIdSelected = App.controllers.mapData.hasSelectedBlock(layer.feature.properties.geoId);
             html = `
             <div class="container-fluid">
               <div class="row">
@@ -523,6 +546,9 @@ let MapView = function (div) {
               </div>
               <div class="row" style="margin: auto; height: ${$(modifiedData.node()).height() * 2/3}px; width: ${$(modifiedData.node()).height() * 2/3}px">
                 <svg height="${modifiedData.attr('height')}" width="${$(modifiedData.node()).height() * 2 / 3 + 5}">${modifiedData.html()}</svg>
+              </div>
+              <div class="row">
+                <button class="btn ${geoIdSelected ? 'btn-danger' : 'btn-primary'} btn-block popup-btn">${geoIdSelected ? 'Remove from' : 'Add to'} comparison</button>
               </div>
             </div>
             `;

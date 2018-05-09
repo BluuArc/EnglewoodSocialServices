@@ -27,6 +27,11 @@ let MapDataController = function () {
       'all': 'glyphicon-check'
     },
 
+    chartList: null,
+    comparisonController: null,
+    mainCategoryName: 'census', // used with comparison controller
+    subTypeHandlers: {},
+
     customCharts: {
       TENURE: {},
       VACANCY_STATUS: {},
@@ -96,11 +101,17 @@ let MapDataController = function () {
           label: ['Other Race', '(Alone or Mixed)']
         }
       }
-    }
+    },
+    activeComparisonChart: null,
+    selectedBlocks: {}
   };
 
   function setChartList(chartList) {
     self.chartList = chartList;
+  }
+
+  function setComparisonController(controller) {
+    self.comparisonController = controller;
   }
 
   // eslint-disable-next-line no-unused-vars
@@ -409,16 +420,84 @@ let MapDataController = function () {
           if(!layer.feature.properties.fullData)
             return;
 
-          //update kiviat on click
+          if (self.activeComparisonChart) {
+            const { chart, panel, select } = self.activeComparisonChart;
+            const currentValue = select.property('value');
+            if (currentValue === 'cursor') {
+              self.activeComparisonChart.data[currentValue] = layer.feature.properties.fullData;
+              self.activeComparisonChart.options[currentValue] = {
+                ...(self.activeComparisonChart.options.default || {}),
+                blockName: layer.feature.properties.blockName
+              };
+              console.debug(self.activeComparisonChart);
+              chart.update(panel, self.activeComparisonChart.data[currentValue], self.activeComparisonChart.options[currentValue]);
+            }
+          }
+
+          //update kiviat on hover
           self.chartList.updateChart(d.mainType,layer.feature.properties.fullData,
             {
               fillColor: 'rgb(134, 95, 163)',
               plotLabels: true,
               blockName: layer.feature.properties.blockName
             });
-        } 
+        },
+        popupButtonClickHandler: (layer) => {
+          const data = layer.feature.properties;
+          const { geoId } = data;
+          if (self.selectedBlocks[geoId]) {
+            delete self.selectedBlocks[geoId];
+          } else {
+            self.selectedBlocks[geoId] = App.models.censusData.getDataByGeoId(geoId).properties;
+            self.activeComparisonChart.data[geoId] = data.fullData;
+            self.activeComparisonChart.options[geoId] = {
+              ...(self.activeComparisonChart.options.default || {}),
+              blockName: data.blockName
+            };
+          }
+          console.debug(self.selectedBlocks, self.activeComparisonChart);
+          updateChartDropdown();
+        }
       }
     );
+  }
+
+  function updateChartDropdown() {
+    const selectElem = self.activeComparisonChart.select;
+    const oldValue = selectElem.property('value');
+    let oldValueExists = false;
+    const blockOptions = Object.keys(self.selectedBlocks)
+      .map(b => ({ value: b, text: self.selectedBlocks[b].name10}));
+    const options = [
+      {
+        value: 'cursor',
+        text: 'Census Block on Cursor'
+      },
+      ...blockOptions
+    ];
+
+    console.debug(options);
+    selectElem.selectAll('option').remove();
+    selectElem.selectAll('option')
+      .data(options)
+      .enter().append('option')
+      .each(function(o) {
+        if (o.value === oldValue) {
+          oldValueExists = true;
+        }
+        const elem = d3.select(this);
+        elem.attr('value', o.value).text(o.text);
+      });
+    if (oldValueExists) {
+      selectElem.property('value', oldValue);
+    } else {
+      d3.selectAll('.geoJSON-gridSpace.active-selection').classed('active-selection', false);
+    }
+    
+    // update panel count
+    const panel = self.activeComparisonChart.panel;
+    const dropdownLabel = panel.select('.panel-header .form-group label');
+    dropdownLabel.text(`Show data for: (${Object.keys(self.selectedBlocks).length} block(s) selected)`);
   }
 
   function removeMap() {
@@ -511,6 +590,16 @@ let MapDataController = function () {
       return;
     }
 
+    if(!self.comparisonController) {
+      console.error('No comparison controller specified');
+      return;
+    } else {
+      if (!self.comparisonController.hasMainEntry(self.mainCategoryName)) {
+        const mainCensusButton = self.comparisonController.addMainEntry('<i class="glyphicon glyphicon-chevron-down"></i> <b>Census</b>', self.mainCategoryName);
+        mainCensusButton.selectionArea.select('button#main-header').classed('btn-default', true);
+      }
+    }
+
     if(self.lastShownProperty){
       removeChartFromList(self.lastShownProperty);
     }
@@ -519,80 +608,80 @@ let MapDataController = function () {
     console.debug('Create chart for', d);
     if(self.customCharts[d.mainType]){
       console.debug('Create custom chart for',d);
-      const title = d.mainType.split('_').map(d => `${d[0].toUpperCase()}${d.slice(1).toLowerCase()}`).join(' ');
-      let censusStarPlot = new InteractiveStarPlot(
-        d.mainType, `<h4><b>${title}</b></h4>`,
-        {
-          axes: Object.keys(self.customCharts[d.mainType])
-            .map(k => self.customCharts[d.mainType][k]),
-          labels: function(labelElement, datum, property) { 
-            // console.debug({ labelElement, datum, property}); 
+      const title = d.mainType.split('_').map(d => `${_.capitalize(d)}`).join(' ');
+      const starPlotOptions = {
+        axes: Object.keys(self.customCharts[d.mainType])
+          .map(k => self.customCharts[d.mainType][k]),
+        labels: function (labelElement, datum, property) {
+          // console.debug({ labelElement, datum, property}); 
 
-            let label = self.customCharts[d.mainType][property].label.slice();
-            let value = datum[property];
+          let label = self.customCharts[d.mainType][property].label.slice();
+          let value = datum[property];
 
-            labelElement.style('font-weight', d.subType === property ? 'bolder' : 'unset');
-            labelElement.style('font-size', d.subType === property ? 'unset' : 'smaller');
-            return label.concat([`(value: ${value.toFixed(0)})`]);
-            // return label;
-          },
-          update: (panel, data, updateOptions) => {
-            self.censusSvg = panel.select('.panel-body svg');
-            if (updateOptions.plotLabels) {
-              const footer = panel.select('.panel-footer');
+          labelElement.style('font-weight', d.subType === property ? 'bolder' : 'unset');
+          labelElement.style('font-size', d.subType === property ? 'unset' : 'smaller');
+          return label.concat([`(value: ${value.toFixed(0)})`]);
+          // return label;
+        },
+        update: (panel, data, updateOptions = {}) => {
+          self.censusSvg = panel.select('.panel-body svg');
+          if (updateOptions.plotLabels) {
+            const footer = panel.select('.panel-footer');
 
-              footer.selectAll('p').remove();
-              if (updateOptions.blockName) {
-                footer.append('p').html(`<b>${updateOptions.blockName}</b>`);
-              } 
-
-              if (!footer.select('table').empty()) {
-                footer.selectAll('table').remove();
-              }
-
-              let table = footer.append('table').classed('container', true)
-                .classed('census-table', true)
-                .style('width', '100%').append('tbody');
-
-              let propertiesLines = Object.keys(data)
-                .filter(d => d.toLowerCase().indexOf('total') === -1)
-                .map(d => {
-                  let value = data[d];
-                  const axisData = self.customCharts[self.lastShownProperty.mainType][d];
-                  const maxValue = axisData.max;
-                  let percent = ((value / maxValue) * 100).toFixed(2);
-                  return {
-                    value,
-                    percent,
-                    label: axisData.label.join(' '),
-                    total: maxValue,
-                  };
-                });
-
-              // let colorScale = d3.scaleLinear().domain([0, 1]);
-              table.selectAll('tr').data(propertiesLines)
-                .enter().append('tr')
-                // .style("background-color", d => colorScale.range(["#FFF", d.color])(0.75))
-                .each(function (d) {
-                  let row = d3.select(this);
-                  row.append('td').classed('align-middle', true)
-                    .style('width', '47.5%').style('text-align', 'left')
-                    .style('padding-left', '5px')
-                    .html(`</span><b>${d.label}</b>`);
-                  row.append('td').classed('align-middle', true)
-                    .style('width', '52.5%')
-                    .text(`${d.value} of ${d.total} people/block`);
-                });
+            footer.selectAll('p').remove();
+            if (updateOptions.blockName) {
+              footer.append('p').html(`<b>${updateOptions.blockName}</b>`);
             }
 
-            if (updateOptions.printInstructions) {
-              panel.select('.panel-footer').selectAll('p').remove();
-              panel.select('.panel-footer').selectAll('table').remove();
-              panel.select('.panel-footer')
-                .append('p').text('Hover over a census block to see information');
+            if (!footer.select('table').empty()) {
+              footer.selectAll('table').remove();
             }
+
+            let table = footer.append('table').classed('container', true)
+              .classed('census-table', true)
+              .style('width', '100%').append('tbody');
+
+            let propertiesLines = Object.keys(data)
+              .filter(d => d.toLowerCase().indexOf('total') === -1)
+              .map(d => {
+                let value = data[d];
+                const axisData = self.customCharts[self.lastShownProperty.mainType][d];
+                const maxValue = axisData.max;
+                let percent = ((value / maxValue) * 100).toFixed(2);
+                return {
+                  value,
+                  percent,
+                  label: axisData.label.join(' '),
+                  total: maxValue,
+                };
+              });
+
+            // let colorScale = d3.scaleLinear().domain([0, 1]);
+            table.selectAll('tr').data(propertiesLines)
+              .enter().append('tr')
+              // .style("background-color", d => colorScale.range(["#FFF", d.color])(0.75))
+              .each(function (d) {
+                let row = d3.select(this);
+                row.append('td').classed('align-middle', true)
+                  .style('width', '47.5%').style('text-align', 'left')
+                  .style('padding-left', '5px')
+                  .html(`</span><b>${d.label}</b>`);
+                row.append('td').classed('align-middle', true)
+                  .style('width', '52.5%')
+                  .text(`${d.value} of ${d.total} people/block`);
+              });
+          }
+
+          if (updateOptions.printInstructions) {
+            panel.select('.panel-footer').selectAll('p').remove();
+            panel.select('.panel-footer').selectAll('table').remove();
+            panel.select('.panel-footer')
+              .append('p').text('Hover over a census block to see information');
           }
         }
+      };
+      let censusStarPlot = new InteractiveStarPlot(
+        d.mainType, `<h4><b>${title}</b></h4>`,starPlotOptions
       );
       self.chartList.addChart(censusStarPlot);
       self.chartList.updateChart(d.mainType, {}, { renderLabels: true });
@@ -603,10 +692,93 @@ let MapDataController = function () {
           plotLabels: true
         });
       // self.chartList.updateChart(d.mainType, App.models.aggregateData.westEnglewood.data.census[d.mainType], { groupID: 'westEnglewood', fillColor: App.models.aggregateData.westEnglewood.color });
+
+      // const plotOptions = {
+      //   chartMargins: {
+      //     top: 5,
+      //     bottom: 5,
+      //     left: 50,
+      //     right: 0
+      //   },
+      //   // width: 225
+      //   width: 350
+      // };
+
+      const comparisonStarPlot = new InteractiveStarPlot(
+        d.mainType, `<h4><b>${title}</b></h4>`, starPlotOptions
+      );
+      self.comparisonController.addSubEntry(self.mainCategoryName, title, d.mainType, (mainId, subId, graphArea) => {
+        console.debug('pressed button for', d.mainType);
+        self.comparisonController.setActiveSubId(mainId, subId);
+        graphArea.selectAll('*').remove();
+        const panel = graphArea.append('div').classed('panel starplot-panel', true);
+        const header = panel.append('div').classed('panel-header', true);
+        panel.append('div').classed('panel-body', true);
+        panel.append('div').classed('panel-footer', true);
+
+        const formGroup = header.append('div').classed('form-group', true);
+        formGroup.append('label').text(`Show data for: (${Object.keys(self.selectedBlocks).length} block(s) selected)`);
+
+        const select = formGroup.append('select').classed('form-control', true);
+        select.on('change', () => {
+          const newValue = select.property('value');
+          console.debug('changed dropdown to', newValue, self.activeComparisonChart);
+          d3.selectAll('.geoJSON-gridSpace.active-selection').classed('active-selection', false);
+          d3.selectAll(`.geoJSON-gridSpace--${newValue}`).classed('active-selection', true);
+          updateChartDropdown();
+          // updateBlockData();
+          self.activeComparisonChart.chart.update(
+            panel,
+            self.activeComparisonChart.data[newValue] || self.activeComparisonChart.data.default,
+            self.activeComparisonChart.options[newValue] || self.activeComparisonChart.options.default);
+        });
+        select.append('option').attr('value', 'cursor').text('Census Block on Cursor');
+
+        comparisonStarPlot.init(panel);
+        comparisonStarPlot.update(panel, {}, { renderLabels: true });
+        const defaultData = generateEmptyChartData(d.mainType);
+        comparisonStarPlot.update(panel, defaultData,
+          {
+            fillColor: 'rgb(134, 95, 163)',
+            printInstructions: true,
+            plotLabels: true,
+            blockName: 'No block selected'
+          });
+        self.activeComparisonChart = {
+          chart: comparisonStarPlot,
+          panel,
+          select,
+          data: {
+            default: defaultData
+          },
+          options: {
+            default: {
+              fillColor: 'rgb(134, 95, 163)',
+              plotLabels: true,
+              blockName: 'No block selected',
+              type: d,
+            }
+          }
+        };
+        updateChartDropdown();
+      });
     }else{
       let title = d.title ? `<b>${d.subType}</b>` : undefined;
-      self.chartList.addChart(new CensusBarChart(d, createPropertyID(d), title));
+      const barChart = new CensusBarChart(d, createPropertyID(d), title);
+      self.chartList.addChart(barChart);
       self.chartList.updateChart(createPropertyID(d));
+
+      title = `${(d.mainType.split('_').map(_.capitalize).join(' '))}: ${d.subType}`;
+
+      self.comparisonController.addSubEntry(self.mainCategoryName, title, createPropertyID(d), (mainId, subId, graphArea) => {
+        console.debug('pressed button for', d.mainType, graphArea);
+        self.comparisonController.setActiveSubId(mainId, subId);
+        graphArea.selectAll('*').remove();
+        graphArea.append('div').classed('panel-footer', true)
+          .append('div').classed('panel-body', true);
+        barChart.init(graphArea);
+        barChart.update();
+      });
     }
 
   }
@@ -625,8 +797,28 @@ let MapDataController = function () {
     self.censusSvg = null;
     if (self.customCharts[propertyType.mainType]) {
       self.chartList.removeChart(propertyType.mainType, true);
+      try {
+        self.comparisonController.deleteSubEntry(self.mainCategoryName, propertyType.mainType);
+        self.activeComparisonChart = null;
+      } catch (err) {
+        console.error(err);
+      }
     } else {
       self.chartList.removeChart(createPropertyID(propertyType), true);
+      try {
+        self.comparisonController.deleteSubEntry(self.mainCategoryName, createPropertyID(propertyType));
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    console.debug(self.comparisonController.getActiveIds());
+    const { main } = self.comparisonController.getActiveIds();
+
+    // clear out current census chart if one is active
+    if (main === 'census') {
+      self.comparisonController.setActiveSubId();
+      self.comparisonController.resetGraphArea();
     }
   }
 
@@ -702,6 +894,10 @@ let MapDataController = function () {
     return self.censusSvg;
   }
 
+  function hasSelectedBlock(geoId) {
+    return !!self.selectedBlocks[geoId];
+  }
+
   return {
     setupDataPanel,
     attachResetOverlayButton,
@@ -710,9 +906,11 @@ let MapDataController = function () {
     removeChartFromList,
     setCensusClearButton,
     setChartList,
+    setComparisonController,
 
     initializeCustomCharts,
     getAxisData,
-    getCensusSVG
+    getCensusSVG,
+    hasSelectedBlock
   };
 };

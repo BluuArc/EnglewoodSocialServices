@@ -31,21 +31,28 @@ let ChartListView = function(listID){
 
     self.toggleButton = d3.select(buttonID).classed('open', !mobile)
       .on('click', function () {
-        let open = !d3.select(this).classed('open');
-        d3.select(this).classed('open', open);
-
-        d3.select(this).select('.glyphicon').attr('class', open ? 'glyphicon glyphicon-eye-close' : 'glyphicon glyphicon-eye-open');
-        if (open) {
-          document.getElementById('chartListButtonText').innerHTML = 'Hide Chart List';
-        }
-        else {
-          document.getElementById('chartListButtonText').innerHTML = 'Show Chart List';
-        }
-
-        self.wrapper
-          .style('pointer-events', open ? 'all' : 'none')
-          .style('opacity', open ? 1 : 0);
+        toggleChartListView();
       });
+  }
+
+  function toggleChartListView(value) {
+    let open = !self.toggleButton.classed('open');
+    if (value !== undefined) {
+      open = !!value;
+    }
+    self.toggleButton.classed('open', open);
+
+    self.toggleButton.select('.glyphicon').attr('class', open ? 'glyphicon glyphicon-eye-close' : 'glyphicon glyphicon-eye-open');
+    if (open) {
+      document.getElementById('chartListButtonText').innerHTML = 'Hide Chart List';
+    }
+    else {
+      document.getElementById('chartListButtonText').innerHTML = 'Show Chart List';
+    }
+
+    self.wrapper
+      .style('pointer-events', open ? 'all' : 'none')
+      .style('opacity', open ? 1 : 0);
   }
 
   function initializeDefaultChart(id, title, canDelete) {
@@ -124,6 +131,7 @@ let ChartListView = function(listID){
     makeCollapsing,
     addChart,
     updateChart,
-    removeChart
+    removeChart,
+    toggleChartListView
   };
 };

@@ -52,6 +52,13 @@ const MapLegendView = function (initOptions = {}) {
     svg.attr('height', height * 1.15);
 
     self.svg = svg;
+
+    // move button group to top of legend element
+    $('#legend #toggle-btn-area').detach().insertBefore('#legend>svg:first');
+    if (App.controllers.legendAreaView) {
+      // App.controllers.legendAreaView.toggleLegend(App.controllers.legendAreaView.getViewStateOfLegend());
+      App.controllers.legendAreaView.toggleLegend(true);
+    }
   }
 
   function drawLeftColumn(svg) {
