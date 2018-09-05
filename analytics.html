@@ -1,131 +1,30 @@
 <!DOCTYPE html>
-<html lang="en">
-
+<html>
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <title>Englewood Data Hub Analytics</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <!-- Fonts -->
   <link href="https://fonts.googleapis.com/css?family=Open+Sans|Zilla+Slab" rel="stylesheet">
 
   <!-- CSS Libs -->
   <link rel="stylesheet" href="./lib/css/bootstrap.min.css">
-  <link rel="stylesheet" href="./lib/css/leaflet.css">
-  <link rel="stylesheet" href="./lib/css/MarkerCluster.css">
-  <link rel="stylesheet" href="./lib/css/MarkerCluster.ESS.css">
-  <link rel="stylesheet" href="./lib/css/starplot.css">
-
-  <!-- JS Libs -->
-  <script src="./lib/js/jquery.min.js"></script>
-  <script src="./lib/js/bootstrap.min.js"></script>
-  <script src="./lib/js/leaflet.js"></script>
-  <script src="./lib/js/d3.v4.min.js"></script>
-  <script src="./lib/js/lodash.js"></script>
-  <script src="./lib/js/turf.min.js"></script>
-  <script src="./lib/js/rbush.min.js"></script>
-  <script src="./lib/js/leaflet.markercluster.js"></script>
-  <script src="./lib/js/leaflet.featuregroup.subgroup.js"></script>
-  <script src="./lib/js/d3-starPlot-modded.js"></script>
-  <script src="./lib/js/svg-icon.js"></script>
-  
-  <script src="./lib/js/d3-legend.min.js"></script>
 
   <!-- CSS Src -->
-  <link rel="stylesheet/less" href="./src/css/analytics.less">
+  <link rel="stylesheet/less" href="./src/css/englewood-analytics.less">
 
   <!-- less.js to parse stylesheet/less -->
   <script src="./lib/js/less.min.js"></script>
-
-  <!-- === JS Src === -->
-  <!-- Models -->
-  <!-- <script src="./src/js/models/socialServiceModel.js"></script> -->
-  <script src="./src/js/models/serviceTaxonomyModel.js"></script>
-  <script src="./src/js/models/censusDataModel.js"></script>
-  <script src="./src/js/models/boundaryDataModel.js"></script>
-  <script src="./src/js/models/landInventoryModel.js"></script>
-  <script src="./src/js/models/crimeDataModel.js"></script>
-  <script src="./src/js/models/browserModel.js"></script>
-  <script src="./src/js/models/schoolDataModel.js"></script>
-  <script src="./src/js/models/serviceDataModel.js"></script>
-
-  <!-- Views -->
-  <script src="./src/js/views/mapView.js"></script>
-  <script src="./src/js/views/mapLegendView.js"></script>
-  <script src="./src/js/views/chartListView.js"></script>
-  <script src="./src/js/views/loadingMessageView.js"></script>
-  <script src="./src/js/views/browserMessageView.js"></script>
-  <script src="./src/js/views/charts/BarChart.js"></script>
-  <!-- <script src="./src/js/views/charts/VacantLotBarChart.js"></script> -->
-  <script src="./src/js/views/charts/CensusBarChart.js"></script>
-  <script src="./src/js/views/charts/starPlotView.js"></script>
-  <!-- <script src="./src/js/views/charts/VacantLotStarPlot.js"></script> -->
-  <script src="./src/js/views/charts/CensusStarPlot.js"></script>
-  <!-- <script src="./src/js/views/charts/CensusMultiStarPlot.js"></script> -->
-  <script src="./src/js/views/charts/InteractiveStarPlot.js"></script>
-  <script src="./src/js/views/charts/PixelGlyph.js"></script>
-  <script src="./src/js/views/charts/VacantLotPixelGlyph.js"></script>
-  <script src="./src/js/views/selectionAreaView.js"></script>
-
-  <!-- Controllers -->
-  <!-- <script src="./src/js/controllers/analyticsFilterController.js"></script> -->
-  <script src="./src/js/controllers/mapDataController.js"></script>
-  <!-- <script src="./src/js/controllers/locationButtonController.js"></script> -->
-  <script src="./src/js/controllers/searchController.js"></script>
-  <!-- <script src="./src/js/controllers/rectSelectorController.js"></script> -->
-  <!-- <script src="./src/js/controllers/leafletMarkerViewController.js"></script> -->
-  <script src="./src/js/controllers/browserMessageController.js"></script>
-  <script src="./src/js/controllers/serviceFilterController.js"></script>
-  <script src="./src/js/controllers/markerToggleController.js"></script>
-  <script src="./src/js/controllers/comparisonAreaController.js"></script>
-  <script src="./src/js/controllers/legendAreaViewController.js"></script>
-
-  <!-- Main Script -->
-  <script src="./src/js/analytics.js"></script>
 </head>
-
 <body>
-  <div id="browserModal" class="modal fade in">
-    <div class="modal-dialog modal-lg">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h2 class="modal-title row">
-            <div class="col-sm-12">
-              Browser Incompatibility
-            </div>
-          </h2>
-        </div>
-        <div class="modal-body">
-          <div class="row">
-            <div class="col-md-12">
-              To access this project with full functionality, please use a Chrome or Firefox browser, not your browser <b>(<span id="user-browser">Unsupported Browser</span>)</b>.
-            </div>
-            <div class="col-md-12">
-              <br> Chrome can be downloaded for free from: <a href="https://www.google.com/chrome/browser/">https://www.google.com/chrome/browser/</a>
-              <br> Firefox can be downloaded for free from: <a href="https://www.mozilla.org/firefox">https://www.mozilla.org/firefox</a>
-            </div>
-            <div class="col-md-12">
-              <br> You may continue using your current browser to access this project. However, some features may not work correctly
-              due to browser incompatibility.
-            </div>
-          </div>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-danger" id="browserAcceptButton">
-            Continue
-            <span class="glyphicon glyphicon-log-out"></span>
-          </button>
-        </div>
-      </div>
-    </div>
-  </div>
-  <nav class="navbar navbar-default" >
-    <div class="container-fluid" id="topBar">
-      <div class="navbar-header" >
+  <nav class="navbar navbar-default">
+    <div class="container-fluid" id="top-bar">
+      <section class="navbar-header">
         <div class="row">
           <div class="col-sm-12">
-            <a class="navbar-brand" id="pageTitle">Englewood Data Hub Analytics</a>
+            <span class="navbar-brand" id="page-title">Englewood Data Hub Analytics</span>
           </div>
         </div>
         <div class="row">
@@ -136,189 +35,135 @@
             <a href="./contact.html?type=analytics">Contact</a>
           </div>
         </div>
-      </div>
+      </section>
 
-      <div class="navbar-left">
-        <div class="nav btn-group" id="filterButtonGroup">
-           <div class="btn-group"> 
-            <button type="button" class="btn btn-default dropdown-toggle navbar-btn rounded" data-toggle="dropdown" id="filterDropdownButton">
-              <span class="glyphicon glyphicon-map-marker" id="service-dropdown-marker"></span>
-              <span id="currentServiceSelection">
+      <section class="navbar-left">
+        <div class="nav btn-group" id="service-button-group">
+          <div class="btn-group">
+            <button class="btn btn-default dropdown-toggle navbar-btn btn-rounded" type="button" data-toggle="dropdown">
+              <i class="glyphicon glyphicon-map-marker"></i>
+              <span class="btn-text">
                 Select Services...
               </span>
-                <span class="caret"></span>
+              <i class="caret"></i>
             </button>
-            <ul class="dropdown-menu dropdown-toggle" role="menu" id="filterDropdownList"></ul>
-           </div> 
-          <button type="button" class="btn btn-default navbar-btn" id="allServicesButton" style="display:none;">
+            <ul class="dropdown-menu dropdown-toggle" role="menu"></ul>
+          </div>
+          <button class="btn btn-default navbar-btn clear-btn">
             <span class="glyphicon glyphicon-remove"></span>
-          </button> 
+          </button>
         </div>
-        <div class="nav btn-group" id="censusButtonGroup">
-           <div class="btn-group"> 
-            <button type="button" class="btn btn-default dropdown-toggle navbar-btn rounded" data-toggle="dropdown" id="censusDropdownButton">
-              <span id="currentServiceSelection">
+
+        <div class="nav btn-group" id="census-button-group">
+          <div class="btn-group">
+            <button class="btn btn-default dropdown-toggle navbar-btn btn-rounded" type="button" data-toggle="dropdown">
+              <span class="btn-text">
                 Select Census Category...
               </span>
-                <span class="caret"></span>
+              <i class="caret"></i>
             </button>
-            <ul class="dropdown-menu dropdown-toggle" role="menu" id="censusDropdownList"></ul>
-           </div> 
-          <button type="button" class="btn btn-default navbar-btn" id="allCensusButton" style="display:none;">
+            <ul class="dropdown-menu dropdown-toggle" role="menu"></ul>
+          </div>
+          <button class="btn btn-default navbar-btn clear-btn">
             <span class="glyphicon glyphicon-remove"></span>
-          </button> 
+          </button>
         </div>
 
-        <button class="btn btn-success navbar-btn" id="toggleHideChartsButton">
-          <span class="glyphicon glyphicon-eye-close"></span>
-          <span id="chartListButtonText">Hide Chart List</span>
-          <!-- <span class="badge" id="chartCount">10</span> -->
+        <div class="nav nav-group" id="chart-list-group">
+          <button class="btn btn-success dropdown-toggle navbar-btn" id="chart-list-button" data-toggle="dropdown">
+            <i class="glyphicon glyphicon-eye-close"></i>
+            <span class="btn-text">
+              Hide Chart List
+            </span>
+          </button>
+          <div class="dropdown-menu" role="menu" id="chart-list-wrapper">
+            <p class="title label-info">Chart List</p>
+            <div id="chart-list">
 
-        </button>
-
-        <div class="dropdown-menu" role="menu" id="chartListWrapper">
-          <p class="title label-info">
-            Chart List
-          </p>
-          <!-- <div class="row" id="selectionButtonGroup">
-              <div class="btn-group col-md-6 col-sm-6"> 
-              <button type="button" class="btn btn-default btn-block" data-toggle="tooltip" title="Click and drag to select an area" id="rectSelector1">
-                <span class="glyphicon glyphicon-plus"></span>
-                Select Map Area 1
-              </button>
-              </div> 
-              <div class="btn-group col-md-6 col-sm-6"> 
-              <button type="button" class="btn btn-default btn-block" data-toggle="tooltip" title="Click and drag to select an area" id="rectSelector2">
-                <span class="glyphicon glyphicon-plus"></span>
-                Select Map Area 2
-                </button> 
-              </div> 
-          </div> -->
-          <div class="" id="chartList">
-
+            </div>
           </div>
-          
         </div>
 
-        <div class="btn-group" id="marker-toggle-group">
-          <button type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown">Toggle Marker Views <span class="caret"></span></button>
+        <div class="nav btn-group" id="marker-view-toggle-group">
+          <button class="btn btn-success dropdown-toggle navbar-btn" data-toggle="dropdown">
+            <span class="btn-text">
+              Toggle Marker Views
+            </span>
+            <i class="caret"></i>
+          </button>
           <ul class="dropdown-menu" role="menu">
             <li>
-              <a id="toggleServiceView" href="#">
-                <span class="glyphicon glyphicon-check"></span>
-                <span id="serviceViewText">Service Markers</span>
-                <span class="svg-insert" id="serviceMarker"></span>
+              <a href="" id="toggle-marker-view--service">
+                <i class="glyphicon glyphicon-unchecked"></i>
+                <span>Service Markers</span>
+                <i class="svg-insert service-marker"></i>
               </a>
             </li>
             <li>
-              <a id="toggleLotView" href="#">
-                <span class="glyphicon glyphicon-check"></span>
-                <span id="lotViewText">Vacant Lot Markers</span>
-                <span class="svg-insert" id="lotMarker"></span>
+              <a href="" id="toggle-marker-view--lot">
+                <i class="glyphicon glyphicon-unchecked"></i>
+                <span>Vacant Lot Markers</span>
+                <i class="svg-insert lot-marker"></i>
               </a>
             </li>
             <li>
-              <a id="toggleSchoolView" href="#">
-                <span class="glyphicon glyphicon-check"></span>
-                <span id="schoolViewText">School Markers</span>
-                <span class="svg-insert" id="schoolMarker"></span>
+              <a href="" id="toggle-marker-view--school">
+                <i class="glyphicon glyphicon-unchecked"></i>
+                <span>School Markers</span>
+                <i class="svg-insert school-marker"></i>
               </a>
             </li>
           </ul>
         </div>
 
-        <div class="btn-group" id="lot-type-toggle-group">
-          <button type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown">Toggle Lot Markers <span class="caret"></span></button>
+        <div class="nav btn-group" id="lot-type-view-toggle-group">
+          <button class="btn btn-success dropdown-toggle navbar-btn" data-toggle="dropdown">
+            <span class="btn-text">
+              Toggle Lot Markers
+            </span>
+            <i class="caret"></i>
+          </button>
           <ul class="dropdown-menu" role="menu">
             <li>
-              <a id="toggleResidential" href="#">
-                <span class="glyphicon glyphicon-check"></span>
-                <span id="textResidential">Residential Markers</span>
-                <span class="svg-insert" id="Residential"></span>
+              <a href="" id="toggle-lot-marker--residential">
+                <i class="glyphicon glyphicon-unchecked"></i>
+                <span>Residential Markers</span>
+                <i class="svg-insert lot-marker--residential"></i>
               </a>
             </li>
             <li>
-              <a id="toggleBCM" href="#">
-                <span class="glyphicon glyphicon-check"></span>
-                <span id="textBCM">Business/Commercial/Manufacturing Markers</span>
-                <span class="svg-insert" id="BCM"></span>
+              <a href="" id="toggle-lot-marker--bcm">
+                <i class="glyphicon glyphicon-unchecked"></i>
+                <span>Business/Commercial/Manufacturing Markers</span>
+                <i class="svg-insert lot-marker--bcm"></i>
               </a>
             </li>
             <li>
-              <a id="togglePOS" href="#">
-                <span class="glyphicon glyphicon-check"></span>
-                <span id="textPOS">Parks and Open Space Markers</span>
-                <span class="svg-insert" id="POS"></span>
+              <a href="" id="toggle-lot-marker--pos">
+                <i class="glyphicon glyphicon-unchecked"></i>
+                <span>Parks and Open Space Markers</span>
+                <i class="svg-insert lot-marker--pos"></i>
               </a>
             </li>
             <li>
-              <a id="togglePD" href="#">
-                <span class="glyphicon glyphicon-check"></span>
-                <span id="textPD">Planned Manufacturing Districts and Development Markers</span>
-                <span class="svg-insert" id="PD"></span>
+              <a href="" id="toggle-lot-marker--pd">
+                <i class="glyphicon glyphicon-unchecked"></i>
+                <span>Planned Manufacturing Districts and Development Markers</span>
+                <i class="svg-insert lot-marker--pd"></i>
               </a>
             </li>
           </ul>
         </div>
-        
-        <div id="legend">
-          <div class="container-fluid">
-            <div class="row" id="toggle-btn-area">
-              <div class="col-md-12">
-                <a class="btn btn-info btn-block" id="legend-collapse-btn">
-                  <b>Collapse Legend</b>
-                </a>
-              </div>
-            </div>
-          </div>
-          <div class="row">
-            <div class="col-md-12">
-              <a class="btn btn-info btn-block" id="comparison-collapse-btn">
-                <b>Collapse Comparison Area</b>
-              </a>
-            </div>
-          </div>
-          <div id="comparison-area" class="container-fluid">
-            <div class="row" id="comparison-area-content">
-              <div id="selection-area" class="col-md-3">
-              </div>
-              <div id="graph-area" class="col-md-9">
-                <p id="default-graph-area-text">Choose a subcategory on the left to see a graph</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+      </section>
     </div>
   </nav>
 
-  <div class="container-fluid appContent">
+  <div class="container-fluid app-content">
     <div class="row h-100">
-
-      <!-- <div id="chartListWrapper">
-        <div class="" id="chartList">
-
-        </div>
-      </div> -->
-
-      <div id="serviceMap">
+      <div id="service-map">
 
       </div>
-
-    </div>
-  </div>
-  
-  <div id="loading-indicator" class="container">
-    <div class="row text-center">
-      <h1>Loading data. Please wait.</h1>
-    </div>
-    <div class="row text-center">
-      <h2>Status: <span id="loading-message">Initializing App</span></h2>
-    </div>
-    <div class="row">
-      <div class="spinner"></div>
     </div>
   </div>
 </body>
-
 </html>
