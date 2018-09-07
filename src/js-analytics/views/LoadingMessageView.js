@@ -1,6 +1,6 @@
 /* global d3 */
 // eslint-disable-next-line no-unused-vars
-class LoadingMessageController {
+class LoadingMessageView {
   constructor (config = {}) {
     const defaultConfig = {
       containerElem: '#loading-indicator',
@@ -9,14 +9,14 @@ class LoadingMessageController {
     };
 
     // assumption: only one instance of each selector is present
-    this.containerElem = document.querySelector(config.containerElem || defaultConfig.containerElem);
-    this.mainMessageElem = document.querySelector(config.mainMessageElem || defaultConfig.mainMessageElem);
-    this.subMessageElem = document.querySelector(config.subMessageElem || defaultConfig.subMessageElem);
-    this.containerD3 = d3.select(this.containerElem);
+    this._containerElem = document.querySelector(config.containerElem || defaultConfig.containerElem);
+    this._mainMessageElem = document.querySelector(config.mainMessageElem || defaultConfig.mainMessageElem);
+    this._subMessageElem = document.querySelector(config.subMessageElem || defaultConfig.subMessageElem);
+    this._containerD3 = d3.select(this._containerElem);
   }
 
   set messageIsVisible (bool) {
-    const classList = this.containerElem.classList;
+    const classList = this._containerElem.classList;
     if (!bool) {
       classList.add('hidden');
     } else {
@@ -26,12 +26,12 @@ class LoadingMessageController {
 
   set mainMessage (msg) {
     this.showMessage();
-    this.mainMessageElem.textContent = msg;
+    this._mainMessageElem.textContent = msg;
   }
 
   set subMessage (msg) {
     this.showMessage();
-    this.subMessageElem.textContent = msg;
+    this._subMessageElem.textContent = msg;
   }
 
   showMessage () {
@@ -40,7 +40,7 @@ class LoadingMessageController {
 
   hideMessage () {
     const animationP = new Promise(resolve => {
-      this.containerD3
+      this._containerD3
         .transition().duration(1000)
         .style('opacity', 0)
         .on('end', resolve);

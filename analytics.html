@@ -11,9 +11,11 @@
 
   <!-- CSS Libs -->
   <link rel="stylesheet" href="./lib/css/bootstrap.min.css">
+  <link rel="stylesheet" href="./lib/css/leaflet.css">
 
   <!-- CSS Src -->
   <link rel="stylesheet/less" href="./src/css/englewood-analytics.less">
+  <script src="./lib/js/less.min.js"></script>
 
 </head>
 <body>
@@ -38,14 +40,14 @@
       <section class="navbar-left">
         <div class="nav btn-group" id="service-button-group">
           <div class="btn-group">
-            <button class="btn btn-default dropdown-toggle navbar-btn btn-rounded" type="button" data-toggle="dropdown">
+            <button class="btn btn-default dropdown-toggle navbar-btn btn-rounded select-btn" type="button" data-toggle="dropdown">
               <i class="glyphicon glyphicon-map-marker"></i>
               <span class="btn-text">
                 Select Services...
               </span>
               <i class="caret"></i>
             </button>
-            <ul class="dropdown-menu dropdown-toggle" role="menu"></ul>
+            <ul class="dropdown-menu dropdown-toggle" role="menu" id="service-dropdown"></ul>
           </div>
           <button class="btn btn-default navbar-btn clear-btn">
             <span class="glyphicon glyphicon-remove"></span>
@@ -54,13 +56,13 @@
 
         <div class="nav btn-group" id="census-button-group">
           <div class="btn-group">
-            <button class="btn btn-default dropdown-toggle navbar-btn btn-rounded" type="button" data-toggle="dropdown">
+            <button class="btn btn-default dropdown-toggle navbar-btn btn-rounded select-btn" type="button" data-toggle="dropdown">
               <span class="btn-text">
                 Select Census Category...
               </span>
               <i class="caret"></i>
             </button>
-            <ul class="dropdown-menu dropdown-toggle" role="menu"></ul>
+            <ul class="dropdown-menu dropdown-toggle" role="menu" id="census-dropdown"></ul>
           </div>
           <button class="btn btn-default navbar-btn clear-btn">
             <span class="glyphicon glyphicon-remove"></span>
@@ -94,21 +96,21 @@
               <a href="" id="toggle-marker-view--service">
                 <i class="glyphicon glyphicon-unchecked"></i>
                 <span>Service Markers</span>
-                <i class="svg-insert service-marker"></i>
+                <i class="map-icon-insert" data-marker="serviceMarker"></i>
               </a>
             </li>
             <li>
               <a href="" id="toggle-marker-view--lot">
                 <i class="glyphicon glyphicon-unchecked"></i>
                 <span>Vacant Lot Markers</span>
-                <i class="svg-insert lot-marker"></i>
+                <i class="map-icon-insert" data-marker="lotMarker"></i>
               </a>
             </li>
             <li>
               <a href="" id="toggle-marker-view--school">
                 <i class="glyphicon glyphicon-unchecked"></i>
                 <span>School Markers</span>
-                <i class="svg-insert school-marker"></i>
+                <i class="map-icon-insert" data-marker="schoolMarker"></i>
               </a>
             </li>
           </ul>
@@ -126,28 +128,28 @@
               <a href="" id="toggle-lot-marker--residential">
                 <i class="glyphicon glyphicon-unchecked"></i>
                 <span>Residential Markers</span>
-                <i class="svg-insert lot-marker--residential"></i>
+                <i class="map-icon-insert" data-marker="Residential"></i>
               </a>
             </li>
             <li>
               <a href="" id="toggle-lot-marker--bcm">
                 <i class="glyphicon glyphicon-unchecked"></i>
                 <span>Business/Commercial/Manufacturing Markers</span>
-                <i class="svg-insert lot-marker--bcm"></i>
+                <i class="map-icon-insert" data-marker="BCM"></i>
               </a>
             </li>
             <li>
               <a href="" id="toggle-lot-marker--pos">
                 <i class="glyphicon glyphicon-unchecked"></i>
                 <span>Parks and Open Space Markers</span>
-                <i class="svg-insert lot-marker--pos"></i>
+                <i class="map-icon-insert" data-marker="POS"></i>
               </a>
             </li>
             <li>
               <a href="" id="toggle-lot-marker--pd">
                 <i class="glyphicon glyphicon-unchecked"></i>
                 <span>Planned Manufacturing Districts and Development Markers</span>
-                <i class="svg-insert lot-marker--pd"></i>
+                <i class="map-icon-insert" data-marker="PD"></i>
               </a>
             </li>
           </ul>
@@ -156,11 +158,8 @@
     </div>
   </nav>
 
-  <div class="container-fluid app-content">
-    <div class="row h-100">
-      <div id="service-map">
-        map goes here
-      </div>
+  <div class="app-content">
+    <div id="service-map">
     </div>
   </div>
 
@@ -179,13 +178,24 @@
   </div>
 
   <!-- JS Libs -->
-  <script src="./lib/js/less.min.js"></script>
   <script src="./lib/js/jquery.min.js"></script>
   <script src="./lib/js/bootstrap.min.js"></script>
   <script src="./lib/js/d3.v4.min.js"></script>
+  <script src="./lib/js/leaflet.js"></script>
+  <script src="./lib/js/svg-icon.js"></script>
+  <script src="./lib/js/lodash.js"></script>
 
   <!-- JS Src -->
-  <script src="./src/js-analytics/controllers/LoadingMessageController.js"></script>
+  
+  <script src="src/js-analytics/models/SocialServiceModel.js"></script>
+  <script src="src/js-analytics/models/MapIconModel.js"></script>
+  <script src="src/js-analytics/models/ServiceTaxonomyModel.js"></script>
+
+  <script src="./src/js-analytics/views/LoadingMessageView.js"></script>
+  <script src="./src/js-analytics/views/MapView.js"></script>
+
+  <script src="./src/js-analytics/controllers/ServiceFilterDropdownController.js"></script>
+  
   <script src="./src/js-analytics/app.js"></script>
 </body>
 </html>

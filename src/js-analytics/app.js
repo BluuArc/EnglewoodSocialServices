@@ -1,4 +1,5 @@
 /* global $ less */
+'use strict';
 
 function wait (time = 500, isMock = false) {
   if (isMock) {
@@ -10,23 +11,47 @@ function wait (time = 500, isMock = false) {
 function AnalyticsApp () {
   const self = this;
 
-  self.models = {};
-  self.views = {};
-  self.controllers = {};
+  /* eslint-disable no-undef */
+  self.models = {
+    serviceData: new SocialServiceModel('admin-data/EnglewoodLocations.csv'),
+    markerIcons: new MapIconModel(),
+    serviceTaxonomy: new ServiceTaxonomyModel('./data/serviceTaxonomy.json'),
+  };
+  self.views = {
+    map: new MapView('service-map', self.models.markerIcons),
+  };
+  self.controllers = {
+    serviceFilterDropdown: new ServiceFilterDropdownController(),
+  };
+  /* eslint-enable no-undef */
+
+  function setAppContentDivHeight () {
+    const container = document.querySelector('.app-content');
+    const toolbar = document.querySelector('body>nav.navbar.navbar-default');
+    container.style.height = `calc(100% - ${toolbar.offsetHeight}px)`;
+  }
 
   self.init = async function () {
     console.time('app init');
     console.debug('Starting app init');
-    /* eslint-disable no-undef */
-    const loadingController = new LoadingMessageController();
-    loadingController.mainMessage = 'Initializing Application';
-    /* eslint-enable no-undef */
+    
+    // eslint-disable-next-line no-undef
+    const loadingView = new LoadingMessageView();
+    loadingView.mainMessage = 'Downloading Data';
+    await self.models.serviceData.load();
+    await self.models.serviceTaxonomy.load();
 
-    await wait(2500, true);
-    loadingController.mainMessage = 'Done!';
-    loadingController.subMessage = '';
-    await loadingController.hideMessage();
-    console.debug('finished app init');
+    loadingView.mainMessage = 'Initializing Application';
+    self.controllers.serviceFilterDropdown.init(self.models.serviceTaxonomy);
+    self.models.markerIcons.autoInsertIntoDom();
+    setAppContentDivHeight();
+    await self.views.map.initMap();
+
+    await wait(500, true);
+
+    loadingView.mainMessage = 'Done!';
+    loadingView.subMessage = '';
+    await loadingView.hideMessage();
     console.timeEnd('app init');
   };
 }
