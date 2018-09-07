@@ -56,11 +56,50 @@
   display: inline-block;
 }
 
-.h-100 {
+.h-100, html {
   height: 100%;
 }
 
 .app-content {
   position: relative;
   height: 92.5%;
+}
+
+#loading-indicator {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background-color: rgba(150,150,150,0.95);
+  z-index: 1100;
+
+  &.hidden {
+    display: none;
+    pointer-events: none;
+  }
+  //adapted from https://www.w3schools.com/howto/howto_css_loader.asp
+  .spinner {
+    border: 8px solid #f3f3f3; /* Light grey */
+    border-top: 8px solid #3498db; /* Blue */
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    margin: auto;
+    animation: spin 1s linear infinite;
+  }
+
+  #loading-message-subtitle {
+    margin-top: 0;
+  }
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
