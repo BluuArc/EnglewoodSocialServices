@@ -35,22 +35,20 @@ class ServiceFilterDropdownController {
     });
 
     const dropdown = d3.select(this._dropdownMenu);
-    const addListItem = this._addListItem;
-    const onMainCategoryClick = this._onMainCategoryClick;
-    const onSideMenuClick = this._onSideMenuClick;
+    const self = this;
 
-    dropdown.selectAll('.main-type')
+    dropdown.selectAll('.service-main-type')
       .data(tier1Categories)
       .enter().append('li')
-      .attr('class', 'dropdown-submenu service-type main-type')
+      .attr('class', 'dropdown-submenu service-main-type')
       .each(function (c1) {
-        addListItem(this, c1, serviceTaxonomyModel, { onMainCategoryClick, onSideMenuClick });
+        // need to pass in self 'this' reference changes
+        self._addListItem(this, c1, serviceTaxonomyModel, self);
       });
   }
 
-  _addListItem (elem, tier1Category, serviceTaxonomyModel = new ServiceTaxonomyModel(), { onMainCategoryClick, onSideMenuClick }) {
-    const tier2Categories = serviceTaxonomyModel.getTier2CategoriesOf(tier1Category)
-      .map(c2 => ({ mainType: tier1Category, subType: c2 }));
+  _addListItem (elem, tier1Category, serviceTaxonomyModel = new ServiceTaxonomyModel(), self) {
+    const tier2Categories = serviceTaxonomyModel.getTier2CategoriesOf(tier1Category);
 
     const btnGroup = d3.select(elem).append('div').classed('btn-group row', true);
 
@@ -58,20 +56,47 @@ class ServiceFilterDropdownController {
     btnGroup.append('button').classed('btn btn-item col-md-10', true)
       .attr('tabindex', -1)
       .html('<span class=\'glyphicon glyphicon-unchecked\'></span>' + tier1Category)
-      .on('click', () => onMainCategoryClick(tier1Category, elem));
+      .on('click', () => self._onMainCategoryClick(tier1Category, elem));
 
     // side menu button
     btnGroup.append('button').classed('btn btn-item btn-dropdown col-md-2', true)
       .html('<i class="caret"></i>')
-      .on('click', function () { onSideMenuClick(this, btnGroup); })
+      .on('click', function () { self._onSideMenuClick(this, btnGroup, d3.select(self._dropdownMenu)); })
       .classed('disabled', tier2Categories.length < 1);
+
+    // sidemenu for t2 categories
+    const t2Dropdown = btnGroup.append('ul').classed('dropdown-menu', true);
+
+    t2Dropdown.selectAll('.service-sub-type')
+      .data(tier2Categories)
+      .enter().append('li')
+      .classed('service-sub-type', true)
+      .append('a')
+      .html(t2 => '<span class=\'glyphicon glyphicon-unchecked\'></span>' + t2)
+      .on('click', (...args) => self._onSubCategoryClick(tier1Category, elem, ...args));
   }
 
   _onMainCategoryClick (c1, listItem) {
+    d3.event.stopPropagation(); // prevent menu close on link click
     console.debug('clicked select all button for', c1, listItem);
   }
 
-  _onSideMenuClick (elem, d3BtnGroup) {
-    console.debug('clicked side menu', elem, d3BtnGroup);
+  _onSideMenuClick (elem, d3ParentBtnGroup, d3Dropdown) {
+    d3.event.stopPropagation();
+    d3.event.preventDefault();
+    if (elem.classList.contains('disabled')) {
+      return;
+    }
+
+    const currentState = d3ParentBtnGroup.classed('open');
+
+    d3Dropdown.selectAll('.service-main-type')
+      .selectAll('.btn-group.open').classed('open', false);
+    d3ParentBtnGroup.classed('open', !currentState);
+  }
+
+  _onSubCategoryClick () {
+    d3.event.stopPropagation(); // prevent menu close on link click
+    console.debug('clicked sub category', arguments);
   }
 }

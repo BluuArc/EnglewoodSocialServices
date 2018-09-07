@@ -259,3 +259,72 @@
     }
   }
 }
+
+///// START multi-level dropdown styles
+* {
+  .dropdown-submenu {
+    position: relative;
+
+    .glyphicon-ok {
+      color: #5CB85C;
+    }
+
+    .glyphicon-check {
+      color: #5CB85C;
+    }
+
+    .glyphicon-plus {
+      color: #5BC0DE;
+    }
+
+    .glyphicon-unchecked {
+      color: gray;
+    }
+  }
+
+  .dropdown-submenu > .dropdown-menu {
+    top: 0;
+    left: 100%;
+    margin-top: -6px;
+    .border-radius(6px 0 6px 6px);
+  }
+
+  .dropdown-submenu:hover > .dropdown-menu {
+    display: block;
+  }
+
+  .dropdown-submenu > a:after {
+    display: block;
+    content: ' ';
+    float: right;
+    width: 0;
+    height: 0;
+    border-color: transparent;
+    border-style: solid;
+    border-width: 5px 0 5px 5px;
+    border-left-color: #CCCCCC;
+    margin-top: 5px;
+    margin-right: -10px;
+  }
+
+  .dropdown-submenu:hover > a:after {
+    border-right-color: #FFFFFF;
+  }
+}
+
+.service-main-type {
+  a {
+    .glyphicon-unchecked {
+      color: transparent;
+    }
+  }
+}
+
+.service-sub-type {
+  a {
+    .glyphicon-unchecked {
+      color: gray;
+    }
+  }
+}
+///// END multi-level dropdown styles
