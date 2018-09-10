@@ -117,26 +117,47 @@ class ServiceFilterDropdownView {
   }
 
   updateView (serviceFilterController = new ServiceFilterController()) {
+    const filterAggregate = Object.keys(this._nameMapping).map(mainCategory => ({
+      mainCategory,
+      state: serviceFilterController.getMainCategoryState(mainCategory),
+      activeSubCategories: serviceFilterController.getEnabledSubCategories(mainCategory)
+    }));
+    
     Object.keys(this._nameMapping).forEach(mainCategory => {
       const { selectAllBtn, t2Dropdown } = this._nameMapping[mainCategory];
+      const filterInfo = filterAggregate.find(filter => filter.mainCategory === mainCategory);
 
-      const mainCategoryGlyphicon = serviceFilterController.getMainCategoryGlyphicon(mainCategory);
       const mainGlyphicon = selectAllBtn.select('.glyphicon');
       mainGlyphicon.classed('glyphicon-unchecked glyphicon-plus glyphicon-check', false)
-        .classed(mainCategoryGlyphicon, true);
+        .classed(serviceFilterController.getIconState(filterInfo.state), true);
 
       t2Dropdown.selectAll('.service-sub-type')
         .selectAll('.glyphicon')
         .classed('glyphicon-plus glyphicon-check', false)
         .classed('glyphicon-unchecked', true);
 
-      const enabledSubCategories = serviceFilterController.getEnabledSubCategories(mainCategory);
-      enabledSubCategories.forEach(subCategory => {
+      filterInfo.activeSubCategories.forEach(subCategory => {
         t2Dropdown.select(`.service-sub-type[data-subcategory="${subCategory}"]`)
           .select('.glyphicon')
           .classed('glyphicon-unchecked', false)
           .classed(serviceFilterController.getIconState('all'), true);
       });
     });
+
+    const d3SelectButton = d3.select(this._buttonGroup).select('.select-btn');
+    const d3ClearButton = d3.select(this._clearBtn);
+    const activeFilters = filterAggregate.filter(({ state }) => state !== 'none');
+    if (activeFilters.length > 0) {
+      const hasMultipleFilters = activeFilters.length > 1
+       || (activeFilters[0].state === 'some' && activeFilters[0].activeSubCategories.length > 1);
+      const buttonText = (hasMultipleFilters) ? 'Various Filters' : (activeFilters[0].activeSubCategories.length === 1 ? activeFilters[0].activeSubCategories[0] : activeFilters[0].mainCategory);
+      d3SelectButton.classed('btn-default', false).classed('btn-success', true)
+        .select('.btn-text').text(buttonText);
+      d3ClearButton.classed('hidden', false);
+    } else {
+      d3SelectButton.classed('btn-default', true).classed('btn-success', false)
+        .select('.btn-text').text('Select Services...');
+      d3ClearButton.classed('hidden', true);
+    }
   }
 }

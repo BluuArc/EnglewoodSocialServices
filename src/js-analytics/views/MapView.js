@@ -7,6 +7,8 @@ class MapView {
     this._leafletMap = L.map(mapId);
     this._englewoodOutline = null;
     this._iconModel = mapIconModel;
+    this._layerGroups = {};
+    this._featureGroups = {};
   }
 
   async initMap (geoJsonPath) {
@@ -48,5 +50,27 @@ class MapView {
         };
       },
     }).addTo(this._leafletMap);
+  }
+
+  addLayerGroup (name, value = []) {
+    this._layerGroups[name] = L.layerGroup(value).addTo(this._leafletMap);
+  }
+
+  setLayerGroupVisibility (name, doShow) {
+    const layerGroup = this._layerGroups[name];
+    if (doShow) {
+      layerGroup.addTo(this._leafletMap);
+    } else {
+      layerGroup.remove();
+    }
+  }
+
+  updateLayerGroup (name, { markerGenerator, data }) {
+    const layerGroup = this._layerGroups[name];
+    layerGroup.clearLayers();
+    data.forEach(entry => {
+      const marker = markerGenerator(entry, layerGroup, this._leafletMap);
+      marker.addTo(layerGroup);
+    });
   }
 }

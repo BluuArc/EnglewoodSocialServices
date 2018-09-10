@@ -39,8 +39,8 @@ function AnalyticsApp () {
     // eslint-disable-next-line no-undef
     const loadingView = new LoadingMessageView();
     loadingView.mainMessage = 'Downloading Data';
-    await self.models.serviceData.load();
     await self.models.serviceTaxonomy.load();
+    await self.models.serviceData.load(undefined, self.models.serviceTaxonomy);
 
     loadingView.mainMessage = 'Initializing Application';
     // self.views.serviceFilterDropdown.init(self.models.serviceTaxonomy);
@@ -48,8 +48,11 @@ function AnalyticsApp () {
     self.controllers.serviceFilters = new ServiceFilterController({
       dropdownView: self.views.serviceFilterDropdown,
       mapView: self.views.map,
+      serviceModel: self.models.serviceData,
+      mapIconModel: self.models.markerIcons,
     });
     self.controllers.serviceFilters.init(self.models.serviceTaxonomy);
+    self.controllers.serviceFilters.updateViews();
     self.models.markerIcons.autoInsertIntoDom();
     setAppContentDivHeight();
     await self.views.map.initMap();
