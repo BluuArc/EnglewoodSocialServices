@@ -107,16 +107,6 @@ class SocialServiceModel {
   async load (altPath = '', serviceTaxonomyModel = new ServiceTaxonomyModel()) {
     console.debug('loading social service data');
     const textData = await this._loadTextData(altPath);
-
-    // filter out empty entries
-    // this._data = rawData.filter(d => {
-    //   const values = Object.values(d);
-    //   const result = values.some(val => typeof val === 'string' && val.length > 0);
-    //   if (!result) {
-    //     console.debug('ignoring entry', d);
-    //   }
-    //   return result;
-    // });
     const csvData = this._cleanCsvData(textData);
     const [headers, ...data] = csvData;
     this._data = data.map(d => this._createServiceObjectFromHeaders(headers, d, serviceTaxonomyModel));

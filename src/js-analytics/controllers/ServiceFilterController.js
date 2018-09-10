@@ -136,20 +136,62 @@ class ServiceFilterController {
     });
   }
 
+  _generateServicePopupHtml (service) {
+    let addressLink = '';
+    if (service.Address) {
+      const address = [service.Address, service.City, service.State, service.Zip].join(', ');
+      addressLink = `
+      <strong>
+        <a href="http://maps.google.com/?q=${address}" target="_blank">
+          <span class="glyphicon glyphicon-share-alt"></span> ${address}
+        </a>
+      </strong>`;
+    }
+
+    const phoneNumberMarkup = service['Phone Number'].length > 0
+      ? `<span class="glyphicon glyphicon-earphone"></span> ${service['Phone Number'].join ? service['Phone Number'].join(' or ') : service['Phone Number']}`
+      : '';
+
+    const webSiteMarkup = (service.Website && service.Website.toLowerCase().trim() !== 'no website')
+      ? `<strong><a href="${service.Website}" target="_blank"><span class="glyphicon glyphicon-home"></span> ${service.Website}</a></strong>`
+      : '';
+
+    return [
+      `<strong>${service['Organization Name']}</strong>`,
+      `${service['Description of Services']}`,
+      addressLink,
+      phoneNumberMarkup,
+      webSiteMarkup
+    ].filter(val => !!val).join('<br>');
+  }
+
   updateViews () {
     this._dropdownView.updateView(this);
     const filteredData = this.filteredData;
     console.debug(filteredData);
 
-    const markerGenerator = (serviceEntry) => {
-      return L.marker(
+    const markerGenerator = (serviceEntry, layerGroup, map) => {
+      const marker = L.marker(
         L.latLng(+serviceEntry.Latitude || 0, +serviceEntry.Longitude || 0),
         {
           icon: this._mapIconModel.getIconById('serviceMarker'),
           riseOnHover: true,
           data: serviceEntry,
-        },
-      ).on('click', () => console.debug(serviceEntry));
+        }
+      ).bindPopup(
+        this._generateServicePopupHtml(serviceEntry),
+        { autoPan: false }
+      ).on('click', () => {
+        console.debug(serviceEntry);
+        map.closePopup();
+      }).on('mouseover', function () {
+        marker.openPopup();
+      }).on('mouseout', function () {
+        if (!this.options.data.expanded) {
+          map.closePopup();
+        }
+      });
+      return marker;
     };
 
     this._mapView.updateLayerGroup(this.layerGroupName, { markerGenerator, data: filteredData });
