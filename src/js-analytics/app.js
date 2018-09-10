@@ -19,9 +19,10 @@ function AnalyticsApp () {
   };
   self.views = {
     map: new MapView('service-map', self.models.markerIcons),
+    serviceFilterDropdown: new ServiceFilterDropdownView(),
   };
   self.controllers = {
-    serviceFilterDropdown: new ServiceFilterDropdownController(),
+    serviceFilters: null,
   };
   /* eslint-enable no-undef */
 
@@ -42,7 +43,13 @@ function AnalyticsApp () {
     await self.models.serviceTaxonomy.load();
 
     loadingView.mainMessage = 'Initializing Application';
-    self.controllers.serviceFilterDropdown.init(self.models.serviceTaxonomy);
+    // self.views.serviceFilterDropdown.init(self.models.serviceTaxonomy);
+    // eslint-disable-next-line no-undef
+    self.controllers.serviceFilters = new ServiceFilterController({
+      dropdownView: self.views.serviceFilterDropdown,
+      mapView: self.views.map,
+    });
+    self.controllers.serviceFilters.init(self.models.serviceTaxonomy);
     self.models.markerIcons.autoInsertIntoDom();
     setAppContentDivHeight();
     await self.views.map.initMap();
