@@ -1,4 +1,4 @@
-/* global turf rbush d3 _ */
+/* global turf rbush d3 */
 
 // eslint-disable-next-line no-unused-vars
 class CensusDataModel {
@@ -146,8 +146,15 @@ class CensusDataModel {
     return this._geoIdMapping[geoId.toString()];
   }
 
-  getSubCategories (mainType) {
-    return this._mapTypeNames[mainType];
+  getSubCategoriesOf (mainType, ignoreTotal = false) {
+
+    const subCategories = this._mapTypeNames[mainType].slice();
+
+    if (ignoreTotal && (subCategories[0] || '').toLowerCase() === 'total') {
+      return subCategories.slice(1);
+    } else {
+      return subCategories;
+    }
   }
 
   get mainCategories () {

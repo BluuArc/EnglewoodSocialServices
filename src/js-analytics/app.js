@@ -21,6 +21,7 @@ function AnalyticsApp (loader = new LoadingMessageView()) {
   self.views = {
     map: new MapView('service-map', self.models.markerIcons),
     serviceFilterDropdown: new ServiceFilterDropdownView(),
+    censusFilterDropdown: new CensusFilterDropdownView(),
     loader,
   };
   self.controllers = {
@@ -42,8 +43,11 @@ function AnalyticsApp (loader = new LoadingMessageView()) {
     const loadingView = self.views.loader;
     await self._initData();
 
-    loadingView.mainMessage = 'Initializing Application';
+    loadingView.mainMessage = 'Initializing UI';
     loadingView.subMessage = 'Please wait';
+
+    self.views.censusFilterDropdown.init(self.models.censusData);
+
     // eslint-disable-next-line no-undef
     self.controllers.serviceFilters = new ServiceFilterController({
       dropdownView: self.views.serviceFilterDropdown,
@@ -97,7 +101,7 @@ let App;
       console.debug('page loaded');
       return wait();
     }).then(() => {
-      loader = new LoadingMessageView()
+      loader = new LoadingMessageView();
       App = new AnalyticsApp(loader);
       return App.init();
     }).catch(err => {
