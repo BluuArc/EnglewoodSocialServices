@@ -1,4 +1,4 @@
-/* global $ less */
+/* global $ less LoadingMessageView */
 'use strict';
 
 function wait (time = 500, isMock = false) {
@@ -8,7 +8,7 @@ function wait (time = 500, isMock = false) {
   return new Promise(resolve => setTimeout(resolve, time));
 }
 
-function AnalyticsApp () {
+function AnalyticsApp (loader = new LoadingMessageView()) {
   const self = this;
 
   /* eslint-disable no-undef */
@@ -16,11 +16,12 @@ function AnalyticsApp () {
     serviceData: new SocialServiceModel('admin-data/EnglewoodLocations.csv'),
     markerIcons: new MapIconModel(),
     serviceTaxonomy: new ServiceTaxonomyModel('./data/serviceTaxonomy.json'),
+    censusData: new CensusDataModel('./data/censusDataBlocks.geojson', './data/censusDataNames.json'),
   };
   self.views = {
     map: new MapView('service-map', self.models.markerIcons),
     serviceFilterDropdown: new ServiceFilterDropdownView(),
-    loader: new LoadingMessageView(),
+    loader,
   };
   self.controllers = {
     serviceFilters: null,
@@ -42,6 +43,7 @@ function AnalyticsApp () {
     await self._initData();
 
     loadingView.mainMessage = 'Initializing Application';
+    loadingView.subMessage = 'Please wait';
     // eslint-disable-next-line no-undef
     self.controllers.serviceFilters = new ServiceFilterController({
       dropdownView: self.views.serviceFilterDropdown,
@@ -58,7 +60,8 @@ function AnalyticsApp () {
       () => self.views.map.setLayerGroupVisibility(ServiceFilterController.layerGroupName, true),
     );
     /* eslint-enable no-undef */
-    self.controllers.serviceFilters.updateViews(self.controllers.serviceMarkerView);
+    self.controllers.serviceFilters.attachMarkerViewController(self.controllers.serviceMarkerView);
+    self.controllers.serviceFilters.updateViews();
     self.models.markerIcons.autoInsertIntoDom();
 
     setAppContentDivHeight();
@@ -72,8 +75,12 @@ function AnalyticsApp () {
 
   self._initData = async function () {
     self.views.loader.mainMessage = 'Downloading Data';
+    self.views.loader.subMessage = 'Loading Service Data';
     await self.models.serviceTaxonomy.load();
     await self.models.serviceData.load(undefined, self.models.serviceTaxonomy);
+
+    self.views.loader.subMessage = 'Loading Census Data';
+    await self.models.censusData.load();
   };
 }
 
@@ -83,13 +90,21 @@ let App;
   const documentLoadP = new Promise(resolve => $(document).ready(resolve));
   const windowLoadP = new Promise(resolve => $(window).on('load', resolve));
   const lessCssLoadedP = less.pageLoadFinished;
-
+  
+  let loader;
   Promise.all([documentLoadP, windowLoadP, lessCssLoadedP])
     .then(() => {
       console.debug('page loaded');
       return wait();
     }).then(() => {
-      App = new AnalyticsApp();
+      loader = new LoadingMessageView()
+      App = new AnalyticsApp(loader);
       return App.init();
-    }).catch(console.error);
+    }).catch(err => {
+      console.error(err);
+      if (loader) {
+        loader.mainMessage = 'An error has occurred';
+        loader.subMessage = 'Please try refreshing the page or contacting the administrator';
+      }
+    });
 })();

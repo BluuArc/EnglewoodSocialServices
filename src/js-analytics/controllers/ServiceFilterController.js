@@ -1,4 +1,4 @@
-/* global L ServiceTaxonomyModel ServiceFilterDropdownView MapView SocialServiceModel MapIconModel */
+/* global L ServiceTaxonomyModel ServiceFilterDropdownView MapView SocialServiceModel MapIconModel MarkerViewController */
 // eslint-disable-next-line no-unused-vars
 class ServiceFilterController {
   constructor ({
@@ -17,6 +17,10 @@ class ServiceFilterController {
     this._mapIconModel = mapIconModel;
     this._serviceTaxonomyModel = null;
     this._markerViewController = null;
+  }
+
+  attachMarkerViewController (viewController = new MarkerViewController()) {
+    this._markerViewController = viewController;
   }
 
   get _iconStates () {
@@ -167,10 +171,7 @@ class ServiceFilterController {
     ].filter(val => !!val).join('<br>');
   }
 
-  updateViews (serviceMarkerViewController) {
-    if (!this._markerViewController && serviceMarkerViewController) {
-      this._markerViewController = serviceMarkerViewController;
-    }
+  updateViews () {
     this._dropdownView.updateView(this);
     const filteredData = this.filteredData;
     console.debug(filteredData);
