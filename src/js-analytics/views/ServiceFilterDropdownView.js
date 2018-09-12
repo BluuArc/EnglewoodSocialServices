@@ -1,6 +1,6 @@
-/* global d3 ServiceTaxonomyModel ServiceFilterController */
+/* global d3 MultiDropdownView ServiceTaxonomyModel ServiceFilterController */
 // eslint-disable-next-line no-unused-vars
-class ServiceFilterDropdownView {
+class ServiceFilterDropdownView extends MultiDropdownView {
   constructor(config = {}) {
     const defaultConfig = {
       buttonGroup: '#service-button-group',
@@ -10,25 +10,14 @@ class ServiceFilterDropdownView {
     };
 
     const getValue = (field) => config[field] || defaultConfig[field];
-
-    this._buttonGroup = document.querySelector(getValue('buttonGroup'));
-    this._selectButton = document.querySelector(getValue('selectButton'));
-    this._dropdownMenu = document.querySelector(getValue('dropdownMenu'));
-    this._clearBtn = document.querySelector(getValue('clearButton'));
+    super({
+      buttonGroup: getValue('buttonGroup'),
+      selectButton: getValue('selectButton'),
+      dropdownMenu: getValue('dropdownMenu'),
+      clearButton: getValue('clearButton'),
+    });
 
     this._nameMapping = {};
-  }
-
-  get _iconStates() {
-    return {
-      none: 'glyphicon-unchecked',
-      some: 'glyphicon-plus',
-      all: 'glyphicon-check',
-    };
-  }
-
-  _hasClickHandler (clickHandlers, name) {
-    return typeof clickHandlers === 'object' && typeof clickHandlers[name] === 'function';
   }
 
   init(serviceTaxonomyModel = new ServiceTaxonomyModel(), clickHandlers = {}) {
@@ -42,7 +31,7 @@ class ServiceFilterDropdownView {
       .enter().append('li')
       .attr('class', 'dropdown-submenu service-main-type')
       .each(function (c1) {
-        // need to pass in self 'this' reference changes
+        // need to pass in self as 'this' reference changes
         self._addListItem(this, c1, serviceTaxonomyModel, self, clickHandlers);
       });
 
@@ -60,7 +49,7 @@ class ServiceFilterDropdownView {
     const selectAllBtn = btnGroup.append('button').classed('btn btn-item col-md-10', true)
       .attr('tabindex', -1)
       .html('<span class=\'glyphicon glyphicon-unchecked\'></span>' + tier1Category)
-      .on('click', () => self._onMainCategoryClick(clickHandlers, tier1Category));
+      .on('click', () => self._onMainCategoryClick(clickHandlers, tier1Category, true));
 
     // side menu button
     btnGroup.append('button').classed('btn btn-item btn-dropdown col-md-2', true)
@@ -80,17 +69,8 @@ class ServiceFilterDropdownView {
       .attr('data-subcategory', t2 => t2)
       .append('a')
       .html(t2 => '<span class=\'glyphicon glyphicon-unchecked\'></span>' + t2)
-      .on('click', (t2Category) => self._onSubCategoryClick(clickHandlers, tier1Category, t2Category));
+      .on('click', (t2Category) => self._onSubCategoryClick(clickHandlers, tier1Category, t2Category, true));
     this._nameMapping[tier1Category] = { selectAllBtn, t2Dropdown };
-  }
-
-  _onMainCategoryClick(clickHandlers, c1) {
-    d3.event.stopPropagation(); // prevent menu close on link click
-    if (this._hasClickHandler(clickHandlers, 'onMainCategoryClick')) {
-      clickHandlers.onMainCategoryClick(c1);
-    } else {
-      console.debug('clicked select all button for', c1);
-    }
   }
 
   _onSideMenuClick(elem, d3ParentBtnGroup, d3Dropdown) {
@@ -107,15 +87,6 @@ class ServiceFilterDropdownView {
     d3ParentBtnGroup.classed('open', !currentState);
   }
 
-  _onSubCategoryClick(clickHandlers, mainCategory, subCategory) {
-    d3.event.stopPropagation(); // prevent menu close on link click
-    if (this._hasClickHandler(clickHandlers, 'onSubCategoryClick')) {
-      clickHandlers.onSubCategoryClick(mainCategory, subCategory);
-    } else {
-      console.debug('clicked sub category', arguments);
-    }
-  }
-
   updateView (serviceFilterController = new ServiceFilterController()) {
     const filterAggregate = Object.keys(this._nameMapping).map(mainCategory => ({
       mainCategory,
@@ -127,15 +98,16 @@ class ServiceFilterDropdownView {
       const { selectAllBtn, t2Dropdown } = this._nameMapping[mainCategory];
       const filterInfo = filterAggregate.find(filter => filter.mainCategory === mainCategory);
 
+      // set main category checkbox
       const mainGlyphicon = selectAllBtn.select('.glyphicon');
       mainGlyphicon.classed('glyphicon-unchecked glyphicon-plus glyphicon-check', false)
         .classed(serviceFilterController.getIconState(filterInfo.state), true);
 
+      // set sub category checkboxes
       t2Dropdown.selectAll('.service-sub-type')
         .selectAll('.glyphicon')
         .classed('glyphicon-plus glyphicon-check', false)
         .classed('glyphicon-unchecked', true);
-
       filterInfo.activeSubCategories.forEach(subCategory => {
         t2Dropdown.select(`.service-sub-type[data-subcategory="${subCategory}"]`)
           .select('.glyphicon')
@@ -144,6 +116,7 @@ class ServiceFilterDropdownView {
       });
     });
 
+    // set button text
     const d3SelectButton = d3.select(this._buttonGroup).select('.select-btn');
     const d3ClearButton = d3.select(this._clearBtn);
     const activeFilters = filterAggregate.filter(({ state }) => state !== 'none');

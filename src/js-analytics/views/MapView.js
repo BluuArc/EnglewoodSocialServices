@@ -65,12 +65,12 @@ class MapView {
     }
   }
 
-  updateLayerGroup (name, { markerGenerator, data }) {
+  updateLayerGroup (name, { featureGenerator, data }) {
     const layerGroup = this._layerGroups[name];
     layerGroup.clearLayers();
     data.forEach(entry => {
-      const marker = markerGenerator(entry, layerGroup, this._leafletMap);
-      marker.addTo(layerGroup);
+      const feature = featureGenerator(entry, layerGroup, this._leafletMap);
+      feature.addTo(layerGroup);
     });
   }
 }

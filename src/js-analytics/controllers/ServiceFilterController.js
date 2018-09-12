@@ -9,12 +9,14 @@ class ServiceFilterController {
   }) {
     // key = tier1 name, value = array of sub-categories
     this._states = {};
+
     this._dropdownView = dropdownView;
     this._mapView = mapView;
     this._defaultValues = {};
     this._serviceModel = serviceModel;
     this._mapIconModel = mapIconModel;
     this._serviceTaxonomyModel = null;
+    this._markerViewController = null;
   }
 
   get _iconStates () {
@@ -25,7 +27,7 @@ class ServiceFilterController {
     };
   }
 
-  get layerGroupName () {
+  static get layerGroupName () {
     return 'serviceMarkers';
   }
 
@@ -49,7 +51,7 @@ class ServiceFilterController {
       onClearButtonClick: () => { this.reset(); },
     });
 
-    this._mapView.addLayerGroup(this.layerGroupName);
+    this._mapView.addLayerGroup(ServiceFilterController.layerGroupName);
   }
 
   getEnabledSubCategories(mainCategory) {
@@ -165,7 +167,10 @@ class ServiceFilterController {
     ].filter(val => !!val).join('<br>');
   }
 
-  updateViews () {
+  updateViews (serviceMarkerViewController) {
+    if (!this._markerViewController && serviceMarkerViewController) {
+      this._markerViewController = serviceMarkerViewController;
+    }
     this._dropdownView.updateView(this);
     const filteredData = this.filteredData;
     console.debug(filteredData);
@@ -194,6 +199,17 @@ class ServiceFilterController {
       return marker;
     };
 
-    this._mapView.updateLayerGroup(this.layerGroupName, { markerGenerator, data: filteredData });
+    this._mapView.updateLayerGroup(
+      ServiceFilterController.layerGroupName,
+      {
+        featureGenerator: markerGenerator,
+        data: filteredData
+      }
+    );
+
+    // show markers if they aren't being shown already
+    if (this._markerViewController) {
+      this._markerViewController.toggle(true);
+    }
   }
 }

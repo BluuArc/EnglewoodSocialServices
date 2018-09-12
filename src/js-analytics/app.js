@@ -20,9 +20,11 @@ function AnalyticsApp () {
   self.views = {
     map: new MapView('service-map', self.models.markerIcons),
     serviceFilterDropdown: new ServiceFilterDropdownView(),
+    loader: new LoadingMessageView(),
   };
   self.controllers = {
     serviceFilters: null,
+    serviceMarkerView: null,
   };
   /* eslint-enable no-undef */
 
@@ -35,15 +37,11 @@ function AnalyticsApp () {
   self.init = async function () {
     console.time('app init');
     console.debug('Starting app init');
-    
-    // eslint-disable-next-line no-undef
-    const loadingView = new LoadingMessageView();
-    loadingView.mainMessage = 'Downloading Data';
-    await self.models.serviceTaxonomy.load();
-    await self.models.serviceData.load(undefined, self.models.serviceTaxonomy);
+
+    const loadingView = self.views.loader;
+    await self._initData();
 
     loadingView.mainMessage = 'Initializing Application';
-    // self.views.serviceFilterDropdown.init(self.models.serviceTaxonomy);
     // eslint-disable-next-line no-undef
     self.controllers.serviceFilters = new ServiceFilterController({
       dropdownView: self.views.serviceFilterDropdown,
@@ -52,17 +50,30 @@ function AnalyticsApp () {
       mapIconModel: self.models.markerIcons,
     });
     self.controllers.serviceFilters.init(self.models.serviceTaxonomy);
-    self.controllers.serviceFilters.updateViews();
+
+    /* eslint-disable no-undef */
+    self.controllers.serviceMarkerView = new MarkerViewController(
+      '#marker-view-toggle-group #toggle-marker-view--service',
+      () => self.views.map.setLayerGroupVisibility(ServiceFilterController.layerGroupName, false),
+      () => self.views.map.setLayerGroupVisibility(ServiceFilterController.layerGroupName, true),
+    );
+    /* eslint-enable no-undef */
+    self.controllers.serviceFilters.updateViews(self.controllers.serviceMarkerView);
     self.models.markerIcons.autoInsertIntoDom();
+
     setAppContentDivHeight();
     await self.views.map.initMap();
-
-    await wait(500, true);
 
     loadingView.mainMessage = 'Done!';
     loadingView.subMessage = '';
     await loadingView.hideMessage();
     console.timeEnd('app init');
+  };
+
+  self._initData = async function () {
+    self.views.loader.mainMessage = 'Downloading Data';
+    await self.models.serviceTaxonomy.load();
+    await self.models.serviceData.load(undefined, self.models.serviceTaxonomy);
   };
 }
 
