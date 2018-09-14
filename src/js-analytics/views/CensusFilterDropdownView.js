@@ -1,4 +1,4 @@
-/* global MultiDropdownView CensusDataModel d3 _ */
+/* global MultiDropdownView CensusDataModel d3 _ CensusFilterController */
 // eslint-disable-next-line no-unused-vars
 class CensusFilterDropdownView extends MultiDropdownView {
   constructor(config = {}) {
@@ -41,11 +41,15 @@ class CensusFilterDropdownView extends MultiDropdownView {
     }
   }
 
+  _cleanMainCategoryName (name) {
+    return name.split('_').map(_.capitalize).join(' ')
+  }
+
   _addListItem(elem, tier1Category, censusDataModel = new CensusDataModel(), self, clickHandlers) {
     const tier2Categories = censusDataModel.getSubCategoriesOf(tier1Category, true);
     const btnGroup = d3.select(elem).append('div').classed('btn-group row', true);
 
-    const buttonText = tier1Category.split('_').map(_.capitalize).join(' ');
+    const buttonText = self._cleanMainCategoryName(tier1Category);
     const selectAllBtn = btnGroup.append('button').classed('btn btn-item col-md-10', true)
       .attr('tabindex', -1)
       .html('<span class=\'glyphicon glyphicon-unchecked\'></span>' + buttonText)
@@ -85,5 +89,64 @@ class CensusFilterDropdownView extends MultiDropdownView {
     d3Dropdown.selectAll('.census-main-type')
       .selectAll('.btn-group.open').classed('open', false);
     d3ParentBtnGroup.classed('open', !currentState);
+  }
+
+  _getSelectionButtonText (mainCategory, subCategory, isTotal = false) {
+    if (!mainCategory || !subCategory) {
+      return 'Select Census Category...';
+    } else if (isTotal) {
+      return `Total: ${this._cleanMainCategoryName(mainCategory)}`;
+    } else if (mainCategory.startsWith('SEX_BY_AGE')) {
+      const type = mainCategory.split('(')[1].replace(')', '');
+      return `${this._cleanMainCategoryName(type)}: ${subCategory}`;
+    } else {
+      return subCategory;
+    }
+  }
+
+  updateView (censusFilterController = new CensusFilterController()) {
+    const { mainType, subType } = censusFilterController.activeFilter;
+    const totalKey = censusFilterController.totalKey;
+
+    Object.keys(this._nameMapping).forEach(mainCategory => {
+      const { selectAllBtn, t2Dropdown } = this._nameMapping[mainCategory];
+
+      // set main category checkbox
+      const mainGlyphicon = selectAllBtn.select('.glyphicon');
+      const mainIconState = censusFilterController.getIconState(censusFilterController.getMainCategoryState(mainCategory));
+      mainGlyphicon.classed('glyphicon-unchecked glyphicon-plus glyphicon-check', false)
+        .classed(mainIconState, true);
+
+      // set sub category checkboxes
+      const allSubCheckboxes = t2Dropdown.selectAll('.census-sub-type')
+        .selectAll('.glyphicon')
+        .classed('glyphicon-plus glyphicon-check', false)
+        .classed('glyphicon-unchecked', true);
+      if (mainCategory === mainType) {
+        if (subType === totalKey) {
+          allSubCheckboxes.classed('glyphicon-unchecked', false)
+            .classed(censusFilterController.getIconState('all'), true);
+        } else {
+          t2Dropdown.select(`.census-sub-type[data-subcategory="${subType}"]`)
+            .select('.glyphicon')
+            .classed('glyphicon-unchecked', false)
+            .classed(censusFilterController.getIconState('all'), true);
+        }
+      }
+    });
+
+    // set button text
+    const d3SelectButton = d3.select(this._buttonGroup).select('.select-btn');
+    const d3ClearButton = d3.select(this._clearBtn);
+    const buttonText = this._getSelectionButtonText(mainType, subType, subType === totalKey);
+    if (mainType && subType) {
+      d3SelectButton.classed('btn-default', false).classed('btn-success', true)
+        .select('.btn-text').text(buttonText);
+      d3ClearButton.classed('hidden', false);
+    } else {
+      d3SelectButton.classed('btn-default', true).classed('btn-success', false)
+        .select('.btn-text').text(buttonText);
+      d3ClearButton.classed('hidden', true);
+    }
   }
 }

@@ -29,7 +29,7 @@ class CensusDataModel {
       });
     });
 
-    console.debug('loaded grid data');
+    console.debug('loaded grid data', this._gridData);
 
     this._gridData.features.forEach((feature, index) => {
       // Array<number>: bbox extent in [ minX, minY, maxX, maxY ] order
@@ -58,7 +58,7 @@ class CensusDataModel {
         }
       });
     });
-    console.debug('loaded name data');
+    console.debug('loaded name data', this._mapTypeNames);
   }
 
   getSubsetGeoJson ({ mainType, subType }, dataType = '') {

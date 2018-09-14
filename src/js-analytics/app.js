@@ -46,8 +46,6 @@ function AnalyticsApp (loader = new LoadingMessageView()) {
     loadingView.mainMessage = 'Initializing UI';
     loadingView.subMessage = 'Please wait';
 
-    self.views.censusFilterDropdown.init(self.models.censusData);
-
     // eslint-disable-next-line no-undef
     self.controllers.serviceFilters = new ServiceFilterController({
       dropdownView: self.views.serviceFilterDropdown,
@@ -56,6 +54,15 @@ function AnalyticsApp (loader = new LoadingMessageView()) {
       mapIconModel: self.models.markerIcons,
     });
     self.controllers.serviceFilters.init(self.models.serviceTaxonomy);
+
+    // eslint-disable-next-line no-undef
+    self.controllers.censusFilters = new CensusFilterController({
+      dropdownView: self.views.censusFilterDropdown,
+      mapView: self.views.map,
+      censusModel: self.models.censusData,
+    });
+    self.controllers.censusFilters.init();
+    self.controllers.censusFilters.updateViews();
 
     /* eslint-disable no-undef */
     self.controllers.serviceMarkerView = new MarkerViewController(
