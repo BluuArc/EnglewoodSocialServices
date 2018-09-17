@@ -5,6 +5,8 @@ class SocialServiceModel {
   constructor(dataPath = '') {
     this._dataPath = dataPath;
     this._data = null;
+    this._dataByLocation = {};
+    this._serviceTaxonomy = null;
   }
 
   _loadTextData (altPath = '') {
@@ -78,6 +80,7 @@ class SocialServiceModel {
   }
 
   _createServiceObjectFromHeaders(headers, data, serviceTaxonomyModel = new ServiceTaxonomyModel()) {
+    this._serviceTaxonomy = serviceTaxonomyModel;
     const result = {};
     const removeExtraQuotes = (str) => {
       return JSON.parse(
@@ -110,10 +113,51 @@ class SocialServiceModel {
     const csvData = this._cleanCsvData(textData);
     const [headers, ...data] = csvData;
     this._data = data.map(d => this._createServiceObjectFromHeaders(headers, d, serviceTaxonomyModel));
+    this._initDataByLocation();
+    this._checkUncategorizedData();
     console.debug('finished', this._data);
+  }
+
+  generateLocationKey (latitude, longitude) {
+    return `${latitude},${longitude}`;
+  }
+
+  _initDataByLocation () {
+    this._data.forEach(serviceEntry => {
+      const locationKey = this.generateLocationKey(serviceEntry.Latitude, serviceEntry.Longitude);
+      if (!this._dataByLocation[locationKey]) {
+        this._dataByLocation[locationKey] = [serviceEntry];
+      } else if (!this._dataByLocation[locationKey].map(val => val['Organization Name']).includes(serviceEntry['Organization Name'])) {
+        this._dataByLocation[locationKey].push(serviceEntry);
+      }
+    });
+    console.debug('finished mapping services by location', this._dataByLocation);
+  }
+
+  _checkUncategorizedData () {
+    const uncategorizedData = this.getData(service => this.getCategoriesFromService(service).length === 0);
+    if (uncategorizedData.length > 0) {
+      console.warn('uncategorized services', uncategorizedData);
+    }
   }
 
   getData (filterFn) {
     return typeof filterFn === 'function' ? this._data.filter(filterFn) : this._data.slice();
+  }
+
+  getServicesByLocation (latitude, longitude) {
+    return this._dataByLocation[this.generateLocationKey(latitude, longitude)];
+  }
+
+  getCategoriesFromService (serviceEntry) {
+    return Object.keys(serviceEntry).filter(key => key.includes('||'))
+      .filter(key => serviceEntry[key])
+      .map(key => {
+        const [mainType, subType] = key.split('||');
+        return {
+          mainType: this._serviceTaxonomy.getMainCategoryOf(mainType),
+          subType,
+        };
+      });
   }
 }

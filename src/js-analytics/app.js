@@ -17,6 +17,7 @@ function AnalyticsApp (loader = new LoadingMessageView()) {
     markerIcons: new MapIconModel(),
     serviceTaxonomy: new ServiceTaxonomyModel('./data/serviceTaxonomy.json'),
     censusData: new CensusDataModel('./data/censusDataBlocks.geojson', './data/censusDataNames.json'),
+    schoolData: new SchoolDataModel('./data/18-02-12 Rev Englewood Schools.csv'),
   };
   self.views = {
     map: new MapView('service-map', self.models.markerIcons),
@@ -73,10 +74,25 @@ function AnalyticsApp (loader = new LoadingMessageView()) {
     /* eslint-enable no-undef */
     self.controllers.serviceFilters.attachMarkerViewController(self.controllers.serviceMarkerView);
     self.controllers.serviceFilters.updateViews();
+
+    /* eslint-disable no-undef */
+    self.controllers.schoolView = new SchoolViewController({
+      mapView: self.views.map,
+      schoolModel: self.models.schoolData,
+      mapIconModel: self.models.markerIcons,
+      serviceModel: self.models.serviceData,
+    });
+    self.controllers.schoolMarkerView = new MarkerViewController(
+      '#marker-view-toggle-group #toggle-marker-view--school',
+      () => self.views.map.setLayerGroupVisibility(SchoolViewController.layerGroupName, false),
+      () => self.views.map.setLayerGroupVisibility(SchoolViewController.layerGroupName, true),
+    );
+    self.controllers.schoolView.init(self.controllers.schoolMarkerView);
+    self.controllers.serviceFilters.updateViews(false);
+    /* eslint-enable no-undef */
+    
     self.models.markerIcons.autoInsertIntoDom();
-
     self.controllers.serviceMarkerView.toggle(false);
-
     setAppContentDivHeight();
     await self.views.map.initMap();
 
@@ -94,6 +110,10 @@ function AnalyticsApp (loader = new LoadingMessageView()) {
 
     self.views.loader.subMessage = 'Loading Census Data';
     await self.models.censusData.load();
+
+    self.views.loader.subMessage = 'Loading School Data';
+    await self.models.schoolData.load();
+    self.models.schoolData.markSchoolsThatAreServices(self.models.serviceData);
   };
 }
 

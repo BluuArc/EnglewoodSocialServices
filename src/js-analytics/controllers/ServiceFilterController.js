@@ -171,41 +171,42 @@ class ServiceFilterController {
     ].filter(val => !!val).join('<br>');
   }
 
+  _markerGenerator (serviceEntry, layerGroup, map) {
+    const marker = L.marker(
+      L.latLng(+serviceEntry.Latitude || 0, +serviceEntry.Longitude || 0),
+      {
+        icon: this._mapIconModel.getIconById('serviceMarker'),
+        riseOnHover: true,
+        data: serviceEntry,
+      }
+    ).bindPopup(
+      this._generateServicePopupHtml(serviceEntry),
+      { autoPan: false }
+    ).on('click', () => {
+      console.debug(serviceEntry);
+      map.closePopup();
+    }).on('mouseover', function () {
+      marker.openPopup();
+    }).on('mouseout', function () {
+      if (!this.options.data.expanded) {
+        map.closePopup();
+      }
+    });
+    return marker;
+  }
+
   updateViews () {
     this._dropdownView.updateView(this);
     const filteredData = this.filteredData;
     console.debug(filteredData);
 
-    const markerGenerator = (serviceEntry, layerGroup, map) => {
-      const marker = L.marker(
-        L.latLng(+serviceEntry.Latitude || 0, +serviceEntry.Longitude || 0),
-        {
-          icon: this._mapIconModel.getIconById('serviceMarker'),
-          riseOnHover: true,
-          data: serviceEntry,
-        }
-      ).bindPopup(
-        this._generateServicePopupHtml(serviceEntry),
-        { autoPan: false }
-      ).on('click', () => {
-        console.debug(serviceEntry);
-        map.closePopup();
-      }).on('mouseover', function () {
-        marker.openPopup();
-      }).on('mouseout', function () {
-        if (!this.options.data.expanded) {
-          map.closePopup();
-        }
-      });
-      return marker;
-    };
-
+    const markerGenerator = (serviceEntry, layerGroup, map) => this._markerGenerator(serviceEntry, layerGroup, map);
     this._mapView.updateLayerGroup(
       ServiceFilterController.layerGroupName,
       {
         featureGenerator: markerGenerator,
         data: filteredData
-      }
+      },
     );
 
     // show markers if they aren't being shown already

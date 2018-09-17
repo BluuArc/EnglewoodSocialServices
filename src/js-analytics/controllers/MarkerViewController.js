@@ -5,6 +5,7 @@ class MarkerViewController {
     this._buttonSymbol = this._button.querySelector('.glyphicon');
     this._toggleOff = toggleOff;
     this._toggleOn = toggleOn;
+    this._preUpdateEventHandlers = {};
     this.viewState = initialState ? true : false;
 
     this._button.addEventListener('click', (e) => {
@@ -14,7 +15,27 @@ class MarkerViewController {
   }
 
   set viewState (newValue) {
-    if (newValue) {
+    this._viewState = newValue;
+    this.updateView();
+  }
+
+  get viewState () {
+    return this._viewState;
+  }
+
+  addPreUpdateEventHandler (key, fn) {
+    this._preUpdateEventHandlers[key] = fn;
+  }
+
+  deletePreUpdateEventHandler (key) {
+    delete this._preUpdateEventHandlers[key];
+  }
+
+  updateView () {
+    Object.keys(this._preUpdateEventHandlers).forEach(handlerKey => {
+      this._preUpdateEventHandlers[handlerKey](this._viewState);
+    });
+    if (this._viewState) {
       this._buttonSymbol.classList.remove('glyphicon-unchecked');
       this._buttonSymbol.classList.add('glyphicon-check');
       this._buttonSymbol.classList.add('success');
@@ -25,11 +46,6 @@ class MarkerViewController {
       this._buttonSymbol.classList.add('glyphicon-unchecked');
       this._toggleOff();
     }
-    this._viewState = newValue;
-  }
-
-  get viewState () {
-    return this._viewState;
   }
 
   toggle (value) {

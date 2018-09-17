@@ -52,4 +52,8 @@ class ServiceTaxonomyModel {
   getCategoryCodeOf (tier1Category) {
     return this._categoryCodeMapping[tier1Category.toLowerCase()];
   }
+
+  getMainCategoryOf (categoryCode) {
+    return this._data[categoryCode] && this._data[categoryCode].description;
+  }
 }
