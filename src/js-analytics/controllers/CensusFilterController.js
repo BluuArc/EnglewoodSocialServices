@@ -1,4 +1,4 @@
-/* global L CensusDataModel ServiceFilterDropdownView MapView */
+/* global d3 L CensusDataModel ServiceFilterDropdownView MapView */
 // eslint-disable-next-line no-unused-vars
 class CensusFilterController {
   constructor ({
@@ -123,7 +123,79 @@ class CensusFilterController {
     };
   }
 
+  get filteredData () {
+    return this._censusModel.getSubsetGeoJson(this.activeFilter, 'main');
+  }
+
+  _generateCensusPopupHtml (geoJsonLayer) {
+    console.debug(geoJsonLayer);
+    const data = geoJsonLayer.feature.properties;
+    const title = this._dropdownView.cleanMainCategoryName(data.description.mainType);
+    const values = Object.keys(data.data || [])
+      .map(name => {
+        const prefix = (name === data.description.subType) ? `<b>${name}:</b>` : `${name}:`;
+        return `${prefix} ${data.data[name]} ${+data.data[name] === 1 ? 'person' : 'people'}`;
+      });
+    return `
+    <div class="container-fluid">
+      <div class="row">
+        <p style="margin-top: 0; margin-bottom: 8px;">
+          <u><b>${title} (People per Block)</b></u>
+        </p>
+        ${values.join('<br>')}
+      </div>
+    </div>`;
+  }
+
+  // eslint-disable-next-line no-unused-vars
+  _chloroplethGenerator (dataEntry, layerGroup, map) {
+    console.debug('chloroplethGenerator', dataEntry);
+
+    const setEnglewoodOutlineOpacityTo = (val) => {
+      const englewoodOutline = this._mapView.englewoodOutline;
+      if (englewoodOutline) {
+        englewoodOutline.setStyle({ fillOpacity: val });
+      }
+    };
+    if (dataEntry && Array.isArray(dataEntry.features) && dataEntry.features.length > 0) {
+      setEnglewoodOutlineOpacityTo(0);
+
+      const colorScale = d3.scaleLinear()
+        .domain(
+        // take ceiling when taking extent so as not to have values equal to 0
+          d3.extent(dataEntry.features, f => {
+            return Math.ceil(f.properties.value * 100) / 100;
+          })
+        ).range(['#9ebcda', '#6e016b']);
+      const chloropleth = L.geoJSON(dataEntry, {
+        style: (feature) => ({
+          color: colorScale(feature.properties.value),
+          opacity: feature.properties.value === 0 ? 0 : 0.1,
+          fillOpacity: feature.properties.value === 0 ? 0 : 0.75,
+          className: `geoJson-gridSpace geoJson-gridSpace--${feature.properties.geoId}`
+        }),
+      }).bindPopup(
+        (layer) => this._generateCensusPopupHtml(layer),
+        { autoPan: false },
+      ).on('click', (geoJson) => {
+        console.debug(geoJson);
+      });
+      return chloropleth;
+    } else {
+      setEnglewoodOutlineOpacityTo(0.35);
+    }
+  }
+
   updateViews () {
     this._dropdownView.updateView(this);
+
+    const chloroplethGenerator = (dataEntry, layerGroup, map) => this._chloroplethGenerator(dataEntry, layerGroup, map);
+    this._mapView.updateLayerGroup(
+      CensusFilterController.layerGroupName,
+      {
+        data: [this.filteredData],
+        featureGenerator: chloroplethGenerator,
+      }
+    );
   }
 }

@@ -46,10 +46,15 @@ class MapView {
           weight: 3,
           opacity: 0.75,
           fillOpacity: 0.2,
-          className: `${neighborhood} fill stroke`,
+          className: `${neighborhood} fill stroke geoJson-englewoodOutline`,
+          pointerEvents: 'none',
         };
       },
     }).addTo(this._leafletMap);
+  }
+
+  get englewoodOutline () {
+    return this._englewoodOutline;
   }
 
   addLayerGroup (name, value = []) {
@@ -65,12 +70,14 @@ class MapView {
     }
   }
 
-  updateLayerGroup (name, { featureGenerator, data }) {
+  updateLayerGroup (name, { featureGenerator, data = [] }) {
     const layerGroup = this._layerGroups[name];
     layerGroup.clearLayers();
     data.forEach(entry => {
       const feature = featureGenerator(entry, layerGroup, this._leafletMap);
-      feature.addTo(layerGroup);
+      if (feature) {
+        feature.addTo(layerGroup);
+      }
     });
   }
 }

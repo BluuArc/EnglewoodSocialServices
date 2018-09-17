@@ -71,8 +71,8 @@ class CensusDataModel {
           type: 'Feature',
           geometry: feature.geometry,
           properties: {
-            data: feature.properties.census[mainType][subType],
-            fullData: (dataType === 'full' && feature.properties.census) ||
+            value: feature.properties.census[mainType][subType],
+            data: (dataType === 'full' && feature.properties.census) ||
               (dataType === 'main' && feature.properties.census[mainType]) ||
               undefined,
             blockName: feature.properties.name10,

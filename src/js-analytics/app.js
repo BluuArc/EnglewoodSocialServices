@@ -75,6 +75,8 @@ function AnalyticsApp (loader = new LoadingMessageView()) {
     self.controllers.serviceFilters.updateViews();
     self.models.markerIcons.autoInsertIntoDom();
 
+    self.controllers.serviceMarkerView.toggle(false);
+
     setAppContentDivHeight();
     await self.views.map.initMap();
 

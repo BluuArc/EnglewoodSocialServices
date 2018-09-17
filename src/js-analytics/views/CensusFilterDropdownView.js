@@ -41,15 +41,15 @@ class CensusFilterDropdownView extends MultiDropdownView {
     }
   }
 
-  _cleanMainCategoryName (name) {
-    return name.split('_').map(_.capitalize).join(' ')
+  cleanMainCategoryName (name) {
+    return name.split('_').map(_.capitalize).join(' ');
   }
 
   _addListItem(elem, tier1Category, censusDataModel = new CensusDataModel(), self, clickHandlers) {
     const tier2Categories = censusDataModel.getSubCategoriesOf(tier1Category, true);
     const btnGroup = d3.select(elem).append('div').classed('btn-group row', true);
 
-    const buttonText = self._cleanMainCategoryName(tier1Category);
+    const buttonText = self.cleanMainCategoryName(tier1Category);
     const selectAllBtn = btnGroup.append('button').classed('btn btn-item col-md-10', true)
       .attr('tabindex', -1)
       .html('<span class=\'glyphicon glyphicon-unchecked\'></span>' + buttonText)
@@ -95,10 +95,10 @@ class CensusFilterDropdownView extends MultiDropdownView {
     if (!mainCategory || !subCategory) {
       return 'Select Census Category...';
     } else if (isTotal) {
-      return `Total: ${this._cleanMainCategoryName(mainCategory)}`;
+      return `Total: ${this.cleanMainCategoryName(mainCategory)}`;
     } else if (mainCategory.startsWith('SEX_BY_AGE')) {
       const type = mainCategory.split('(')[1].replace(')', '');
-      return `${this._cleanMainCategoryName(type)}: ${subCategory}`;
+      return `${this.cleanMainCategoryName(type)}: ${subCategory}`;
     } else {
       return subCategory;
     }
@@ -138,7 +138,7 @@ class CensusFilterDropdownView extends MultiDropdownView {
     // set button text
     const d3SelectButton = d3.select(this._buttonGroup).select('.select-btn');
     const d3ClearButton = d3.select(this._clearBtn);
-    const buttonText = this._getSelectionButtonText(mainType, subType, subType === totalKey);
+    const buttonText = _.truncate(this._getSelectionButtonText(mainType, subType, subType === totalKey), { length: 30 });
     if (mainType && subType) {
       d3SelectButton.classed('btn-default', false).classed('btn-success', true)
         .select('.btn-text').text(buttonText);
