@@ -18,6 +18,7 @@ function AnalyticsApp (loader = new LoadingMessageView()) {
     serviceTaxonomy: new ServiceTaxonomyModel('./data/serviceTaxonomy.json'),
     censusData: new CensusDataModel('./data/censusDataBlocks.geojson', './data/censusDataNames.json'),
     schoolData: new SchoolDataModel('./data/18-02-12 Rev Englewood Schools.csv'),
+    lotData: new LotDataModel('./data/EnglewoodLandInventory.csv', './data/WestEnglewoodLandInventory.csv'),
   };
   self.views = {
     map: new MapView('service-map', self.models.markerIcons),
@@ -46,6 +47,8 @@ function AnalyticsApp (loader = new LoadingMessageView()) {
 
     loadingView.mainMessage = 'Initializing UI';
     loadingView.subMessage = 'Please wait';
+
+    // TODO: segment into separate init functions
 
     // eslint-disable-next-line no-undef
     self.controllers.serviceFilters = new ServiceFilterController({
@@ -114,6 +117,9 @@ function AnalyticsApp (loader = new LoadingMessageView()) {
     self.views.loader.subMessage = 'Loading School Data';
     await self.models.schoolData.load();
     self.models.schoolData.markSchoolsThatAreServices(self.models.serviceData);
+
+    self.views.loader.subMessage = 'Loading Lot Data';
+    await self.models.lotData.load();
   };
 }
 
