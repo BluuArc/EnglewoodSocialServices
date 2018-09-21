@@ -8,7 +8,8 @@ class MapView {
     this._englewoodOutline = null;
     this._iconModel = mapIconModel;
     this._layerGroups = {};
-    this._featureGroups = {};
+    this._clusterGroups = {};
+    this._clusterSubGroups = {};
   }
 
   async initMap (geoJsonPath) {
@@ -57,17 +58,21 @@ class MapView {
     return this._englewoodOutline;
   }
 
+  _setLeafletElementVisibility (elem, doShow) {
+    if (doShow) {
+      elem.addTo(this._leafletMap);
+    } else {
+      elem.remove();
+    }
+  }
+
   addLayerGroup (name, value = []) {
     this._layerGroups[name] = L.layerGroup(value).addTo(this._leafletMap);
   }
 
   setLayerGroupVisibility (name, doShow) {
     const layerGroup = this._layerGroups[name];
-    if (doShow) {
-      layerGroup.addTo(this._leafletMap);
-    } else {
-      layerGroup.remove();
-    }
+    this._setLeafletElementVisibility(layerGroup, doShow);
   }
 
   updateLayerGroup (name, { featureGenerator, data = [] }) {
@@ -79,5 +84,40 @@ class MapView {
         feature.addTo(layerGroup);
       }
     });
+  }
+
+  _generateClusterSubGroupKey (name, subName) {
+    return [name, subName].join('-');
+  }
+
+  addClusterGroup (name, options) {
+    this._clusterGroups[name] = L.markerClusterGroup(options).addTo(this._leafletMap);
+  }
+
+  addClusterSubGroup (name, subName) {
+    const parentGroup = this._clusterGroups[name];
+    const subGroupKey = this._generateClusterSubGroupKey(name, subName);
+    this._clusterSubGroups[subGroupKey] = L.featureGroup.subGroup(parentGroup).addTo(this._leafletMap);
+  }
+
+  setClusterGroupVisibility (name, doShow) {
+    const clusterGroup = this._clusterGroups[name];
+    this._setLeafletElementVisibility(clusterGroup, doShow);
+  }
+
+  setClusterSubGroupVisibility (name, subName, doShow) {
+    const subGroup = this._clusterSubGroups[this._generateClusterSubGroupKey(name, subName)];
+    this._setLeafletElementVisibility(subGroup, doShow);
+  }
+
+  updateClusterGroup (name, manipulatorFn) {
+    manipulatorFn(this._clusterGroups[name], this._leafletMap, (subName) => {
+      return this._clusterSubGroups[this._generateClusterSubGroupKey(name, subName)];
+    });
+  }
+
+  updateClusterSubGroup (name, subName, manipulatorFn) {
+    const subGroup = this._clusterSubGroups[this._generateClusterSubGroupKey(name, subName)];
+    manipulatorFn(subGroup, this._leafletMap);
   }
 }

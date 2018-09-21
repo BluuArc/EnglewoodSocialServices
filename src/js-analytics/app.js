@@ -29,6 +29,10 @@ function AnalyticsApp (loader = new LoadingMessageView()) {
   self.controllers = {
     serviceFilters: null,
     serviceMarkerView: null,
+    censusFilters: null,
+    schoolView: null,
+    schoolMarkerView: null,
+    lotView: null,
   };
   /* eslint-enable no-undef */
 
@@ -92,6 +96,30 @@ function AnalyticsApp (loader = new LoadingMessageView()) {
     );
     self.controllers.schoolView.init(self.controllers.schoolMarkerView);
     self.controllers.serviceFilters.updateViews(false);
+    /* eslint-enable no-undef */
+
+    /* eslint-disable no-undef */
+    self.controllers.lotView = new LotViewController({
+      mapView: self.views.map,
+      lotModel: self.models.lotData,
+      mapIconModel: self.models.markerIcons,
+      lotMarkerTypeDropdownSelector: '#lot-type-view-toggle-group',
+    });
+    self.controllers.lotMarkerView = new MarkerViewController(
+      '#marker-view-toggle-group #toggle-marker-view--lot',
+      () => self.views.map.setClusterGroupVisibility(LotViewController.layerGroupName, false),
+      () => self.views.map.setClusterGroupVisibility(LotViewController.layerGroupName, true),
+    );
+    const lotTypeMarkerViews = {};
+    self.models.lotData.lotTypes.forEach(type => {
+      lotTypeMarkerViews[type] = new MarkerViewController(
+        `#lot-type-view-toggle-group #toggle-lot-marker--${type.toLowerCase()}`,
+        () => self.views.map.setClusterSubGroupVisibility(LotViewController.layerGroupName, type, false),
+        () => self.views.map.setClusterSubGroupVisibility(LotViewController.layerGroupName, type, true),
+      );
+    });
+    self.controllers.lotView.init(self.controllers.lotMarkerView, lotTypeMarkerViews);
+    self.controllers.lotView.updateAllViews(false);
     /* eslint-enable no-undef */
     
     self.models.markerIcons.autoInsertIntoDom();

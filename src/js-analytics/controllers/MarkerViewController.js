@@ -33,6 +33,7 @@ class MarkerViewController {
 
   updateView () {
     Object.keys(this._preUpdateEventHandlers).forEach(handlerKey => {
+      console.debug(this.viewState);
       this._preUpdateEventHandlers[handlerKey](this._viewState);
     });
     if (this._viewState) {
