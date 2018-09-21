@@ -128,7 +128,6 @@ class CensusFilterController {
   }
 
   _generateCensusPopupHtml (geoJsonLayer) {
-    console.debug(geoJsonLayer);
     const data = geoJsonLayer.feature.properties;
     const title = this._dropdownView.cleanMainCategoryName(data.description.mainType);
     const values = Object.keys(data.data || [])

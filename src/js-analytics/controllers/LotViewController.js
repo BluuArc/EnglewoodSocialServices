@@ -115,7 +115,6 @@ class LotViewController {
   }
 
   updateViewsByType (showMarkers, type) {
-    console.debug('toggling', type, showMarkers);
     this._mapView.setClusterSubGroupVisibility(LotViewController.layerGroupName, type, showMarkers);
 
     if (showMarkers && !this._mainMarkerController.viewState) {
