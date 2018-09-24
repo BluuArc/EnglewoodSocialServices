@@ -1,10 +1,11 @@
-/* global d3 L CensusDataModel ServiceFilterDropdownView MapView */
+/* global d3 L CensusDataModel ServiceFilterDropdownView MapView LegendView */
 // eslint-disable-next-line no-unused-vars
 class CensusFilterController {
   constructor ({
     dropdownView = new ServiceFilterDropdownView(),
     mapView = new MapView(),
     censusModel = new CensusDataModel(),
+    legendView = new LegendView(),
   }) {
     // key = tier1 name, value = array of sub-categories
     this._states = {};
@@ -17,6 +18,7 @@ class CensusFilterController {
     };
     this._censusModel = censusModel;
     this._markerViewController = null;
+    this._legendView = legendView;
   }
 
   get _iconStates () {
@@ -146,6 +148,10 @@ class CensusFilterController {
     </div>`;
   }
 
+  _hasCensusData (dataEntry) {
+    return dataEntry && Array.isArray(dataEntry.features) && dataEntry.features.length > 0;
+  }
+
   // eslint-disable-next-line no-unused-vars
   _chloroplethGenerator (dataEntry, layerGroup, map) {
     console.debug('chloroplethGenerator', dataEntry);
@@ -156,7 +162,7 @@ class CensusFilterController {
         englewoodOutline.setStyle({ fillOpacity: val });
       }
     };
-    if (dataEntry && Array.isArray(dataEntry.features) && dataEntry.features.length > 0) {
+    if (this._hasCensusData(dataEntry)) {
       setEnglewoodOutlineOpacityTo(0);
 
       const colorScale = d3.scaleLinear()
@@ -185,10 +191,33 @@ class CensusFilterController {
     }
   }
 
+  _generateLegendCensusScale (dataColorScale) {
+    let simpleColorScale = d3.scaleLinear()
+      .domain([0, 4]).range(dataColorScale.range());
+    return d3.scaleQuantize()
+      .domain(dataColorScale.domain()).range(d3.range(5).map((i) => simpleColorScale(i)));
+  }
+
   updateViews () {
     this._dropdownView.updateView(this);
 
-    const chloroplethGenerator = (dataEntry, layerGroup, map) => this._chloroplethGenerator(dataEntry, layerGroup, map);
+    const chloroplethGenerator = (dataEntry, layerGroup, map) => {
+      if (this._hasCensusData(dataEntry)) {
+        const colorScale = d3.scaleLinear()
+          .domain(
+            // take ceiling when taking extent so as not to have values equal to 0
+            d3.extent(dataEntry.features, f => {
+              return Math.ceil(f.properties.value * 100) / 100;
+            })
+          ).range(['#9ebcda', '#6e016b']);
+        const title = this._dropdownView.cleanMainCategoryName(this._activeFilter.mainType);
+        this._legendView.drawCensusLegend({ colorScale, title });
+      } else {
+        this._legendView.drawCensusLegend();
+      }
+
+      return this._chloroplethGenerator(dataEntry, layerGroup, map);
+    };
     this._mapView.updateLayerGroup(
       CensusFilterController.layerGroupName,
       {

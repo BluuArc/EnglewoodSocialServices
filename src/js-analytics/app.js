@@ -25,6 +25,11 @@ function AnalyticsApp (loader = new LoadingMessageView()) {
     serviceFilterDropdown: new ServiceFilterDropdownView(),
     censusFilterDropdown: new CensusFilterDropdownView(),
     loader,
+    legend: new LegendView(
+      '#legend #legend--collapse-btn',
+      '#legend--collapse-svg-container',
+      self.models.markerIcons,
+    ),
   };
   self.controllers = {
     serviceFilters: null,
@@ -98,6 +103,7 @@ function AnalyticsApp (loader = new LoadingMessageView()) {
       dropdownView: self.views.censusFilterDropdown,
       mapView: self.views.map,
       censusModel: self.models.censusData,
+      legendView: self.views.legend,
     });
     self.controllers.censusFilters.init();
 

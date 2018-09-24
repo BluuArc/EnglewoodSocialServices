@@ -347,3 +347,29 @@
     stroke: white;
   }
 }
+
+#legend {
+  position: absolute;
+  z-index: 100;
+  right: 10px;
+  top: 75px;
+  background-color: rgba(150, 150, 150, 0.75);
+
+  #legend--collapse-btn {
+    font-weight: bold;
+  }
+
+  #legend--collapse-svg-container > svg {
+    padding-top: 15px;
+    margin-top: 15px;
+    font-family: 'Open Sans', sans-serif;
+
+    text.legendTitle {
+      font-weight: bold;
+    }
+
+    .label {
+      font-size: 0.85em;
+    }
+  }
+}
