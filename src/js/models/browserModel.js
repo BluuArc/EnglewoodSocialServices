@@ -1,9 +1,7 @@
 'use strict';
 
-var App = App || {};
-
 // eslint-disable-next-line no-unused-vars
-let BrowserModel = function() {
+const BrowserModel = function() {
   // based off of https://stackoverflow.com/questions/2324944/in-javascript-how-do-i-determine-if-my-current-browser-is-firefox-on-a-computer
   function getBrowser() {
     let agent = navigator.userAgent;

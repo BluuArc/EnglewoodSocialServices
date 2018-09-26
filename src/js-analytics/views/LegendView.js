@@ -1,4 +1,4 @@
-/* global d3 _ MapIconModel */
+/* global d3 MapIconModel */
 
 // eslint-disable-next-line no-unused-vars
 class LegendView {

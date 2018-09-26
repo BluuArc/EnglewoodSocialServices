@@ -1,11 +1,9 @@
 /* global d3 $ */
 'use strict';
 
-var App = App || {};
-
 // eslint-disable-next-line no-unused-vars
-let BrowserMessageView = function (browserContainerDiv) {
-  let self = {
+const BrowserMessageView = function (browserContainerDiv) {
+  const self = {
     messageContainer: null,
     $messageContainer: null,
     message: null,
@@ -15,7 +13,7 @@ let BrowserMessageView = function (browserContainerDiv) {
 
   function init() {
     self.messageContainer = d3.selectAll(browserContainerDiv);
-    self.$messageContainer = $(browserContainerDiv); //should point ot modal
+    self.$messageContainer = $(browserContainerDiv); //should point to modal
     self.messageContainer.selectAll('#browserAcceptButton').on('click', () => {
       hideMessage();
     });

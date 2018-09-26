@@ -21,6 +21,40 @@
 
 </head>
 <body>
+  <div id="browser-compatibility-modal" class="modal fade in">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 class="modal-title row">
+            <div class="col-sm-12">
+              Browser Incompatibility
+            </div>
+          </h2>
+        </div>
+        <div class="modal-body">
+          <div class="row">
+            <div class="col-md-12">
+              To access this project with full functionality, please use a Chrome or Firefox browser, not your browser <b>(<span id="user-browser">Unsupported Browser</span>)</b>.
+            </div>
+            <div class="col-md-12">
+              <br> Chrome can be downloaded for free from: <a href="https://www.google.com/chrome/browser/">https://www.google.com/chrome/browser/</a>
+              <br> Firefox can be downloaded for free from: <a href="https://www.mozilla.org/firefox">https://www.mozilla.org/firefox</a>
+            </div>
+            <div class="col-md-12">
+              <br> You may continue using your current browser to access this project. However, some features may not work correctly
+              due to browser incompatibility.
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-danger" id="browserAcceptButton">
+            Continue
+            <span class="glyphicon glyphicon-log-out"></span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
   <nav class="navbar navbar-default">
     <div class="container-fluid" id="top-bar">
       <section class="navbar-header">
@@ -70,21 +104,6 @@
             <span class="glyphicon glyphicon-remove"></span>
           </button>
         </div>
-
-        <!-- <div class="nav nav-group" id="chart-list-group">
-          <button class="btn btn-success dropdown-toggle navbar-btn" id="chart-list-button" data-toggle="dropdown">
-            <i class="glyphicon glyphicon-eye-close"></i>
-            <span class="btn-text">
-              Hide Chart List
-            </span>
-          </button>
-          <div class="dropdown-menu" role="menu" id="chart-list-wrapper">
-            <p class="title label-info">Chart List</p>
-            <div id="chart-list">
-
-            </div>
-          </div>
-        </div> -->
 
         <div class="nav btn-group" id="marker-view-toggle-group">
           <button class="btn btn-success dropdown-toggle navbar-btn" data-toggle="dropdown">
@@ -166,8 +185,8 @@
   </div>
 
   <div id="legend">
-    <div class="row">
-      <div class="col-md-12">
+    <div class="row" style="margin: 0;">
+      <div class="col-md-12" style="padding: 0;">
         <a class="btn btn-info btn-block" id="legend--collapse-btn">
           <b>Collapse Legend</b>
         </a>
@@ -204,6 +223,23 @@
   <script src="./lib/js/leaflet.markercluster.js"></script>
   <script src="./lib/js/leaflet.featuregroup.subgroup.js"></script>
   <script src="./lib/js/d3-legend.min.js"></script>
+
+  <script src="src/js/models/browserModel.js"></script>
+  <script src="src/js/views/browserMessageView.js"></script>
+  <script>
+    // separate, as consequent scripts may fail to load due to incompatibility
+    (() => {
+      const browserModel = new BrowserModel();
+      const browserMessageView = new BrowserMessageView('#browser-compatibility-modal');
+      // console.debug('browser:', browserModel.getBrowser());
+      if (!browserModel.isValidBrowser()) {
+        browserMessageView.setBrowserName(browserModel.getBrowser());
+        browserMessageView.showMessage();
+      } else {
+        browserMessageView.hideMessage();
+      }
+    })();
+  </script>
 
   <!-- JS Src -->
   
