@@ -8,18 +8,26 @@ class MapIconModel {
     this._smallIconMapping = mappings.smallMapping;
   }
 
+  get defaultIconSize () {
+    return [25, 41];
+  }
+
+  get defaultIconSizeSmall () {
+    return [14, 23];
+  }
+
   _generateIcons () {
     const regularMapping = {};
     const smallMapping = {};
     const defaultOptions = {
       fillOpacity: 1,
       circleWeight: 3.5,
-      iconSize: [25, 41],
+      iconSize: this.defaultIconSize,
       iconAnchor: [12, 41],
       popupAnchor: [1, -34],
       shadowSize: [41, 41]
     };
-    const smallIconSize = [14, 23];
+    const smallIconSize = this.defaultIconSizeSmall;
     const smallCircleRatio = 0.60;
     const iconColors = {
       serviceMarker: '#2e84cb',
@@ -92,6 +100,7 @@ class MapIconModel {
   autoInsertIntoDom () {
     const toInsert = Array.from(document.querySelectorAll('.map-icon-insert'));
     console.debug('to insert', toInsert);
+    const smallIconSize = this.defaultIconSizeSmall;
     toInsert.forEach(elem => {
       const markerType = elem.dataset && elem.dataset.marker;
       const marker = this.getSmallIconById(markerType);
@@ -99,6 +108,10 @@ class MapIconModel {
         elem.innerHTML = marker.options.html;
         elem.classList.remove('map-icon-insert');
         elem.classList.add('map-icon-inserted');
+        
+        const iconSvg = elem.querySelector('.svg-icon-svg');
+        iconSvg.style.width = `${smallIconSize[0]}px`;
+        iconSvg.style.height = `${smallIconSize[1]}px`;
       }
     });
   }

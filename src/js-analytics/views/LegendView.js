@@ -33,12 +33,13 @@ class LegendView {
     return {
       columnWidth: 210,
       initialHeight: 150,
+      topOffset: 15, // for legend title text
       id: 'map-legend',
     };
   }
 
   initLegend () {
-    const { columnWidth, initialHeight, id } = this._config;
+    const { columnWidth, initialHeight, id, topOffset } = this._config;
     this._svg = d3.select(this._parent)
       .insert('svg', ':first-child')
       .attr('width', columnWidth * 3)
@@ -48,7 +49,7 @@ class LegendView {
     // draw left column
     const leftColumn = this._svg.append('g')
       .classed('legendOrdinal', true)
-      .attr('transform', 'translate(0,0)');
+      .attr('transform', `translate(0,${topOffset})`);
 
     leftColumn.call(this._neighborhoodLegendConfig);
     leftColumn.select('.legendTitle')
@@ -61,12 +62,12 @@ class LegendView {
     this._censusGroup = this._svg.append('g')
       .attr('id', 'census-group')
       .classed('legendLinear', true)
-      .attr('transform', `translate(${columnWidth}, 0)`);
+      .attr('transform', `translate(${columnWidth}, ${topOffset})`);
     this.drawCensusLegend();
 
     // draw right column
     const rightColumn = this._svg.append('g')
-      .attr('transform', `translate(${columnWidth * 2},0)`);
+      .attr('transform', `translate(${columnWidth * 2},${topOffset})`);
     this._addLotMarkerD3Group(rightColumn, 0);
     this._centerD3Group(rightColumn, 2);
 
@@ -188,9 +189,9 @@ class LegendView {
   // numColumnOffset = # of columns left of group
   _centerD3Group (group, numColumnOffset) {
     const groupWidth = group.node().getBBox().width;
-    const { columnWidth } = this._config;
+    const { columnWidth, topOffset } = this._config;
     const leftOffset = (columnWidth * numColumnOffset) + ((columnWidth - groupWidth) / 2);
-    group.attr('transform', `translate(${leftOffset}, 0)`);
+    group.attr('transform', `translate(${leftOffset}, ${topOffset})`);
   }
 
   drawCensusLegend (censusOptions) {
