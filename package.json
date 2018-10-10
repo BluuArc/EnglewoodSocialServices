@@ -21,8 +21,8 @@
   },
   "homepage": "https://github.com/uic-evl/EnglewoodSocialServices#readme",
   "dependencies": {
-    "body-parser": "^1.17.2",
-    "express": "^4.15.4",
+    "body-parser": "^1.18.3",
+    "express": "^4.16.3",
     "fs-extra": "^4.0.1",
     "http-auth": "^3.2.3",
     "pm2": "^2.6.1",
