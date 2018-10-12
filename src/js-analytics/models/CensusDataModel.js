@@ -1,4 +1,4 @@
-/* global turf rbush d3 */
+/* global turf rbush */
 
 // eslint-disable-next-line no-unused-vars
 class CensusDataModel {
@@ -19,16 +19,7 @@ class CensusDataModel {
   }
 
   async _loadGridData (altPath) {
-    this._gridData = await new Promise((resolve, reject) => {
-      d3.json(altPath || this._dataPathGrid, (err, data) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(data);
-        }
-      });
-    });
-
+    this._gridData = await window.dataDownloadController.getJson(altPath || this._dataPathGrid);
     console.debug('loaded grid data', this._gridData);
 
     this._gridData.features.forEach((feature, index) => {
@@ -49,15 +40,7 @@ class CensusDataModel {
   }
 
   async _loadNameData (altPath) {
-    this._mapTypeNames = await new Promise((resolve, reject) => {
-      d3.json(altPath || this._dataPathNames, (err, data) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(data);
-        }
-      });
-    });
+    this._mapTypeNames = await window.dataDownloadController.getJson(altPath || this._dataPathNames);
     console.debug('loaded name data', this._mapTypeNames);
   }
 
