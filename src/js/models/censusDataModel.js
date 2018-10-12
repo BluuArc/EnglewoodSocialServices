@@ -1,4 +1,4 @@
-/* global turf rbush d3 _ */
+/* global turf rbush _ */
 'use strict';
 
 var App = App || {};
@@ -16,19 +16,16 @@ let CensusDataModel = function() {
   self.tree = rbush();
 
   function loadData() {
-    // load mapTypeNames.json as well as allDataBlocks.geojson
-    let allDataBlocksdP = new Promise(function(resolve, reject) {
-      d3.json('./data/censusDataBlocks.geojson', function(err, json) {
-        if (err) reject(err);
-
+    const allDataBlocksP = App.controllers.dataDownload.getJson('./data/censusDataBlocks.geojson')
+      .then(function (json) {
         self.gridData = json;
 
         // create tree containing all blocks
-        for(let featureInd in self.gridData.features) {
+        for (const featureInd in self.gridData.features) {
           // Array<number>: bbox extent in [ minX, minY, maxX, maxY ] order
-          let bbox = turf.bbox(self.gridData.features[featureInd]);
+          const bbox = turf.bbox(self.gridData.features[featureInd]);
 
-          let item = {
+          const item = {
             minX: bbox[0],
             minY: bbox[1],
             maxX: bbox[2],
@@ -47,22 +44,18 @@ let CensusDataModel = function() {
         });
         console.debug('geoid-keyed data', self.dataByGeoId);
 
-        resolve(json);
+        return json;
       });
-    });
 
-    let mapTypeNamesP = new Promise(function(resolve, reject) {
-      d3.json('./data/censusDataNames.json', function(err, json) {
-        if (err) reject(err);
-
+    const mapTypeNamesP = App.controllers.dataDownload.getJson('./data/censusDataNames.json')
+      .then(function (json) {
         self.mapTypeNames = json;
 
         console.debug('Loaded map type names', json);
-        resolve(json);
+        return json;
       });
-    });
 
-    return Promise.all([allDataBlocksdP, mapTypeNamesP]);
+    return Promise.all([allDataBlocksP, mapTypeNamesP]);
   }
 
   function getSubsetGeoJSON(propertyTypes, type = '') {

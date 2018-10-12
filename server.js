@@ -1,31 +1,63 @@
 // Authentication module.
-var auth = require('http-auth');
-var express = require('express');
-let bodyParser = require('body-parser');
+const auth = require('http-auth');
+const express = require('express');
+const bodyParser = require('body-parser');
+const cors = require('cors');
+const https = require('https');
 
-var argv = require('yargs')
-  .usage('Usage: $0 -p [integer] -i [string of IP address]')
+const argv = require('yargs')
+  .usage('Usage: $0 -p [integer for non-HTTPS port] -i [string of IP address] -s [integer for HTTPS port]')
   .default("p", 4000)
+  .default("s", 443)
   .default("i", '')
   .alias('p', 'port')
+  .alias('s', 'https')
   .alias('i', 'ip').alias('i', 'ip-address')
   .describe('p', 'Port to run server on')
   .describe('i', 'IP Address to run server on')
+  .describe('s', 'Port to run HTTPS server on')
   .help('h')
   .alias('h', 'help')
   .argv;
 
-var path = require('path');
-var fs = require('fs-extra');
+const path = require('path');
+const fs = require('fs-extra');
 
-var basic = auth.basic({
+const basic = auth.basic({
       file: path.join(__dirname, "admin-data", "users.htpasswd") // englewood-admin | helpthesekids
     }
 );
 
 // Application setup.
-var app = express();
-let admin = express();
+const app = express();
+const admin = express();
+
+function initHttps () {
+  try {
+    const credentials = {
+      key: fs.readFileSync('../evl2017/_.evl.uic.edu.key', 'utf8'),
+      cert: fs.readFileSync('../evl2017/_.evl.uic.edu.crt', 'utf8'),
+      ca: fs.readFileSync('../evl2017/_.evl.uic.edu-ca.crt', 'utf8'),
+    };
+    const httpsServer = https.createServer(credentials, app);
+    if (argv.ip.length > 0) {
+      httpsServer.listen(argv.https, argv.ip, function () {
+        console.log("HTTPS Listening on " + this.address().address + ":" + this.address().port);
+      });
+    } else {
+      httpsServer.listen(argv.https, function () {
+        console.log("HTTPS Listening on " + this.address().address + ":" + this.address().port);
+      });
+    }
+    return httpsServer;
+  } catch (err) {
+    console.log('error initializing HTTPS');
+    console.log(err);
+  }
+}
+
+// enable cors
+app.use(cors({ origin: '*' }));
 
 admin.use(bodyParser.json());
 admin.use(auth.connect(basic));
@@ -100,3 +132,5 @@ function changeUsedFile(timestamp, fileName, res) {
   // send updated log as response
   res.sendFile(path.join(__dirname, "admin-data", "LOG.csv"));
 }
+
+initHttps();
