@@ -1,4 +1,4 @@
-/* global d3 _ */
+/* global _ */
 
 // eslint-disable-next-line no-unused-vars
 class ServiceTaxonomyModel {

@@ -1,6 +1,9 @@
+/* global d3 */
+
 'use strict';
 
 // controller for getting data files specific to tool
+// eslint-disable-next-line no-unused-vars
 const DataDownloadController = function (rootUrl) {
   const self = {
     rootUrl: '',
@@ -43,9 +46,23 @@ const DataDownloadController = function (rootUrl) {
     });
   }
 
+  function getText (path = '') {
+    return new Promise(function (fulfill, reject) {
+      d3.text(generateFullUrl(path), function (err, data) {
+        if (err) {
+          reject(err);
+        } else {
+          fulfill(data);
+        }
+      });
+    });
+  }
+
+
   return {
     getCsv,
     getJson,
+    getText,
     setRootUrl,
   };
 };
