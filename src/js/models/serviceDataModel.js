@@ -16,12 +16,7 @@ const ServiceDataModel = function() {
   function init() {}
 
   function loadTextData(path) {
-    return new Promise((resolve, reject) => {
-      d3.text(path, (error, text) => {
-        if (error) reject(error);
-        else resolve(text);
-      });
-    });
+    return App.controllers.dataDownload.getText(path)
   }
 
   function createServiceObjectFromHeaders(headers, data) {

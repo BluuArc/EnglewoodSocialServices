@@ -1,4 +1,4 @@
-/* global L d3 */
+/* global L */
 
 // eslint-disable-next-line no-unused-vars
 class MapView {
