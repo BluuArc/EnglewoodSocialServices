@@ -1,4 +1,4 @@
-/* global d3 */
+/* global */
 
 // eslint-disable-next-line no-unused-vars
 class LotDataModel {
@@ -9,15 +9,7 @@ class LotDataModel {
   }
 
   loadCsv (path) {
-    return new Promise((resolve, reject) => {
-      d3.csv(path, (err, data) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(data);
-        }
-      });
-    });
+    return window.dataDownloadController.getCsv(path);
   }
 
   async load (altPathEnglewood = '', altPathWest = '') {

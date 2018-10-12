@@ -1,4 +1,4 @@
-/* global d3 SocialServiceModel */
+/* global SocialServiceModel */
 
 // eslint-disable-next-line no-unused-vars
 class SchoolDataModel {
