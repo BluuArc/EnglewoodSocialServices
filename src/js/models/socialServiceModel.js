@@ -19,24 +19,22 @@ let SocialServiceModel = function() {
   }
 
   function loadData(dataPath) {
-    return new Promise(function(resolve, reject) {
-      d3.csv(dataPath, function(err, data) {
-        if (err) reject(err);
+    return App.controllers.dataDownload.getCsv(dataPath)
+      .then(function (data) {
+        self.data = data;
 
         //filter out empty entries
-        self.data = data.filter((d) => {
+        self.data = data.filter(function (d) {
           let isNotEmpty = false;
-          for(let property in d){
-            if(typeof d[property] === 'string' && d[property].length > 0){
+          for (const property in d) {
+            if (typeof d[property] === 'string' && d[property].length > 0) {
               isNotEmpty = true;
             }
           }
-           
           return isNotEmpty;
         });
-        resolve();
+        return;
       });
-    });
   }
 
   function getData() {
@@ -45,34 +43,16 @@ let SocialServiceModel = function() {
 
   function getFilteredData(serviceFilters) {
     self.filters = serviceFilters;
-    // if (Object.keys(serviceFilters).length == 0) {
-    //   return self.data;
-    // }
-    //
-    // return _.filter(self.data, function(el) {
-    //   for (let property of Object.keys(serviceFilters)) {
-    //     if (el[property] == 1) {
-    //       return true;
-    //     }
-    //   }
-    //
-    //   return false;
-    // });
-
     return getSearchAndFilterSubset();
   }
 
   // just searching by name for now
   function getSearchedData(term) {
     self.searchTerm = _.lowerCase(term);
-
     return getSearchAndFilterSubset();
   }
 
-  
-
   function getSearchAndFilterSubset() {
-
     let filteredData = Object.keys(self.filters).length == 0 ? self.data :
       _.filter(self.data, function(el) {
         for (let property of Object.keys(self.filters)) {
@@ -80,7 +60,6 @@ let SocialServiceModel = function() {
             return true;
           }
         }
-
         return false;
       });
 
@@ -96,13 +75,13 @@ let SocialServiceModel = function() {
   }
 
   function getDataWithinBounds(bounds) {
-    let lat = d3.extent(bounds, b => b.lat);
-    let lng = d3.extent(bounds, b => b.lng);
+    const lat = d3.extent(bounds, b => b.lat);
+    const lng = d3.extent(bounds, b => b.lng);
 
-    // return _.filter(self.data, service => service.Y >= lat[0] && service.Y < lat[1] && service.X >= lng[0] && service.X < lng[1]);
     return getDataByFilter((service) => {
-      let serviceLat = +service.Latitude, serviceLng = +service.Longitude;
-      return serviceLat >= lat[0] && serviceLat < lat[1] && serviceLng >= lng[0] && serviceLng < lng[1];
+      const serviceLat = +service.Latitude, serviceLng = +service.Longitude;
+      return (serviceLat >= lat[0] && serviceLat < lat[1]) &&
+        (serviceLng >= lng[0] && serviceLng < lng[1]);
     });
   }
 

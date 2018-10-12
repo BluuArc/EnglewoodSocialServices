@@ -32,6 +32,7 @@ function AnalyticsApp (loader = new LoadingMessageView()) {
     ),
   };
   self.controllers = {
+    dataDownload: new DataDownloadController('https://quahog.evl.uic.edu/'),
     serviceFilters: null,
     serviceMarkerView: null,
     censusFilters: null,
@@ -39,6 +40,7 @@ function AnalyticsApp (loader = new LoadingMessageView()) {
     schoolMarkerView: null,
     lotView: null,
   };
+  window.dataDownloadController = self.controllers.dataDownload;
   /* eslint-enable no-undef */
 
   function setAppContentDivHeight () {

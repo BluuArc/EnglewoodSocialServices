@@ -1,4 +1,4 @@
-/* global d3 ServiceTaxonomyModel */
+/* global ServiceTaxonomyModel */
 
 // eslint-disable-next-line no-unused-vars
 class SocialServiceModel {
@@ -10,15 +10,7 @@ class SocialServiceModel {
   }
 
   _loadTextData (altPath = '') {
-    return new Promise((resolve, reject) => {
-      d3.text(altPath || this._dataPath, (err, data) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(data);
-        }
-      });
-    });
+    return window.dataDownloadController.getText(altPath || this._dataPath);
   }
 
   _cleanCsvData (textData) {

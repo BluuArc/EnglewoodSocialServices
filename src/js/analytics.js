@@ -47,6 +47,8 @@ Promise.all([documentPromise, windowPromise, less.pageLoadFinished])
 
   // controllers
   App.controllers.serviceFilterDropdown = new ServiceFilterController();
+  App.controllers.dataDownload = new DataDownloadController('https://quahog.evl.uic.edu/');
+  // App.controllers.serviceFilterDropdown = new FilterDropdownController();
   App.controllers.mapData = new MapDataController();
   // App.controllers.locationButton = new LocationButtonController();
   App.controllers.search = new SearchController();

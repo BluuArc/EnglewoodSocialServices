@@ -93,19 +93,33 @@ let MapView = function (div) {
 
   function drawEnglewoodOutline() {
     //add outline of Englewood
-    d3.json('./data/EnglewoodCommunityAreaBoundaries.geojson', function (error, d) {
-      console.debug(d);
-      self.englewoodOutline = L.geoJSON(d, {
-        style: function(feature){
-          return {
-            weight: 3,
-            opacity: 0.75,
-            fillOpacity: 0.2,
-            className: 'geoJSON-englewoodOutline fill stroke ' + feature.properties.community.toLowerCase().replace(/ /g, '-'),
-          };
-        }
-      }).addTo(self.map);
-    });
+    // d3.json('./data/EnglewoodCommunityAreaBoundaries.geojson', function (error, d) {
+    //   console.debug(d);
+    //   self.englewoodOutline = L.geoJSON(d, {
+    //     style: function(feature){
+    //       return {
+    //         weight: 3,
+    //         opacity: 0.75,
+    //         fillOpacity: 0.2,
+    //         className: 'geoJSON-englewoodOutline fill stroke ' + feature.properties.community.toLowerCase().replace(/ /g, '-'),
+    //       };
+    //     }
+    //   }).addTo(self.map);
+    // });
+    return App.controllers.dataDownload.getJson('./data/EnglewoodCommunityAreaBoundaries.geojson')
+      .then(function (d) {
+        self.englewoodOutline = L.geoJSON(d, {
+          style: function (feature) {
+            return {
+              weight: 3,
+              opacity: 0.75,
+              fillOpacity: 0.35,
+              className: 'geoJSON-englewoodOutline fill stroke ' + feature.properties.community.toLowerCase().replace(/ /g, '-'),
+            };
+          },
+        }).addTo(self.map);
+        return;
+      });
   }
 
   // initialize the different icon options by color

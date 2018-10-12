@@ -1,4 +1,4 @@
-/* global d3 SocialServiceModel */
+/* global SocialServiceModel */
 
 // eslint-disable-next-line no-unused-vars
 class SchoolDataModel {
@@ -9,15 +9,7 @@ class SchoolDataModel {
 
   async load (altPath = '') {
     console.debug('loading school data');
-    const rawData = await new Promise((resolve, reject) => {
-      d3.csv(altPath || this._dataPath, (err, data) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(data);
-        }
-      });
-    });
+    const rawData = await window.dataDownloadController.getCsv(altPath || this._dataPath);
     // remove empty entries
     this._data = rawData.filter(m => m['Organization Name']);
     console.debug('finished', this._data);

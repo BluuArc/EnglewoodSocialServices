@@ -1,4 +1,4 @@
-/* global d3 */
+/* global */
 'use strict';
 
 var App = App || {};
@@ -14,19 +14,11 @@ let SchoolDataModel = function () {
   function init() {}
 
   function loadData(dataPath) {
-    return new Promise((fulfill,reject) => {
-      d3.csv(dataPath, (err,data) => {
-        if(err){
-          reject(err);
-          return;
-        }
-
+    return App.controllers.dataDownload.getCsv(dataPath)
+      .then(function (data) {
         // remove empty entries
         self.data = data.filter(m => m['Organization Name']);
-
-        fulfill();
       });
-    });
   }
 
   function getData() {

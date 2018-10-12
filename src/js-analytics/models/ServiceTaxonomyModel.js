@@ -1,4 +1,4 @@
-/* global d3 _ */
+/* global _ */
 
 // eslint-disable-next-line no-unused-vars
 class ServiceTaxonomyModel {
@@ -10,15 +10,7 @@ class ServiceTaxonomyModel {
 
   async load (altPath = '') {
     console.debug('loading service taxonomy data');
-    const data = await new Promise((resolve, reject) => {
-      d3.json(altPath || this._dataPath, (err, data) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(data);
-        }
-      });
-    });
+    const data = await window.dataDownloadController.getJson(altPath || this._dataPath);
 
     const codeMapping = {};
     Object.keys(data).forEach(code => {

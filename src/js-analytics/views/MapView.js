@@ -1,4 +1,4 @@
-/* global L d3 */
+/* global L */
 
 // eslint-disable-next-line no-unused-vars
 class MapView {
@@ -30,15 +30,7 @@ class MapView {
   }
 
   async _drawEnglewoodOutline(geoJsonPath = './data/EnglewoodCommunityAreaBoundaries.geojson') {
-    const jsonData = await new Promise((resolve, reject) => {
-      d3.json(geoJsonPath, (err, d) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(d);
-        }
-      });
-    });
+    const jsonData = await window.dataDownloadController.getJson(geoJsonPath);
 
     this._englewoodOutline = L.geoJSON(jsonData, {
       style (feature) {

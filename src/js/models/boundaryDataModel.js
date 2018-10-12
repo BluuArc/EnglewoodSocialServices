@@ -1,4 +1,4 @@
-/* global d3 turf */
+/* global turf */
 'use strict';
 
 var App = App || {};
@@ -12,24 +12,19 @@ let BoundaryDataModel = function () {
   };
 
   function loadData() {
-    return new Promise(function (fulfill, reject) {
-      const validProperties = ['WEST ENGLEWOOD','ENGLEWOOD'];
-      d3.json('./data/EnglewoodCommunityAreaBoundaries.geojson', function (error, json) {
-        if(error) reject(error);
-
-        // self.geoData = json;
-        for(let feature of json.features){
-          let index = validProperties.indexOf(feature.properties.community);
-          if(index === 0){
+    return App.controllers.dataDownload.getJson('./data/EnglewoodCommunityAreaBoundaries.geojson')
+      .then(function (data) {
+        const validProperties = ['WEST ENGLEWOOD', 'ENGLEWOOD'];
+        for (const feature of data.features) {
+          const index = validProperties.indexOf(feature.properties.community);
+          if (index === 0) {
             self.westEnglewoodPoly = turf.polygon(feature.geometry.coordinates[0]);
-          }else if(index === 1){
+          } else if (index === 1) {
             self.englewoodPoly = turf.polygon(feature.geometry.coordinates[0]);
           }
         }
-        fulfill();
-      }
-      );
-    });
+        return;
+      });
   }
 
   function convertLeafletPointToTurfPoint(point){

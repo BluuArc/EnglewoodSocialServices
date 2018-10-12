@@ -1,4 +1,4 @@
-/* global d3 _ */
+/* global _ */
 'use strict';
 
 var App = App || {};
@@ -17,21 +17,17 @@ let ServiceTaxonomyModel = function() {
   }
 
   function loadData(dataPath) {
-    return new Promise(function(resolve, reject) {
-      d3.json(dataPath, function(err, data) {
-        if (err) reject(err);
-
+    return App.controllers.dataDownload.getJson(dataPath)
+      .then(function (data) {
         self.data = data;
 
-        for (let code of Object.keys(self.data)) {
+        for (const code of Object.keys(self.data)) {
           self.categoryCodeMap[self.data[code].description.toLowerCase()] = code;
         }
 
         console.debug(self.data);
-
-        resolve();
+        return;
       });
-    });
   }
 
   function getTier1Categories() {
