@@ -1,9 +1,11 @@
+'use strict';
 // Authentication module.
 const auth = require('http-auth');
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const https = require('https');
+const axios = require('axios');
 
 const argv = require('yargs')
   .usage('Usage: $0 -p [integer for non-HTTPS port] -i [string of IP address] -s [integer for HTTPS port]')
@@ -22,6 +24,32 @@ const argv = require('yargs')
 
 const path = require('path');
 const fs = require('fs-extra');
+const DataCache = require('./DataCache');
+
+const crimeCache = new DataCache(async () => {
+  // get data from 2 weeks ago (latest possible data set)
+  const oneWeek = 1000 /* ms/sec */ * 60 /* sec/min */ * 60 /* min/hr */ * 24 /* hrs / day */ * 7 /* days/wk */ * 2 /* weeks */;
+  const currentDate = new Date();
+  const weekBefore = new Date(currentDate.valueOf() - oneWeek);
+
+  const url = 'https://data.cityofchicago.org/resource/6zsd-86xi.json';
+  const params = [
+    `$where=date between '${weekBefore.getUTCFullYear()}-${weekBefore.getUTCMonth() + 1}-${weekBefore.getUTCDate()}T00:00:00' and '${currentDate.getUTCFullYear()}-${currentDate.getUTCMonth() + 1}-${currentDate.getUTCDate()}T00:00:00'`,
+    '$$app_token=SmTDhtuO7GXW1Wt1eYHel6s8P',
+    '$limit=25000',
+  ];
+  const fullUrl = [url, params.join('&')].join('?');
+  console.log(`refreshing crime data via ${fullUrl}`);
+  const response = await axios.get(fullUrl);
+  if (Array.isArray(response.data)) {
+    console.log(`got ${response.data.length} entries`);
+  }
+
+  return {
+    data: response.data,
+    url: [url, params[0]].join('?'), // only save base url and where search
+  };
+}, 60 * 60 * 1000); // 1 hour
 
 const basic = auth.basic({
   file: path.join(__dirname, 'admin-data', 'users.htpasswd') // englewood-admin | helpthesekids
@@ -63,6 +91,19 @@ admin.use(auth.connect(basic));
 
 app.use('/admin', admin);
 app.use(express.static('./'));
+
+app.get('/api/crimes', (req, res) => {
+  crimeCache.getValue()
+    .then(entry => res.json({
+      // return data, url for query, and time of update
+      data: entry.data,
+      url: entry.url,
+      updateTime: crimeCache.updateTime.toISOString(),
+    })).catch(err => {
+      console.error(err);
+      res.status(500).json({ err: err.message });
+    });
+});
 
 if(argv.ip.length > 0){
   app.listen(argv.port,argv.ip, function () {
