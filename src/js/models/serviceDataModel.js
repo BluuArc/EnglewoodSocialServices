@@ -16,7 +16,7 @@ const ServiceDataModel = function() {
   function init() {}
 
   function loadTextData(path) {
-    return App.controllers.dataDownload.getText(path)
+    return App.controllers.dataDownload.getText(path);
   }
 
   function createServiceObjectFromHeaders(headers, data) {
