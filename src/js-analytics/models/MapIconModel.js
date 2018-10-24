@@ -34,7 +34,8 @@ class MapIconModel {
       serviceMarkerSelected: '#cc852a',
       lotMarker: '#9c2bcb',
       schoolMarker: '#b15928',
-      locationMarker: '#cb2d40'
+      locationMarker: '#cb2d40',
+      crimeMarker: '#e31a1c',
     };
     const lotColors = {
       Residential: '#999999',

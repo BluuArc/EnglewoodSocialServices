@@ -12,6 +12,7 @@ class CrimeDataModel {
   }
 
   getData (filterFn) {
-    return typeof filterFn === 'function' ? this._data.filter(filterFn) : this._data.slice();
+    const crimeData = this._data.data;
+    return typeof filterFn === 'function' ? crimeData.filter(filterFn) : crimeData.slice();
   }
 }

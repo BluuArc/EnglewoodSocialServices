@@ -40,6 +40,9 @@ function AnalyticsApp (loader = new LoadingMessageView()) {
     schoolView: null,
     schoolMarkerView: null,
     lotView: null,
+    lotMarkerView: null,
+    crimeView: null,
+    crimeMarkerView: null,
   };
   window.dataDownloadController = self.controllers.dataDownload;
   /* eslint-enable no-undef */
@@ -68,6 +71,7 @@ function AnalyticsApp (loader = new LoadingMessageView()) {
     self.controllers.censusFilters.updateViews();
     self.controllers.serviceMarkerView.toggle(false);
     self.controllers.lotMarkerView.toggle(false);
+    self.controllers.crimeMarkerView.toggle(false);
 
     loadingView.mainMessage = 'Done!';
     loadingView.subMessage = '';
@@ -97,6 +101,7 @@ function AnalyticsApp (loader = new LoadingMessageView()) {
 
   self._initViewControllers = function () {
     /* eslint-disable no-undef */
+    // service and census
     self.controllers.serviceFilters = new ServiceFilterController({
       dropdownView: self.views.serviceFilterDropdown,
       mapView: self.views.map,
@@ -120,6 +125,7 @@ function AnalyticsApp (loader = new LoadingMessageView()) {
     );
     self.controllers.serviceFilters.attachMarkerViewController(self.controllers.serviceMarkerView);
 
+    // school
     self.controllers.schoolView = new SchoolViewController({
       mapView: self.views.map,
       schoolModel: self.models.schoolData,
@@ -133,6 +139,7 @@ function AnalyticsApp (loader = new LoadingMessageView()) {
     );
     self.controllers.schoolView.init(self.controllers.schoolMarkerView);
 
+    // lot
     self.controllers.lotView = new LotViewController({
       mapView: self.views.map,
       lotModel: self.models.lotData,
@@ -153,6 +160,19 @@ function AnalyticsApp (loader = new LoadingMessageView()) {
       );
     });
     self.controllers.lotView.init(self.controllers.lotMarkerView, lotTypeMarkerViews);
+
+    // crime
+    self.controllers.crimeView = new CrimeViewController({
+      mapView: self.views.map,
+      crimeModel: self.models.crimeData,
+      mapIconModel: self.models.markerIcons,
+    });
+    self.controllers.crimeMarkerView = new MarkerViewController(
+      '#marker-view-toggle-group #toggle-marker-view--crime',
+      () => self.views.map.setClusterGroupVisibility(CrimeViewController.layerGroupName, false),
+      () => self.views.map.setClusterGroupVisibility(CrimeViewController.layerGroupName, true),
+    );
+    self.controllers.crimeView.init(self.controllers.crimeMarkerView);
     /* eslint-enable no-undef */
   };
 }
