@@ -19,6 +19,7 @@ function AnalyticsApp (loader = new LoadingMessageView()) {
     censusData: new CensusDataModel('./data/censusDataBlocks.geojson', './data/censusDataNames.json'),
     schoolData: new SchoolDataModel('./data/18-02-12 Rev Englewood Schools.csv'),
     lotData: new LotDataModel('./data/EnglewoodLandInventory.csv', './data/WestEnglewoodLandInventory.csv'),
+    crimeData: new CrimeDataModel('./api/crimes'),
   };
   self.views = {
     map: new MapView('service-map', self.models.markerIcons),
@@ -89,6 +90,9 @@ function AnalyticsApp (loader = new LoadingMessageView()) {
 
     self.views.loader.subMessage = 'Loading Lot Data';
     await self.models.lotData.load();
+
+    self.views.loader.subMessage = 'Loading Crime Data';
+    await self.models.crimeData.load();
   };
 
   self._initViewControllers = function () {
