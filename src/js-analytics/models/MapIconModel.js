@@ -6,6 +6,7 @@ class MapIconModel {
     const mappings = this._generateIcons();
     this._iconMapping = mappings.regularMapping;
     this._smallIconMapping = mappings.smallMapping;
+    this._iconGenerators = this._generateIconGenerators();
   }
 
   get defaultIconSize () {
@@ -14,6 +15,31 @@ class MapIconModel {
 
   get defaultIconSizeSmall () {
     return [14, 23];
+  }
+
+  _generateIconGenerators () {
+    const iconGenerators = {};
+
+    iconGenerators.crimeClusterIcon = (cluster) => {
+      // based on default cluster icon generator (https://github.com/Leaflet/Leaflet.markercluster/blob/master/src/MarkerClusterGroup.js)
+      const childCount = cluster.getChildCount();
+
+      let iconClass = 'marker-cluster-';
+      if (childCount < 10) {
+        iconClass += 'small';
+      } else if (childCount < 100) {
+        iconClass += 'medium';
+      } else {
+        iconClass += 'large';
+      }
+
+      return new L.DivIcon({
+        html: `<div><span>${childCount}</span></div>`,
+        className: ['crime-marker-cluster', iconClass].join(' '),
+        iconSize: new L.Point(40, 40),
+      });
+    };
+    return iconGenerators;
   }
 
   _generateIcons () {
@@ -96,6 +122,10 @@ class MapIconModel {
 
   getSmallIconById (id) {
     return this._smallIconMapping[id];
+  }
+  
+  getIconGeneratorById (id) {
+    return this._iconGenerators[id];
   }
 
   autoInsertIntoDom () {

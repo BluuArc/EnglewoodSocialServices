@@ -55,7 +55,8 @@
 	border-radius: 15px;
 	font: 12px "Helvetica Neue", Arial, Helvetica, sans-serif;
 }
-.marker-cluster span {
+.marker-cluster span,
+.crime-marker-cluster span {
 	line-height: 30px;
 }
 
@@ -63,4 +64,24 @@
 	left: -2px;
 	top: -2px;
 	border: 2px solid purple;
+}
+
+/* crime marker cluster icon */
+.crime-marker-cluster {
+	width: 30px;
+	/* height: 30px; */
+	margin-left: 5px;
+	margin-top: 5px;
+
+	text-align: center;
+	font: 12px "Helvetica Neue", Arial, Helvetica, sans-serif;
+}
+
+.crime-marker-cluster span {
+	font-weight: bold;
+}
+
+.crime-marker-cluster:hover {
+	top: -2px;
+	border: 2px solid red;
 }

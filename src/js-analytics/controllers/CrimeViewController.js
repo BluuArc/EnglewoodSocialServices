@@ -14,7 +14,10 @@ class CrimeViewController {
 
     this._mapView.addClusterGroup(CrimeViewController.layerGroupName, {
       showCoverageOnHover: false,
-      disableClusteringAtZoom: 18
+      disableClusteringAtZoom: 18,
+      chunkedLoading: true,
+      maxClusterRadius: 160,
+      iconCreateFunction: this._mapIconModel.getIconGeneratorById('crimeClusterIcon'),
     });
   }
 
@@ -31,9 +34,9 @@ class CrimeViewController {
   }
 
   _generatePopupHtml (crime) {
-    // return [
-    // ].join('<br>');
-    return JSON.stringify(crime);
+    return Object.keys(crime)
+      .map(key => `<b>${key}: </b> ${typeof crime[key] === 'object' ? JSON.stringify(crime[key]) : crime[key]}`)
+      .join('<br>');
   }
 
   _markerGenerator (crime, map) {
@@ -66,7 +69,7 @@ class CrimeViewController {
     this._mapView.updateClusterGroup(CrimeViewController.layerGroupName, (group, map) => {
       data.forEach(crime => {
         const marker = this._markerGenerator(crime, map);
-        marker.addTo(group);
+        group.addLayer(marker);
       });
     });
   }

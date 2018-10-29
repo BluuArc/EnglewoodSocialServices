@@ -17,6 +17,8 @@ class LotViewController {
 
     this._mapView.addClusterGroup(LotViewController.layerGroupName, {
       showCoverageOnHover: false,
+      chunkedLoading: true,
+      maxClusterRadius: 160,
       disableClusteringAtZoom: 18
     });
 
@@ -93,7 +95,8 @@ class LotViewController {
         const zoneType = this._lotModel.getZoneClassification(lot);
         const marker = this._markerGenerator(lot, map);
         const typeGroup = getClusterSubGroup(zoneType);
-        marker.addTo(typeGroup);
+        // marker.addTo(typeGroup);
+        typeGroup.addLayer(marker);
       });
     });
   }
