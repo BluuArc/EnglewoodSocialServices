@@ -33,6 +33,7 @@ const app = express();
 const admin = express();
 
 const crimeCache = require('./src/api/crimeCache');
+const vacantLotCache = require('./src/api/vacantLotCache');
 
 function initHttps () {
   try {
@@ -77,6 +78,21 @@ app.get('/api/crimes', (req, res) => {
     })).catch(err => {
       console.error(err);
       res.status(500).json({ err: err.message });
+    });
+});
+
+app.get('/api/vacant-lots', (req, res) => {
+  vacantLotCache.getValue()
+    .then(entry => res.json({
+      // return data, url for query, and time of update
+      data: entry.data,
+      url: entry.url,
+      updateTime: vacantLotCache.updateTime.toISOString(),
+    })).catch(err => {
+      console.error(err);
+      res.status(500).json({
+        err: err.message
+      });
     });
 });
 

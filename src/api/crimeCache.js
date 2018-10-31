@@ -1,5 +1,4 @@
 'use strict';
-
 const DataCache = require('./DataCache');
 const axios = require('axios');
 
