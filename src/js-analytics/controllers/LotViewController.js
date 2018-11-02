@@ -54,10 +54,14 @@ class LotViewController {
   }
 
   _generateLotPopupHtml (lot) {
+    const ignoredFields = ['address', 'location', 'pin', 'sq_ft', 'x_coordinate', 'y_coordinate', 'zoning_classification']
     return [
-      `<strong>${lot.Location}</strong>`,
-      `<b>Size: </b> ${lot['Sq. Ft.']} sq. ft.`,
-      `<b>Zone Classification:</b> ${this._lotModel.getZoneClassification(lot, true)}`,
+      `<strong>${lot.address} (${lot.pin})</strong>`,
+      `<b>Size: </b> ${lot.sq_ft} sq. ft.`,
+      `<b>Zone Classification:</b> ${this._lotModel.getZoneClassification(lot, true)} (${lot.zoning_classification})`,
+      ...Object.keys(lot)
+        .filter(key => !ignoredFields.includes(key))
+        .map(key => `<b>${key}: </b> ${typeof lot[key] === 'object' ? JSON.stringify(lot[key]) : lot[key]}`)
     ].join('<br>');
   }
 
@@ -65,7 +69,7 @@ class LotViewController {
     const zoneType = this._lotModel.getZoneClassification(lot);
 
     const marker = L.marker(
-      L.latLng(+lot.Latitude, +lot.Longitude),
+      L.latLng(+lot.latitude, +lot.longitude),
       {
         icon: this._mapIconModel.getIconById(zoneType !== 'Other' ? zoneType : 'lotMarker'),
         riseOnHover: true,

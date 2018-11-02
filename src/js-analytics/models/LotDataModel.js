@@ -2,44 +2,20 @@
 
 // eslint-disable-next-line no-unused-vars
 class LotDataModel {
-  constructor(dataPathEnglewood = '', dataPathWest = '') {
-    this._dataPathEnglewood = dataPathEnglewood;
-    this._dataPathWestEnglewood = dataPathWest;
+  constructor (dataPath = '') {
+    this._dataPath = dataPath;
     this._data = null;
   }
 
-  loadCsv (path) {
-    return window.dataDownloadController.getCsv(path);
-  }
-
-  async load (altPathEnglewood = '', altPathWest = '') {
+  async load (altPath = '') {
     console.debug('loading lot data');
-    const extractCoords = (locationText) => locationText.slice(locationText.lastIndexOf('(') + 1)
-      .replace(')', '')
-      .split(',');
-    const englewoodData = await this.loadCsv(altPathEnglewood || this._dataPathEnglewood)
-      .then(data => data.map(lot => {
-        lot.Area = 'Englewood';
-        const coords = extractCoords(lot.Location);
-        lot.Latitude = coords[0];
-        lot.Longitude = coords[1];
-        return lot;
-      }));
-    const westEnglewoodData = await this.loadCsv(altPathWest || this._dataPathWestEnglewood)
-      .then(data => data.map(lot => {
-        lot.Area = 'West Englewood';
-        const coords = extractCoords(lot.Location);
-        lot.Latitude = coords[0];
-        lot.Longitude = coords[1];
-        return lot;
-      }));
-    
-    this._data = englewoodData.concat(westEnglewoodData);
+    this._data = await window.dataDownloadController.getJson(altPath || this._dataPath);
     console.debug('finished', this._data);
   }
 
   getData (filterFn) {
-    return typeof filterFn === 'function' ? this._data.filter(filterFn) : this._data.slice();
+    const lotData = this._data.data;
+    return typeof filterFn === 'function' ? lotData.filter(filterFn) : lotData.slice();
   }
 
   get _nameMapping () {
@@ -60,7 +36,7 @@ class LotDataModel {
   }
 
   getZoneClassification(lot = {}, isFullName = false) {
-    const zone = lot['Zoning Classification'];
+    const zone = lot.zoning_classification;
     if (zone.indexOf('R') === 0) {
       return this._nameMapping.Residential;
     } else if (zone.indexOf('PD') === 0 || zone.indexOf('PMD') === 0) {

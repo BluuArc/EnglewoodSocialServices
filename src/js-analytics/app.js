@@ -18,7 +18,7 @@ function AnalyticsApp (loader = new LoadingMessageView()) {
     serviceTaxonomy: new ServiceTaxonomyModel('./data/serviceTaxonomy.json'),
     censusData: new CensusDataModel('./data/censusDataBlocks.geojson', './data/censusDataNames.json'),
     schoolData: new SchoolDataModel('./data/18-02-12 Rev Englewood Schools.csv'),
-    lotData: new LotDataModel('./data/EnglewoodLandInventory.csv', './data/WestEnglewoodLandInventory.csv'),
+    lotData: new LotDataModel('./api/vacant-lots'),
     crimeData: new CrimeDataModel('./api/crimes'),
   };
   self.views = {
