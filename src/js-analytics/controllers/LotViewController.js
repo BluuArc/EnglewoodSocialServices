@@ -54,7 +54,7 @@ class LotViewController {
   }
 
   _generateLotPopupHtml (lot) {
-    const ignoredFields = ['address', 'location', 'pin', 'sq_ft', 'x_coordinate', 'y_coordinate', 'zoning_classification']
+    const ignoredFields = ['address', 'location', 'pin', 'sq_ft', 'x_coordinate', 'y_coordinate', 'zoning_classification'];
     return [
       `<strong>${lot.address} (${lot.pin})</strong>`,
       `<b>Size: </b> ${lot.sq_ft} sq. ft.`,
@@ -99,7 +99,6 @@ class LotViewController {
         const zoneType = this._lotModel.getZoneClassification(lot);
         const marker = this._markerGenerator(lot, map);
         const typeGroup = getClusterSubGroup(zoneType);
-        // marker.addTo(typeGroup);
         typeGroup.addLayer(marker);
       });
     });

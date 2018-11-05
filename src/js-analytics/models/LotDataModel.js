@@ -10,6 +10,10 @@ class LotDataModel {
   async load (altPath = '') {
     console.debug('loading lot data');
     this._data = await window.dataDownloadController.getJson(altPath || this._dataPath);
+
+    const includedAreas = ['ENGLEWOOD', 'WEST ENGLEWOOD'];
+    this._data.data = this._data.data.filter(lot => includedAreas.includes(lot.community_area_name));
+    this._data.clientNotes = 'Manually filtered out lots not in Englewood or West Englewood on the client side';
     console.debug('finished', this._data);
   }
 
