@@ -150,16 +150,21 @@ function AnalyticsApp (loader = new LoadingMessageView()) {
       lotMarkerTypeDropdownSelector: '#lot-type-view-toggle-group',
     });
     self.controllers.lotMarkerView = new MarkerViewController(
-      '#marker-view-toggle-group #toggle-marker-view--lot',
+      '#main-marker-dropdown #toggle-marker-view--lot',
       () => self.views.map.setClusterGroupVisibility(LotViewController.layerGroupName, false),
       () => self.views.map.setClusterGroupVisibility(LotViewController.layerGroupName, true),
+      false,
+      true,
     );
+    self.controllers.lotDropdownView = new MainMarkerDropdownView('#main-marker-button-group', '#map-markers-dropdown--lot');
     const lotTypeMarkerViews = {};
     self.models.lotData.lotTypes.forEach(type => {
       lotTypeMarkerViews[type] = new MarkerViewController(
-        `#lot-type-view-toggle-group #toggle-lot-marker--${type.toLowerCase()}`,
+        `#main-marker-dropdown #toggle-lot-marker--${type.toLowerCase()}`,
         () => self.views.map.setClusterSubGroupVisibility(LotViewController.layerGroupName, type, false),
         () => self.views.map.setClusterSubGroupVisibility(LotViewController.layerGroupName, type, true),
+        true,
+        true,
       );
     });
     self.controllers.lotView.init(self.controllers.lotMarkerView, lotTypeMarkerViews);
