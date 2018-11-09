@@ -201,7 +201,11 @@
   min-width: 275px;
 }
 
-#service-dropdown, #census-dropdown {
+#main-marker-dropdown {
+  min-width: 275px;
+}
+
+#service-dropdown, #census-dropdown, #main-marker-dropdown {
   padding-right: 4px;
   .btn-group {
     margin-left: 4px;
@@ -219,6 +223,18 @@
       text-align: left;
       margin-right: -4px;
       text-transform: capitalize;
+
+      display: inline-flex;
+      align-items: center;
+      height: 100%;
+
+      .caret {
+        margin: auto;
+      }
+
+      .map-icon-inserted {
+        margin-left: 4px;
+      }
 
       &:hover, &:focus {
         color: #262626;

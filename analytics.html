@@ -57,23 +57,33 @@
   </div>
   <nav class="navbar navbar-default">
     <div class="container-fluid" id="top-bar">
-      <section class="navbar-header">
-        <div class="row">
-          <div class="col-sm-12">
-            <span class="navbar-brand" id="page-title">Englewood Data Hub Analytics</span>
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-sm-6 text-center">
-            <a href="./about-analytics.html">About</a>
-          </div>
-          <div class="col-sm-6 text-center">
-            <a href="./contact.html?type=analytics">Contact</a>
-          </div>
-        </div>
-      </section>
-
       <section class="navbar-left">
+        <div class="nav dropdown btn-group" id="service-button-group-@new">
+          <button class="btn btn-default navbar-btn btn-rounded dropdown-toggle" data-toggle="dropdown">
+            <span class="btn-text">Map Markers</span>
+            <i class="caret"></i>
+          </button>
+          <ul class="dropdown-menu dropdown-toggle" role="menu" id="main-marker-dropdown">
+            <li class="dropdown-submenu">
+              <div class="btn-group row">
+                <button class="btn btn-item col-md-10" tabindex="-1">
+                  <span class="glyphicon glyphicon-unchecked"></span>
+                  Services
+                  <i class="map-icon-insert" data-marker="serviceMarker"></i>
+                </button>
+                <button class="btn btn-item btn-dropdown col-md-2">
+                  <div>
+                    <i class="caret"></i>
+                  </div>
+                </button>
+                <ul class="dropdown-menu"></ul>
+              </div>
+            </li>
+            <li>School</li>
+            <li>Lots</li>
+            <li>Crime</li>
+          </ul>
+        </div>
         <div class="nav btn-group" id="service-button-group">
           <div class="btn-group">
             <button class="btn btn-default dropdown-toggle navbar-btn btn-rounded select-btn" type="button" data-toggle="dropdown">
@@ -89,7 +99,7 @@
             <span class="glyphicon glyphicon-remove"></span>
           </button>
         </div>
-
+      
         <div class="nav btn-group" id="census-button-group">
           <div class="btn-group">
             <button class="btn btn-default dropdown-toggle navbar-btn btn-rounded select-btn" type="button" data-toggle="dropdown">
@@ -104,7 +114,7 @@
             <span class="glyphicon glyphicon-remove"></span>
           </button>
         </div>
-
+      
         <div class="nav btn-group" id="marker-view-toggle-group">
           <button class="btn btn-success dropdown-toggle navbar-btn" data-toggle="dropdown">
             <span class="btn-text">
@@ -143,7 +153,7 @@
             </li>
           </ul>
         </div>
-
+      
         <div class="nav btn-group" id="lot-type-view-toggle-group">
           <button class="btn btn-success dropdown-toggle navbar-btn" data-toggle="dropdown">
             <span class="btn-text">
@@ -181,6 +191,21 @@
               </a>
             </li>
           </ul>
+        </div>
+      </section>
+      <section class="navbar-header">
+        <div class="row">
+          <div class="col-sm-12">
+            <span class="navbar-brand" id="page-title">Englewood Data Hub Analytics</span>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm-6 text-center">
+            <a href="./about-analytics.html">About</a>
+          </div>
+          <div class="col-sm-6 text-center">
+            <a href="./contact.html?type=analytics">Contact</a>
+          </div>
         </div>
       </section>
     </div>
