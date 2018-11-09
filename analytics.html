@@ -58,7 +58,7 @@
   <nav class="navbar navbar-default">
     <div class="container-fluid" id="top-bar">
       <section class="navbar-left">
-        <div class="nav dropdown btn-group" id="service-button-group-@new">
+        <div class="nav dropdown btn-group" id="main-marker-button-group">
           <button class="btn btn-default navbar-btn btn-rounded dropdown-toggle" data-toggle="dropdown">
             <span class="btn-text">Map Markers</span>
             <i class="caret"></i>
@@ -79,9 +79,53 @@
                 <ul class="dropdown-menu"></ul>
               </div>
             </li>
-            <li>School</li>
+            <li class="dropdown-submenu">
+              <div class="btn-group row">
+                <button class="btn btn-item col-md-10" tabindex="-1" id="toggle-marker-view--school">
+                  <span class="glyphicon glyphicon-unchecked"></span>
+                  Schools
+                  <i class="map-icon-insert" data-marker="schoolMarker"></i>
+                </button>
+                <button class="btn btn-item btn-dropdown col-md-2" disabled>
+                  <div>
+                    <i class="caret"></i>
+                  </div>
+                </button>
+              </div>
+            </li>
+            <li class="dropdown-submenu">
+              <div class="btn-group row">
+                <button class="btn btn-item col-md-10" tabindex="-1">
+                  <span class="glyphicon glyphicon-unchecked"></span>
+                  Vacant Lots
+                  <i class="map-icon-insert" data-marker="lotMarker"></i>
+                </button>
+                <button class="btn btn-item btn-dropdown col-md-2">
+                  <div>
+                    <i class="caret"></i>
+                  </div>
+                </button>
+                <ul class="dropdown-menu"></ul>
+              </div>
+            </li>
+            <li class="dropdown-submenu">
+              <div class="btn-group row">
+                <button class="btn btn-item col-md-10" tabindex="-1">
+                  <span class="glyphicon glyphicon-unchecked"></span>
+                  Crimes
+                  <i class="map-icon-insert" data-marker="crimeMarker"></i>
+                </button>
+                <button class="btn btn-item btn-dropdown col-md-2">
+                  <div>
+                    <i class="caret"></i>
+                  </div>
+                </button>
+                <ul class="dropdown-menu"></ul>
+              </div>
+            </li>
+            <!-- <li>School</li>
             <li>Lots</li>
-            <li>Crime</li>
+            <li>Crime</li> -->
           </ul>
         </div>
         <div class="nav btn-group" id="service-button-group">

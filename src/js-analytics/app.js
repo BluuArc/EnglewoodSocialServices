@@ -72,6 +72,7 @@ function AnalyticsApp (loader = new LoadingMessageView()) {
     self.controllers.serviceMarkerView.toggle(false);
     self.controllers.lotMarkerView.toggle(false);
     self.controllers.crimeMarkerView.toggle(false);
+    self.controllers.schoolMarkerView.toggle(false);
 
     loadingView.mainMessage = 'Done!';
     loadingView.subMessage = '';
@@ -133,9 +134,11 @@ function AnalyticsApp (loader = new LoadingMessageView()) {
       serviceModel: self.models.serviceData,
     });
     self.controllers.schoolMarkerView = new MarkerViewController(
-      '#marker-view-toggle-group #toggle-marker-view--school',
+      '#main-marker-dropdown #toggle-marker-view--school',
       () => self.views.map.setLayerGroupVisibility(SchoolViewController.layerGroupName, false),
       () => self.views.map.setLayerGroupVisibility(SchoolViewController.layerGroupName, true),
+      false,
+      true,
     );
     self.controllers.schoolView.init(self.controllers.schoolMarkerView);
 
