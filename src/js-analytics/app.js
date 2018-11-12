@@ -23,7 +23,10 @@ function AnalyticsApp (loader = new LoadingMessageView()) {
   };
   self.views = {
     map: new MapView('service-map', self.models.markerIcons),
-    serviceFilterDropdown: new ServiceFilterDropdownView(),
+    serviceFilterDropdown: new ServiceFilterDropdownView({
+      buttonGroup: '#main-marker-dropdown #map-markers-dropdown--services',
+      dropdownMenu: '#main-marker-dropdown #map-markers-dropdown--services ul.dropdown-menu',
+    }),
     censusFilterDropdown: new CensusFilterDropdownView(),
     loader,
     legend: new LegendView(
@@ -103,11 +106,13 @@ function AnalyticsApp (loader = new LoadingMessageView()) {
   self._initViewControllers = function () {
     /* eslint-disable no-undef */
     // service and census
+    self.views.mainServiceDropdown = new MainMarkerDropdownView('#main-marker-button-group', '#map-markers-dropdown--services');
     self.controllers.serviceFilters = new ServiceFilterController({
       dropdownView: self.views.serviceFilterDropdown,
       mapView: self.views.map,
       serviceModel: self.models.serviceData,
       mapIconModel: self.models.markerIcons,
+      mainMarkerDropdownView: self.views.mainServiceDropdown,
     });
     self.controllers.serviceFilters.init(self.models.serviceTaxonomy);
 

@@ -1,13 +1,13 @@
 /* global d3 */
 // eslint-disable-next-line no-unused-vars
 class MultiDropdownView {
-  constructor ({ buttonGroup, selectButton, dropdownMenu, clearButton }) {
+  constructor (options = {}) {
     const getElem = (selector) => document.querySelector(selector);
 
-    this._buttonGroup = getElem(buttonGroup);
-    this._selectButton = getElem(selectButton);
-    this._dropdownMenu = getElem(dropdownMenu);
-    this._clearBtn = getElem(clearButton);
+    this._buttonGroup =  options.buttonGroup ? getElem(options.buttonGroup) : null;
+    this._selectButton = options.selectButton ? getElem(options.selectButton) : null;
+    this._dropdownMenu = options.dropdownMenu ? getElem(options.dropdownMenu) : null;
+    this._clearBtn = options.clearButton ? getElem(options.clearButton) : null;
   }
 
   _hasClickHandler(clickHandlers, name) {

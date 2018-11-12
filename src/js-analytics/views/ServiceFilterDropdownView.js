@@ -4,17 +4,17 @@ class ServiceFilterDropdownView extends MultiDropdownView {
   constructor(config = {}) {
     const defaultConfig = {
       buttonGroup: '#service-button-group',
-      selectButton: '#service-button-group button.select-btn',
+      // selectButton: '#service-button-group button.select-btn',
       dropdownMenu: '#service-button-group ul.dropdown-menu',
-      clearButton: '#service-button-group button.clear-btn',
+      // clearButton: '#service-button-group button.clear-btn',
     };
 
     const getValue = (field) => config[field] || defaultConfig[field];
     super({
       buttonGroup: getValue('buttonGroup'),
-      selectButton: getValue('selectButton'),
+      // selectButton: getValue('selectButton'),
       dropdownMenu: getValue('dropdownMenu'),
-      clearButton: getValue('clearButton'),
+      // clearButton: getValue('clearButton'),
     });
 
     this._nameMapping = {};
@@ -36,9 +36,9 @@ class ServiceFilterDropdownView extends MultiDropdownView {
       });
 
     
-    if (this._hasClickHandler(clickHandlers, 'onClearButtonClick'))  {
-      d3.select(this._clearBtn).on('click', clickHandlers.onClearButtonClick);
-    }
+    // if (this._hasClickHandler(clickHandlers, 'onClearButtonClick'))  {
+    //   d3.select(this._clearBtn).on('click', clickHandlers.onClearButtonClick);
+    // }
   }
 
   _addListItem(elem, tier1Category, serviceTaxonomyModel = new ServiceTaxonomyModel(), self, clickHandlers) {
@@ -117,20 +117,20 @@ class ServiceFilterDropdownView extends MultiDropdownView {
     });
 
     // set button text
-    const d3SelectButton = d3.select(this._buttonGroup).select('.select-btn');
-    const d3ClearButton = d3.select(this._clearBtn);
-    const activeFilters = filterAggregate.filter(({ state }) => state !== 'none');
-    if (activeFilters.length > 0) {
-      const hasMultipleFilters = activeFilters.length > 1
-       || (activeFilters[0].state === 'some' && activeFilters[0].activeSubCategories.length > 1);
-      const buttonText = (hasMultipleFilters) ? 'Various Filters' : (activeFilters[0].activeSubCategories.length === 1 ? activeFilters[0].activeSubCategories[0] : activeFilters[0].mainCategory);
-      d3SelectButton.classed('btn-default', false).classed('btn-success', true)
-        .select('.btn-text').text(buttonText);
-      d3ClearButton.classed('hidden', false);
-    } else {
-      d3SelectButton.classed('btn-default', true).classed('btn-success', false)
-        .select('.btn-text').text('Select Services...');
-      d3ClearButton.classed('hidden', true);
-    }
+    // const d3SelectButton = d3.select(this._buttonGroup).select('.select-btn');
+    // const d3ClearButton = d3.select(this._clearBtn);
+    // const activeFilters = filterAggregate.filter(({ state }) => state !== 'none');
+    // if (activeFilters.length > 0) {
+    //   const hasMultipleFilters = activeFilters.length > 1
+    //    || (activeFilters[0].state === 'some' && activeFilters[0].activeSubCategories.length > 1);
+    //   const buttonText = (hasMultipleFilters) ? 'Various Filters' : (activeFilters[0].activeSubCategories.length === 1 ? activeFilters[0].activeSubCategories[0] : activeFilters[0].mainCategory);
+    //   d3SelectButton.classed('btn-default', false).classed('btn-success', true)
+    //     .select('.btn-text').text(buttonText);
+    //   d3ClearButton.classed('hidden', false);
+    // } else {
+    //   d3SelectButton.classed('btn-default', true).classed('btn-success', false)
+    //     .select('.btn-text').text('Select Services...');
+    //   d3ClearButton.classed('hidden', true);
+    // }
   }
 }

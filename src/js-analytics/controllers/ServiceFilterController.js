@@ -1,4 +1,4 @@
-/* global L ServiceTaxonomyModel ServiceFilterDropdownView MapView SocialServiceModel MapIconModel MarkerViewController */
+/* global L ServiceTaxonomyModel ServiceFilterDropdownView MainMarkerDropdownController MapView SocialServiceModel MapIconModel MarkerViewController MainMarkerDropdownView */
 // eslint-disable-next-line no-unused-vars
 class ServiceFilterController {
   constructor ({
@@ -6,6 +6,7 @@ class ServiceFilterController {
     mapView = new MapView(),
     serviceModel = new SocialServiceModel(),
     mapIconModel = new MapIconModel(),
+    mainMarkerDropdownView = new MainMarkerDropdownView()
   }) {
     // key = tier1 name, value = array of sub-categories
     this._states = {};
@@ -17,6 +18,8 @@ class ServiceFilterController {
     this._mapIconModel = mapIconModel;
     this._serviceTaxonomyModel = null;
     this._markerViewController = null;
+    this._mainMarkerDropdownView = mainMarkerDropdownView;
+    this._mainMarkerDropdownController = null;
   }
 
   attachMarkerViewController (viewController = new MarkerViewController()) {
@@ -42,6 +45,26 @@ class ServiceFilterController {
   init (serviceTaxonomyModel = new ServiceTaxonomyModel()) {
     const tier1Categories = serviceTaxonomyModel.allTier1Categories;
     this._serviceTaxonomyModel = serviceTaxonomyModel;
+
+    this._mainMarkerDropdownController = new MainMarkerDropdownController(this._mainMarkerDropdownView, (state) => {
+      const states = MainMarkerDropdownController.states;
+      if (state === states.ALL) {
+        tier1Categories.forEach(category => {
+          if (this.getMainCategoryState(category) !== 'all') {
+            this.toggleMainCategory(category, true, false);
+          }
+        });
+        this.updateViews();
+      } else if (state === states.NONE) {
+        tier1Categories.forEach(category => {
+          if (this.getMainCategoryState(category) !== 'none') {
+            this.toggleMainCategory(category, false, false);
+          }
+        });
+        this.updateViews();
+      }
+      this._markerViewController.toggle(state !== states.NONE);
+    });
 
     tier1Categories.forEach(category => {
       const tier2Categories = serviceTaxonomyModel.getTier2CategoriesOf(category);
@@ -94,18 +117,20 @@ class ServiceFilterController {
     return this._iconStates[this.getMainCategoryState(mainCategory)];
   }
 
-  toggleMainCategory (category, value) {
+  toggleMainCategory (category, value, doUpdate) {
     if (value !== undefined) { // specific toggle value
-      this.setMainCategoryValue(category, (value) ? this._defaultValues[category] : []);
+      this.setMainCategoryValue(category, (value) ? this._defaultValues[category] : [], doUpdate);
     } else {
-      this.setMainCategoryValue(category, (!this.isMainCategoryEnabled(category)) ? this._defaultValues[category] : []);
+      this.setMainCategoryValue(category, (!this.isMainCategoryEnabled(category)) ? this._defaultValues[category] : [], doUpdate);
     }
   }
 
-  setMainCategoryValue (category, value) {
+  setMainCategoryValue (category, value, doUpdate = true) {
     console.debug('setting category state', category, value);
     this._states[category] = value;
-    this.updateViews();
+    if (doUpdate) {
+      this.updateViews();
+    }
   }
 
   toggleSubCategory (mainCategory, subCategory, value) {
@@ -212,6 +237,21 @@ class ServiceFilterController {
     // show markers if they aren't being shown already
     if (this._markerViewController) {
       this._markerViewController.toggle(true);
+    }
+
+    // update main map marker checkbox
+    const tier1Categories = this._serviceTaxonomyModel.allTier1Categories;
+    let newState;
+    if (tier1Categories.every(c => this.getMainCategoryState(c) === 'all')) {
+      newState = MainMarkerDropdownController.states.ALL;
+    } else if (tier1Categories.some(c => this.getMainCategoryState(c) !== 'none')) {
+      newState = MainMarkerDropdownController.states.SOME;
+    } else {
+      newState = MainMarkerDropdownController.states.NONE;
+    }
+
+    if (this._mainMarkerDropdownController.state !== newState) {
+      this._mainMarkerDropdownController.state = newState;
     }
   }
 }

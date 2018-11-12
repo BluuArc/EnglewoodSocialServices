@@ -180,19 +180,18 @@
   }
 }
 
-#service-button-group {
-  #service-dropdown {
-    min-width: 300px;
+#map-markers-dropdown--services #service-dropdown {
+  min-width: 300px;
+  overflow: visible;
 
-    .btn-group .btn-item {
-      margin-right: 0px;
-    }
-    a {
-      margin-left: 4px;
-      .glyphicon {
-        margin-right: 6px;
-        margin-left: -4px;
-      }
+  .btn-group .btn-item {
+    margin-right: 0px;
+  }
+  a {
+    margin-left: 4px;
+    .glyphicon {
+      margin-right: 6px;
+      margin-left: -4px;
     }
   }
 }
@@ -207,7 +206,7 @@
 
 #service-dropdown, #census-dropdown, #main-marker-dropdown {
   padding-right: 4px;
-  .btn-group {
+  & .dropdown-submenu .btn-group {
     margin-left: 4px;
     width: 100%;
     border-bottom: 1px solid rgba(211, 211, 211, 0.76);
