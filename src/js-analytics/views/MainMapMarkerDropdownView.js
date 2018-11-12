@@ -22,7 +22,7 @@ class MainMarkerDropdownView {
     });
   }
 
-  get viewStateClasses () {
+  static get viewStateClasses () {
     return {
       ALL: 'glyphicon-check',
       SOME: 'glyphicon-plus',
@@ -32,6 +32,10 @@ class MainMarkerDropdownView {
 
   get allButton () {
     return this._allButton;
+  }
+
+  get dropdown () {
+    return this._dropdown;
   }
 
   updateGlyphicon (glyphiconClass) {

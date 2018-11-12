@@ -70,7 +70,7 @@ function AnalyticsApp (loader = new LoadingMessageView()) {
     self.controllers.serviceFilters.updateViews();
     self.controllers.censusFilters.updateViews();
     self.controllers.serviceMarkerView.toggle(false);
-    self.controllers.lotMarkerView.toggle(false);
+    self.controllers.lotView.updateAllViews(false);
     self.controllers.crimeMarkerView.toggle(false);
     self.controllers.schoolMarkerView.toggle(false);
 
@@ -147,7 +147,6 @@ function AnalyticsApp (loader = new LoadingMessageView()) {
       mapView: self.views.map,
       lotModel: self.models.lotData,
       mapIconModel: self.models.markerIcons,
-      lotMarkerTypeDropdownSelector: '#lot-type-view-toggle-group',
     });
     self.controllers.lotMarkerView = new MarkerViewController(
       '#main-marker-dropdown #toggle-marker-view--lot',
@@ -156,18 +155,18 @@ function AnalyticsApp (loader = new LoadingMessageView()) {
       false,
       true,
     );
-    self.controllers.lotDropdownView = new MainMarkerDropdownView('#main-marker-button-group', '#map-markers-dropdown--lot');
+    self.views.lotDropdown = new MainMarkerDropdownView('#main-marker-button-group', '#map-markers-dropdown--lot');
     const lotTypeMarkerViews = {};
     self.models.lotData.lotTypes.forEach(type => {
       lotTypeMarkerViews[type] = new MarkerViewController(
         `#main-marker-dropdown #toggle-lot-marker--${type.toLowerCase()}`,
         () => self.views.map.setClusterSubGroupVisibility(LotViewController.layerGroupName, type, false),
         () => self.views.map.setClusterSubGroupVisibility(LotViewController.layerGroupName, type, true),
-        true,
+        false,
         true,
       );
     });
-    self.controllers.lotView.init(self.controllers.lotMarkerView, lotTypeMarkerViews);
+    self.controllers.lotView.init(self.views.lotDropdown, lotTypeMarkerViews);
 
     // crime
     self.controllers.crimeView = new CrimeViewController({

@@ -1,4 +1,4 @@
-/* global L MarkerViewController MapView LotDataModel MapIconModel */
+/* global L MapView LotDataModel MapIconModel MainMarkerDropdownView MainMarkerDropdownController */
 
 // eslint-disable-next-line no-unused-vars
 class LotViewController {
@@ -6,13 +6,11 @@ class LotViewController {
     mapView = new MapView(),
     lotModel = new LotDataModel(),
     mapIconModel = new MapIconModel(),
-    lotMarkerTypeDropdownSelector = '#lot-type-view-toggle-group'
   }) {
     this._mapView = mapView;
     this._lotModel = lotModel;
     this._mainMarkerController = null;
     this._mapIconModel = mapIconModel;
-    this._lotTypeDropdown = document.querySelector(lotMarkerTypeDropdownSelector);
     this._markerControllers = {};
 
     this._mapView.addClusterGroup(LotViewController.layerGroupName, {
@@ -38,10 +36,15 @@ class LotViewController {
       : undefined;
   }
 
-  init (mainMarkerController = new MarkerViewController(), lotControllersByType = {}) {
-    this._mainMarkerController = mainMarkerController;
-    this._mainMarkerController.addPreUpdateEventHandler(LotViewController.layerGroupName, (isShowing) => {
-      this.updateAllViews(isShowing);
+  init (mainMarkerView = new MainMarkerDropdownView(), lotControllersByType = {}) {
+    this._mainMarkerController = new MainMarkerDropdownController(mainMarkerView, (state) => {
+      const states = MainMarkerDropdownController.states;
+      this._mapView.setClusterGroupVisibility(LotViewController.layerGroupName, state !== states.NONE);
+      if (state === states.ALL) {
+        this.updateAllViews(true);
+      } else if (state === states.NONE) {
+        this.updateAllViews(false);
+      }
     });
     this._lotModel.lotTypes.forEach(type => {
       this._markerControllers[type] = lotControllersByType[type];
@@ -109,22 +112,33 @@ class LotViewController {
   }
 
   updateAllViews (showMarkers) {
-    this._lotTypeDropdown.style.display = showMarkers ? '' : 'none';
-
     this._mapView.setClusterGroupVisibility(LotViewController.layerGroupName, showMarkers);
 
-    if (!this._hasAnyMarkersShowing) {
-      Object.keys(this._markerControllers).forEach(type => {
-        this._markerControllers[type].toggle(showMarkers);
-      });
+    Object.keys(this._markerControllers).forEach(type => {
+      this._markerControllers[type].toggle(showMarkers);
+    });
+
+    const newState = showMarkers ? MainMarkerDropdownController.states.ALL : MainMarkerDropdownController.states.NONE;
+    if (this._mainMarkerController.state !== newState) {
+      this._mainMarkerController.state = newState;
     }
   }
 
   updateViewsByType (showMarkers, type) {
     this._mapView.setClusterSubGroupVisibility(LotViewController.layerGroupName, type, showMarkers);
 
-    if (showMarkers && !this._mainMarkerController.viewState) {
-      this._mainMarkerController.toggle(true);
+    // update main marker view state depending on how many types are shown
+    const isShowingAll = this._lotModel.lotTypes.every(type => this._markerControllers[type].viewState);
+    let newState;
+    if (isShowingAll) {
+      newState = MainMarkerDropdownController.states.ALL;
+    } else if (this._hasAnyMarkersShowing) {
+      newState = MainMarkerDropdownController.states.SOME;
+    } else {
+      newState = MainMarkerDropdownController.states.NONE;
+    }
+    if (this._mainMarkerController.state !== newState) {
+      this._mainMarkerController.state = newState;
     }
   }
 }
