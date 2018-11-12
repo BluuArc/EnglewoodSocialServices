@@ -70,9 +70,8 @@ function AnalyticsApp (loader = new LoadingMessageView()) {
     self.models.markerIcons.autoInsertIntoDom();
     setAppContentDivHeight();
     await self.views.map.initMap();
-    self.controllers.serviceFilters.updateViews();
     self.controllers.censusFilters.updateViews();
-    self.controllers.serviceMarkerView.toggle(false);
+    self.controllers.serviceFilters.toggleAll(false);
     self.controllers.lotView.updateAllViews(false);
     self.controllers.crimeMarkerView.toggle(false);
     self.controllers.schoolMarkerView.toggle(false);
@@ -123,13 +122,6 @@ function AnalyticsApp (loader = new LoadingMessageView()) {
       legendView: self.views.legend,
     });
     self.controllers.censusFilters.init();
-
-    self.controllers.serviceMarkerView = new MarkerViewController(
-      '#marker-view-toggle-group #toggle-marker-view--service',
-      () => self.views.map.setLayerGroupVisibility(ServiceFilterController.layerGroupName, false),
-      () => self.views.map.setLayerGroupVisibility(ServiceFilterController.layerGroupName, true),
-    );
-    self.controllers.serviceFilters.attachMarkerViewController(self.controllers.serviceMarkerView);
 
     // school
     self.controllers.schoolView = new SchoolViewController({

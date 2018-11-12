@@ -17,13 +17,8 @@ class ServiceFilterController {
     this._serviceModel = serviceModel;
     this._mapIconModel = mapIconModel;
     this._serviceTaxonomyModel = null;
-    this._markerViewController = null;
     this._mainMarkerDropdownView = mainMarkerDropdownView;
     this._mainMarkerDropdownController = null;
-  }
-
-  attachMarkerViewController (viewController = new MarkerViewController()) {
-    this._markerViewController = viewController;
   }
 
   get _iconStates () {
@@ -49,21 +44,11 @@ class ServiceFilterController {
     this._mainMarkerDropdownController = new MainMarkerDropdownController(this._mainMarkerDropdownView, (state) => {
       const states = MainMarkerDropdownController.states;
       if (state === states.ALL) {
-        tier1Categories.forEach(category => {
-          if (this.getMainCategoryState(category) !== 'all') {
-            this.toggleMainCategory(category, true, false);
-          }
-        });
-        this.updateViews();
+        this.toggleAll(true);
       } else if (state === states.NONE) {
-        tier1Categories.forEach(category => {
-          if (this.getMainCategoryState(category) !== 'none') {
-            this.toggleMainCategory(category, false, false);
-          }
-        });
-        this.updateViews();
+        this.toggleAll(false);
       }
-      this._markerViewController.toggle(state !== states.NONE);
+      this._mapView.setLayerGroupVisibility(ServiceFilterController.layerGroupName, state !== states.NONE);
     });
 
     tier1Categories.forEach(category => {
@@ -115,6 +100,15 @@ class ServiceFilterController {
 
   getMainCategoryGlyphicon (mainCategory) {
     return this._iconStates[this.getMainCategoryState(mainCategory)];
+  }
+
+  toggleAll (showAll) {
+    const tier1Categories = this._serviceTaxonomyModel.allTier1Categories;
+    tier1Categories.forEach(category => {
+      this.toggleMainCategory(category, !!showAll, false);
+    });
+    this.updateViews();
+    this._mapView.setLayerGroupVisibility(ServiceFilterController.layerGroupName, showAll);
   }
 
   toggleMainCategory (category, value, doUpdate) {
@@ -233,11 +227,6 @@ class ServiceFilterController {
         data: filteredData
       },
     );
-
-    // show markers if they aren't being shown already
-    if (this._markerViewController) {
-      this._markerViewController.toggle(true);
-    }
 
     // update main map marker checkbox
     const tier1Categories = this._serviceTaxonomyModel.allTier1Categories;
