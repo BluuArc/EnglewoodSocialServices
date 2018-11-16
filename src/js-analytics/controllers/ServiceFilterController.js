@@ -1,4 +1,4 @@
-/* global L ServiceTaxonomyModel ServiceFilterDropdownView MainMarkerDropdownController MapView SocialServiceModel MapIconModel MarkerViewController MainMarkerDropdownView */
+/* global L ServiceTaxonomyModel ServiceFilterDropdownView MainMarkerDropdownController MapView SocialServiceModel MapIconModel MainMarkerDropdownView */
 // eslint-disable-next-line no-unused-vars
 class ServiceFilterController {
   constructor ({

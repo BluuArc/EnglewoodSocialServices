@@ -138,23 +138,20 @@
               </div>
             </li>
             <li class="dropdown-submenu">
-              <div class="btn-group row">
-                <button class="btn btn-item col-md-10" tabindex="-1">
+              <div class="btn-group row"  id="map-markers-dropdown--crime">
+                <button class="btn btn-item col-md-10" tabindex="-1" id="toggle-marker-view--crime">
                   <span class="glyphicon glyphicon-unchecked"></span>
                   Crimes
                   <i class="map-icon-insert" data-marker="crimeMarker"></i>
                 </button>
-                <button class="btn btn-item btn-dropdown col-md-2">
+                <button class="btn btn-item btn-dropdown col-md-2 map-marker-subdropdown-toggle">
                   <div>
                     <i class="caret"></i>
                   </div>
                 </button>
-                <ul class="dropdown-menu"></ul>
+                <ul class="dropdown-menu" role="menu"></ul>
               </div>
             </li>
-            <!-- <li>School</li>
-            <li>Lots</li>
-            <li>Crime</li> -->
           </ul>
         </div>
         <div class="nav btn-group" id="census-button-group">
@@ -180,13 +177,13 @@
             <i class="caret"></i>
           </button>
           <ul class="dropdown-menu" role="menu">
-            <li>
-              <a href="#" id="toggle-marker-view--crime">
+            <!-- <li>
+              <a href="#">
                 <i class="glyphicon glyphicon-unchecked"></i>
                 <span>Crime Markers</span>
                 <i class="map-icon-insert" data-marker="crimeMarker"></i>
               </a>
-            </li>
+            </li> -->
           </ul>
         </div>
       </section>

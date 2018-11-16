@@ -172,11 +172,12 @@ function AnalyticsApp (loader = new LoadingMessageView()) {
       mapIconModel: self.models.markerIcons,
     });
     self.controllers.crimeMarkerView = new MarkerViewController(
-      '#marker-view-toggle-group #toggle-marker-view--crime',
+      '#main-marker-dropdown #toggle-marker-view--crime',
       () => self.views.map.setClusterGroupVisibility(CrimeViewController.layerGroupName, false),
       () => self.views.map.setClusterGroupVisibility(CrimeViewController.layerGroupName, true),
     );
-    self.controllers.crimeView.init(self.controllers.crimeMarkerView);
+    self.views.crimeDropdown = new MainMarkerDropdownView('#main-marker-button-group', '#map-markers-dropdown--crime');
+    self.controllers.crimeView.init(self.views.crimeDropdown);
     /* eslint-enable no-undef */
   };
 }
