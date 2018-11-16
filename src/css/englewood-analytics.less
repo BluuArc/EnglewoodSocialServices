@@ -180,19 +180,18 @@
   }
 }
 
-#service-button-group {
-  #service-dropdown {
-    min-width: 300px;
+#map-markers-dropdown--services #service-dropdown {
+  min-width: 300px;
+  overflow: visible;
 
-    .btn-group .btn-item {
-      margin-right: 0px;
-    }
-    a {
-      margin-left: 4px;
-      .glyphicon {
-        margin-right: 6px;
-        margin-left: -4px;
-      }
+  .btn-group .btn-item {
+    margin-right: 0px;
+  }
+  a {
+    margin-left: 4px;
+    .glyphicon {
+      margin-right: 6px;
+      margin-left: -4px;
     }
   }
 }
@@ -201,9 +200,13 @@
   min-width: 275px;
 }
 
-#service-dropdown, #census-dropdown {
+#main-marker-dropdown {
+  min-width: 225px;
+}
+
+#service-dropdown, #census-dropdown, #main-marker-dropdown {
   padding-right: 4px;
-  .btn-group {
+  & .dropdown-submenu .btn-group {
     margin-left: 4px;
     width: 100%;
     border-bottom: 1px solid rgba(211, 211, 211, 0.76);
@@ -219,6 +222,18 @@
       text-align: left;
       margin-right: -4px;
       text-transform: capitalize;
+
+      display: inline-flex;
+      align-items: center;
+      height: 100%;
+
+      .caret {
+        margin: auto;
+      }
+
+      .map-icon-inserted {
+        margin-left: 4px;
+      }
 
       &:hover, &:focus {
         color: #262626;
@@ -274,7 +289,7 @@
 
 ///// START multi-level dropdown styles
 * {
-  .dropdown-submenu, #marker-view-toggle-group, #lot-type-view-toggle-group {
+  .dropdown-submenu, #lot-type-view-toggle-group {
     position: relative;
 
     .glyphicon-ok {

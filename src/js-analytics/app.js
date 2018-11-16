@@ -23,7 +23,10 @@ function AnalyticsApp (loader = new LoadingMessageView()) {
   };
   self.views = {
     map: new MapView('service-map', self.models.markerIcons),
-    serviceFilterDropdown: new ServiceFilterDropdownView(),
+    serviceFilterDropdown: new ServiceFilterDropdownView({
+      buttonGroup: '#main-marker-dropdown #map-markers-dropdown--services',
+      dropdownMenu: '#main-marker-dropdown #map-markers-dropdown--services ul.dropdown-menu',
+    }),
     censusFilterDropdown: new CensusFilterDropdownView(),
     loader,
     legend: new LegendView(
@@ -67,11 +70,11 @@ function AnalyticsApp (loader = new LoadingMessageView()) {
     self.models.markerIcons.autoInsertIntoDom();
     setAppContentDivHeight();
     await self.views.map.initMap();
-    self.controllers.serviceFilters.updateViews();
     self.controllers.censusFilters.updateViews();
-    self.controllers.serviceMarkerView.toggle(false);
-    self.controllers.lotMarkerView.toggle(false);
+    self.controllers.serviceFilters.toggleAll(false);
+    self.controllers.lotView.updateAllViews(false);
     self.controllers.crimeMarkerView.toggle(false);
+    self.controllers.schoolMarkerView.toggle(false);
 
     loadingView.mainMessage = 'Done!';
     loadingView.subMessage = '';
@@ -102,11 +105,13 @@ function AnalyticsApp (loader = new LoadingMessageView()) {
   self._initViewControllers = function () {
     /* eslint-disable no-undef */
     // service and census
+    self.views.mainServiceDropdown = new MainMarkerDropdownView('#main-marker-button-group', '#map-markers-dropdown--services');
     self.controllers.serviceFilters = new ServiceFilterController({
       dropdownView: self.views.serviceFilterDropdown,
       mapView: self.views.map,
       serviceModel: self.models.serviceData,
       mapIconModel: self.models.markerIcons,
+      mainMarkerDropdownView: self.views.mainServiceDropdown,
     });
     self.controllers.serviceFilters.init(self.models.serviceTaxonomy);
 
@@ -118,13 +123,6 @@ function AnalyticsApp (loader = new LoadingMessageView()) {
     });
     self.controllers.censusFilters.init();
 
-    self.controllers.serviceMarkerView = new MarkerViewController(
-      '#marker-view-toggle-group #toggle-marker-view--service',
-      () => self.views.map.setLayerGroupVisibility(ServiceFilterController.layerGroupName, false),
-      () => self.views.map.setLayerGroupVisibility(ServiceFilterController.layerGroupName, true),
-    );
-    self.controllers.serviceFilters.attachMarkerViewController(self.controllers.serviceMarkerView);
-
     // school
     self.controllers.schoolView = new SchoolViewController({
       mapView: self.views.map,
@@ -133,9 +131,11 @@ function AnalyticsApp (loader = new LoadingMessageView()) {
       serviceModel: self.models.serviceData,
     });
     self.controllers.schoolMarkerView = new MarkerViewController(
-      '#marker-view-toggle-group #toggle-marker-view--school',
+      '#main-marker-dropdown #toggle-marker-view--school',
       () => self.views.map.setLayerGroupVisibility(SchoolViewController.layerGroupName, false),
       () => self.views.map.setLayerGroupVisibility(SchoolViewController.layerGroupName, true),
+      false,
+      true,
     );
     self.controllers.schoolView.init(self.controllers.schoolMarkerView);
 
@@ -144,22 +144,26 @@ function AnalyticsApp (loader = new LoadingMessageView()) {
       mapView: self.views.map,
       lotModel: self.models.lotData,
       mapIconModel: self.models.markerIcons,
-      lotMarkerTypeDropdownSelector: '#lot-type-view-toggle-group',
     });
     self.controllers.lotMarkerView = new MarkerViewController(
-      '#marker-view-toggle-group #toggle-marker-view--lot',
+      '#main-marker-dropdown #toggle-marker-view--lot',
       () => self.views.map.setClusterGroupVisibility(LotViewController.layerGroupName, false),
       () => self.views.map.setClusterGroupVisibility(LotViewController.layerGroupName, true),
+      false,
+      true,
     );
+    self.views.lotDropdown = new MainMarkerDropdownView('#main-marker-button-group', '#map-markers-dropdown--lot');
     const lotTypeMarkerViews = {};
     self.models.lotData.lotTypes.forEach(type => {
       lotTypeMarkerViews[type] = new MarkerViewController(
-        `#lot-type-view-toggle-group #toggle-lot-marker--${type.toLowerCase()}`,
+        `#main-marker-dropdown #toggle-lot-marker--${type.toLowerCase()}`,
         () => self.views.map.setClusterSubGroupVisibility(LotViewController.layerGroupName, type, false),
         () => self.views.map.setClusterSubGroupVisibility(LotViewController.layerGroupName, type, true),
+        false,
+        true,
       );
     });
-    self.controllers.lotView.init(self.controllers.lotMarkerView, lotTypeMarkerViews);
+    self.controllers.lotView.init(self.views.lotDropdown, lotTypeMarkerViews);
 
     // crime
     self.controllers.crimeView = new CrimeViewController({
@@ -168,11 +172,12 @@ function AnalyticsApp (loader = new LoadingMessageView()) {
       mapIconModel: self.models.markerIcons,
     });
     self.controllers.crimeMarkerView = new MarkerViewController(
-      '#marker-view-toggle-group #toggle-marker-view--crime',
+      '#main-marker-dropdown #toggle-marker-view--crime',
       () => self.views.map.setClusterGroupVisibility(CrimeViewController.layerGroupName, false),
       () => self.views.map.setClusterGroupVisibility(CrimeViewController.layerGroupName, true),
     );
-    self.controllers.crimeView.init(self.controllers.crimeMarkerView);
+    self.views.crimeDropdown = new MainMarkerDropdownView('#main-marker-button-group', '#map-markers-dropdown--crime');
+    self.controllers.crimeView.init(self.views.crimeDropdown);
     /* eslint-enable no-undef */
   };
 }

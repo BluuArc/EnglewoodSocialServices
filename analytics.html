@@ -57,39 +57,103 @@
   </div>
   <nav class="navbar navbar-default">
     <div class="container-fluid" id="top-bar">
-      <section class="navbar-header">
-        <div class="row">
-          <div class="col-sm-12">
-            <span class="navbar-brand" id="page-title">Englewood Data Hub Analytics</span>
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-sm-6 text-center">
-            <a href="./about-analytics.html">About</a>
-          </div>
-          <div class="col-sm-6 text-center">
-            <a href="./contact.html?type=analytics">Contact</a>
-          </div>
-        </div>
-      </section>
-
       <section class="navbar-left">
-        <div class="nav btn-group" id="service-button-group">
-          <div class="btn-group">
-            <button class="btn btn-default dropdown-toggle navbar-btn btn-rounded select-btn" type="button" data-toggle="dropdown">
-              <i class="glyphicon glyphicon-map-marker"></i>
-              <span class="btn-text">
-                Select Services...
-              </span>
-              <i class="caret"></i>
-            </button>
-            <ul class="dropdown-menu dropdown-toggle" role="menu" id="service-dropdown"></ul>
-          </div>
-          <button class="btn btn-default navbar-btn clear-btn">
-            <span class="glyphicon glyphicon-remove"></span>
+        <div class="nav dropdown btn-group" id="main-marker-button-group">
+          <button class="btn btn-default navbar-btn btn-rounded dropdown-toggle" data-toggle="dropdown">
+            <span class="btn-text">Map Markers</span>
+            <i class="caret"></i>
           </button>
+          <ul class="dropdown-menu dropdown-toggle" role="menu" id="main-marker-dropdown">
+            <li class="dropdown-submenu">
+              <div class="btn-group row" id="map-markers-dropdown--services">
+                <button class="btn btn-item col-md-10" tabindex="-1">
+                  <span class="glyphicon glyphicon-unchecked"></span>
+                  Services
+                  <i class="map-icon-insert" data-marker="serviceMarker"></i>
+                </button>
+                <button class="btn btn-item btn-dropdown map-marker-subdropdown-toggle col-md-2">
+                  <div>
+                    <i class="caret"></i>
+                  </div>
+                </button>
+                <ul class="dropdown-menu" id="service-dropdown"></ul>
+              </div>
+            </li>
+            <li class="dropdown-submenu">
+              <div class="btn-group row">
+                <button class="btn btn-item col-md-10" tabindex="-1" id="toggle-marker-view--school">
+                  <span class="glyphicon glyphicon-unchecked"></span>
+                  Schools
+                  <i class="map-icon-insert" data-marker="schoolMarker"></i>
+                </button>
+                <button class="btn btn-item btn-dropdown col-md-2" disabled>
+                  <div>
+                    <i class="caret"></i>
+                  </div>
+                </button>
+              </div>
+            </li>
+            <li class="dropdown-submenu">
+              <div class="btn-group row" id="map-markers-dropdown--lot">
+                <button class="btn btn-item col-md-10" tabindex="-1" id="toggle-marker-view--lot">
+                  <span class="glyphicon glyphicon-unchecked"></span>
+                  Vacant Lots
+                  <i class="map-icon-insert" data-marker="lotMarker"></i>
+                </button>
+                <button class="btn btn-item btn-dropdown col-md-2 map-marker-subdropdown-toggle" data-toggle="dropdown">
+                  <div>
+                    <i class="caret"></i>
+                  </div>
+                </button>
+                <ul class="dropdown-menu" role="menu">
+                  <li>
+                    <a href="" id="toggle-lot-marker--residential">
+                      <i class="glyphicon glyphicon-unchecked"></i>
+                      <span>Residential Markers</span>
+                      <i class="map-icon-insert" data-marker="Residential"></i>
+                    </a>
+                  </li>
+                  <li>
+                    <a href="" id="toggle-lot-marker--bcm">
+                      <i class="glyphicon glyphicon-unchecked"></i>
+                      <span>Business/Commercial/Manufacturing Markers</span>
+                      <i class="map-icon-insert" data-marker="BCM"></i>
+                    </a>
+                  </li>
+                  <li>
+                    <a href="" id="toggle-lot-marker--pos">
+                      <i class="glyphicon glyphicon-unchecked"></i>
+                      <span>Parks and Open Space Markers</span>
+                      <i class="map-icon-insert" data-marker="POS"></i>
+                    </a>
+                  </li>
+                  <li>
+                    <a href="" id="toggle-lot-marker--pd">
+                      <i class="glyphicon glyphicon-unchecked"></i>
+                      <span>Planned Manufacturing Districts and Development Markers</span>
+                      <i class="map-icon-insert" data-marker="PD"></i>
+                    </a>
+                  </li>
+                </ul>
+              </div>
+            </li>
+            <li class="dropdown-submenu">
+              <div class="btn-group row"  id="map-markers-dropdown--crime">
+                <button class="btn btn-item col-md-10" tabindex="-1" id="toggle-marker-view--crime">
+                  <span class="glyphicon glyphicon-unchecked"></span>
+                  Crimes
+                  <i class="map-icon-insert" data-marker="crimeMarker"></i>
+                </button>
+                <button class="btn btn-item btn-dropdown col-md-2 map-marker-subdropdown-toggle">
+                  <div>
+                    <i class="caret"></i>
+                  </div>
+                </button>
+                <ul class="dropdown-menu" role="menu"></ul>
+              </div>
+            </li>
+          </ul>
         </div>
-
         <div class="nav btn-group" id="census-button-group">
           <div class="btn-group">
             <button class="btn btn-default dropdown-toggle navbar-btn btn-rounded select-btn" type="button" data-toggle="dropdown">
@@ -104,83 +168,20 @@
             <span class="glyphicon glyphicon-remove"></span>
           </button>
         </div>
-
-        <div class="nav btn-group" id="marker-view-toggle-group">
-          <button class="btn btn-success dropdown-toggle navbar-btn" data-toggle="dropdown">
-            <span class="btn-text">
-              Toggle Marker Views
-            </span>
-            <i class="caret"></i>
-          </button>
-          <ul class="dropdown-menu" role="menu">
-            <li>
-              <a href="#" id="toggle-marker-view--service">
-                <i class="glyphicon glyphicon-unchecked"></i>
-                <span>Service Markers</span>
-                <i class="map-icon-insert" data-marker="serviceMarker"></i>
-              </a>
-            </li>
-            <li>
-              <a href="#" id="toggle-marker-view--lot">
-                <i class="glyphicon glyphicon-unchecked"></i>
-                <span>Vacant Lot Markers</span>
-                <i class="map-icon-insert" data-marker="lotMarker"></i>
-              </a>
-            </li>
-            <li>
-              <a href="#" id="toggle-marker-view--school">
-                <i class="glyphicon glyphicon-unchecked"></i>
-                <span>School Markers</span>
-                <i class="map-icon-insert" data-marker="schoolMarker"></i>
-              </a>
-            </li>
-            <li>
-              <a href="#" id="toggle-marker-view--crime">
-                <i class="glyphicon glyphicon-unchecked"></i>
-                <span>Crime Markers</span>
-                <i class="map-icon-insert" data-marker="crimeMarker"></i>
-              </a>
-            </li>
-          </ul>
+      </section>
+      <section class="navbar-header">
+        <div class="row">
+          <div class="col-sm-12">
+            <span class="navbar-brand" id="page-title">Englewood Data Hub Analytics</span>
+          </div>
         </div>
-
-        <div class="nav btn-group" id="lot-type-view-toggle-group">
-          <button class="btn btn-success dropdown-toggle navbar-btn" data-toggle="dropdown">
-            <span class="btn-text">
-              Toggle Lot Markers
-            </span>
-            <i class="caret"></i>
-          </button>
-          <ul class="dropdown-menu" role="menu">
-            <li>
-              <a href="" id="toggle-lot-marker--residential">
-                <i class="glyphicon glyphicon-unchecked"></i>
-                <span>Residential Markers</span>
-                <i class="map-icon-insert" data-marker="Residential"></i>
-              </a>
-            </li>
-            <li>
-              <a href="" id="toggle-lot-marker--bcm">
-                <i class="glyphicon glyphicon-unchecked"></i>
-                <span>Business/Commercial/Manufacturing Markers</span>
-                <i class="map-icon-insert" data-marker="BCM"></i>
-              </a>
-            </li>
-            <li>
-              <a href="" id="toggle-lot-marker--pos">
-                <i class="glyphicon glyphicon-unchecked"></i>
-                <span>Parks and Open Space Markers</span>
-                <i class="map-icon-insert" data-marker="POS"></i>
-              </a>
-            </li>
-            <li>
-              <a href="" id="toggle-lot-marker--pd">
-                <i class="glyphicon glyphicon-unchecked"></i>
-                <span>Planned Manufacturing Districts and Development Markers</span>
-                <i class="map-icon-insert" data-marker="PD"></i>
-              </a>
-            </li>
-          </ul>
+        <div class="row">
+          <div class="col-sm-6 text-center">
+            <a href="./about-analytics.html">About</a>
+          </div>
+          <div class="col-sm-6 text-center">
+            <a href="./contact.html?type=analytics">Contact</a>
+          </div>
         </div>
       </section>
     </div>
@@ -264,6 +265,7 @@
   <script src="./src/js-analytics/views/ServiceFilterDropdownView.js"></script>
   <script src="./src/js-analytics/views/CensusFilterDropdownView.js"></script>
   <script src="./src/js-analytics/views/LegendView.js"></script>
+  <script src="./src/js-analytics/views/MainMapMarkerDropdownView.js"></script>
 
   <script src="./src/js-analytics/controllers/MarkerViewController.js"></script>
   <script src="./src/js-analytics/controllers/ServiceFilterController.js"></script>
@@ -272,6 +274,7 @@
   <script src="./src/js-analytics/controllers/LotViewController.js"></script>
   <script src="./src/js-analytics/controllers/CrimeViewController.js"></script>
   <script src="./src/js/controllers/dataDownloadController.js"></script>
+  <script src="./src/js-analytics/controllers/MainMarkerDropdownController.js"></script>
 
   <script src="./src/js-analytics/app.js"></script>
 </body>

@@ -1,6 +1,6 @@
 // eslint-disable-next-line no-unused-vars
 class MarkerViewController {
-  constructor (buttonSelector, toggleOff, toggleOn, initialState) {
+  constructor (buttonSelector, toggleOff, toggleOn, initialState, stopEventPropagation = false) {
     this._button = document.querySelector(buttonSelector);
     this._buttonSymbol = this._button.querySelector('.glyphicon');
     this._toggleOff = toggleOff;
@@ -10,6 +10,10 @@ class MarkerViewController {
 
     this._button.addEventListener('click', (e) => {
       e.preventDefault();
+      // useful for keeping a dropdown open when button is clicked
+      if (stopEventPropagation) {
+        e.stopPropagation();
+      }
       this.toggle();
     });
   }

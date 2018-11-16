@@ -1,4 +1,4 @@
-/* global L MarkerViewController MapView CrimeDataModel MapIconModel */
+/* global L MarkerViewController MainMarkerDropdownController MainMarkerDropdownView MapView CrimeDataModel MapIconModel */
 
 // eslint-disable-next-line no-unused-vars
 class CrimeViewController {
@@ -11,6 +11,7 @@ class CrimeViewController {
     this._crimeModel = crimeModel;
     this._mainMarkerController = null;
     this._mapIconModel = mapIconModel;
+    this._markerControllers = {};
 
     this._mapView.addClusterGroup(CrimeViewController.layerGroupName, {
       showCoverageOnHover: false,
@@ -19,16 +20,58 @@ class CrimeViewController {
       maxClusterRadius: 160,
       iconCreateFunction: this._mapIconModel.getIconGeneratorById('crimeClusterIcon'),
     });
+
+    this._crimeModel.types.forEach(type => {
+      this._markerControllers[type] = null;
+      this._mapView.addClusterSubGroup(CrimeViewController.layerGroupName, type);
+    });
   }
 
   static get layerGroupName () {
     return 'crimeMarkers';
   }
 
-  init (mainMarkerController = new MarkerViewController()) {
-    this._mainMarkerController = mainMarkerController;
-    this._mainMarkerController.addPreUpdateEventHandler(CrimeViewController.layerGroupName, (isShowing) => {
-      this.updateAllViews(isShowing);
+  getLayerGroupNameByType (crimeType) {
+    return this._crimeModel.types.includes(crimeType)
+      ? `${CrimeViewController.layerGroupName}--${crimeType}`
+      : undefined;
+  }
+
+  init (mainMarkerDropdownView = new MainMarkerDropdownView()) {
+    this._mainMarkerController = new MainMarkerDropdownController(mainMarkerDropdownView, (state) => {
+      const states = MainMarkerDropdownController.states;
+      this._mapView.setClusterGroupVisibility(CrimeViewController.layerGroupName, state !== states.NONE);
+      if (state === states.ALL) {
+        this.updateAllViews(true);
+      } else if (state === states.NONE) {
+        this.updateAllViews(false);
+      }
+    });
+
+    // initialize dropdown elements
+    const dropdown = mainMarkerDropdownView.dropdown;
+    this._crimeModel.types.forEach(type => {
+      const dropdownEntry = document.createElement('li');
+      dropdownEntry.innerHTML = `
+        <a href="" id="toggle-crime-marker--${type.toLowerCase()}">
+          <i class="glyphicon glyphicon-unchecked"></i>
+          <span style="text-transform: capitalize;">${type.replace(/_/g, ' ').toLowerCase()}</span>
+        </a>
+      `;
+      dropdown.appendChild(dropdownEntry);
+
+      this._markerControllers[type] = new MarkerViewController(
+        `#main-marker-dropdown #toggle-crime-marker--${type.toLowerCase()}`,
+        () => this._mapView.setClusterSubGroupVisibility(CrimeViewController.layerGroupName, type, false),
+        () => this._mapView.setClusterSubGroupVisibility(CrimeViewController.layerGroupName, type, true),
+        false,
+        true,
+      );
+
+      this._markerControllers[type].addPreUpdateEventHandler(this.getLayerGroupNameByType(type), (isShowing) => {
+        this.updateViewsByType(isShowing, type);
+      });
+
     });
     this._initMapMarkers();
   }
@@ -66,15 +109,48 @@ class CrimeViewController {
   _initMapMarkers () {
     const data = this._crimeModel.getData();
 
-    this._mapView.updateClusterGroup(CrimeViewController.layerGroupName, (group, map) => {
+    this._mapView.updateClusterGroup(CrimeViewController.layerGroupName, (group, map, getClusterSubGroup) => {
       data.forEach(crime => {
+        const crimeType = this._crimeModel.getCrimeType(crime);
         const marker = this._markerGenerator(crime, map);
-        group.addLayer(marker);
+        const typeGroup = getClusterSubGroup(crimeType);
+        typeGroup.addLayer(marker);
       });
     });
   }
 
+  get _hasAnyMarkersShowing () {
+    return Object.values(this._markerControllers).some(c => c.viewState);
+  }
+
   updateAllViews (showMarkers) {
     this._mapView.setClusterGroupVisibility(CrimeViewController.layerGroupName, showMarkers);
+
+    Object.keys(this._markerControllers).forEach(type => {
+      this._markerControllers[type].toggle(showMarkers);
+    });
+
+    const newState = showMarkers ? MainMarkerDropdownController.states.ALL : MainMarkerDropdownController.states.NONE;
+    if (this._mainMarkerController.state !== newState) {
+      this._mainMarkerController.state = newState;
+    }
+  }
+
+  updateViewsByType (showMarkers, type) {
+    this._mapView.setClusterSubGroupVisibility(CrimeViewController.layerGroupName, type, showMarkers);
+
+    // update main marker view state depending on how many types are shown
+    const isShowingAll = this._crimeModel.types.every(type => this._markerControllers[type].viewState);
+    let newState;
+    if (isShowingAll) {
+      newState = MainMarkerDropdownController.states.ALL;
+    } else if (this._hasAnyMarkersShowing) {
+      newState = MainMarkerDropdownController.states.SOME;
+    } else {
+      newState = MainMarkerDropdownController.states.NONE;
+    }
+    if (this._mainMarkerController.state !== newState) {
+      this._mainMarkerController.state = newState;
+    }
   }
 }
