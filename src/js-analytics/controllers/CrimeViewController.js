@@ -55,7 +55,7 @@ class CrimeViewController {
       dropdownEntry.innerHTML = `
         <a href="" id="toggle-crime-marker--${type.toLowerCase()}">
           <i class="glyphicon glyphicon-unchecked"></i>
-          <span>${type.replace(/_/g, ' ')}</span>
+          <span style="text-transform: capitalize;">${type.replace(/_/g, ' ').toLowerCase()}</span>
         </a>
       `;
       dropdown.appendChild(dropdownEntry);
