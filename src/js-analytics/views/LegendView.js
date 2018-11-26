@@ -95,13 +95,13 @@ class LegendView {
         name: 'Service Marker'
       },
       {
-        id: 'lotMarker',
-        name: 'Lot Marker'
-      },
-      {
         id: 'schoolMarker',
         name: 'School Marker'
-      }
+      },
+      {
+        id: 'crimeMarker',
+        name: 'Crime Marker'
+      },
     ];
 
     const lineHeight = 25;
